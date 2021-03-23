@@ -112,15 +112,26 @@ def open_force_close_auction(cdp_number: int):
     assert cdp[cdp_number, "auction", "open"] is False, "Auction is already taking place!" # May not work
     
     cdp[cdp_number, "open"] = False # This contract may only be bid on, and not closed
+    cdp[cdp_number, "auction", "open"] = True
     
     cdp[cdp_number, "auction", "highest_bidder"] = ctx.caller
-    cdp[cdp_number, "auction", "top_bid"] = 0
+    cdp[cdp_number, "auction", "top_bid"] = 0.0
     cdp[cdp_number, "auction", "time"] = now.seconds #TODO: make sure this works
     
+    return True
+    
 @export
-def bid_on_force_close(cdp_number: int):
+def bid_on_force_close(cdp_number: int, amount: float):
     assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
     assert cdp[cdp_number, "auction", "open"] is False, "Auction is already taking place!" # May not work
+    assert amount > cdp[cdp_number, "auction", "top_bid"], "There is already a higher bid!"
+    
+    dai_contract.transfer_from(amount=amount, to=ctx.this, main_account=ctx.caller)
+    
+    cdp[cdp_number, "auction", "highest_bidder"] = ctx.caller
+    cdp[cdp_number, "auction", "top_bid"] = amount
+    
+    return True
     
 @export
 def sync_stability_pool(vault_type: int):
