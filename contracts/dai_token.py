@@ -1,9 +1,12 @@
 balances = Hash(default_value=0)
 operator = Variable()
+total_supply = Variable()
 
 @construct
 def seed(vk: str, owner: str):
-    balances[vk] = 288_090_567
+    balances[vk] = 1000000
+    total_supply.set(1000000)
+    
     operator.set(owner)
 
 @export
@@ -57,6 +60,9 @@ def mint(amount: float):
     sender = ctx.caller
     balances[sender] += amount
     
+    total = total_supply.get() + amount
+    total_supply.set(amount)
+    
 @export
 def burn(amount: float):
     assert amount > 0, 'Cannot burn negative balances!'
@@ -67,6 +73,13 @@ def burn(amount: float):
     
     balances[sender] -= amount
     
+    total = total_supply.get() - amount
+    total_supply.set(amount)
+    
+@export
+def get_total_supply():
+    return total_supply.get()
+
 @export
 def change_owner(new_owner: str):
     assert_owner()
