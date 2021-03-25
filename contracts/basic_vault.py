@@ -123,31 +123,82 @@ def open_force_close_auction(cdp_number: int):
 @export
 def bid_on_force_close(cdp_number: int, amount: float):
     assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
-    assert cdp[cdp_number, "auction", "open"] is False, "Auction is already taking place!" # May not work
+    assert cdp[cdp_number, "auction", "open"] is True, "Auction is not open!" # May not work
     assert amount > cdp[cdp_number, "auction", "top_bid"], "There is already a higher bid!"
     
-    dai_contract.transfer_from(amount=amount, to=ctx.this, main_account=ctx.caller)
+    if cdp[cdp_number, "auction", ctx.caller, "bid"] is not None:
+        dai_contract.transfer_from(amount=amount - cdp[cdp_number, "auction", ctx.caller, "bid"], to=ctx.this, main_account=ctx.caller)
+        
+    else:
+        dai_contract.transfer_from(amount=amount, to=ctx.this, main_account=ctx.caller)
     
     cdp[cdp_number, "auction", "highest_bidder"] = ctx.caller
     cdp[cdp_number, "auction", "top_bid"] = amount
+    cdp[cdp_number, "auction", ctx.caller, "bid"] = amount
+    
+    return True
+    
+@export
+def settle_force_close(cdp_number: int):
+    assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
+    assert cdp[cdp_number, "auction", "open"] is True, "Auction is not open!" 
+    
+    assert now.seconds - cdp[cdp_number, "auction", "time"] > vaults[vault_type, "minimum_auction_time"], "Auction is still open!"
+    
+    cdp[cdp_number, "auction", "settled"] = True
+    cdp[cdp_number, "open"] = False
+    cdp[cdp_number, "auction", "open"] = False
+    
+    cdp[cdp_number, "auction", cdp[cdp_number, "auction", "highest_bidder"], "bid"] = 0
+    
+    fee = cdp[cdp_number, "dai"] * 0.1
+    dai_contract.transfer_from(amount=cdp[cdp_number, "dai"] - fee, to=ctx.caller)
+    
+    stability_pool[cdp[number, "collateral_type"]] += fee
+    
+    vaults[vault_type, "issued"] -= cdp[number, "dai"]
+    vaults[vault_type, "total"] -= cdp[cdp_number, "auction", "top_bid"]
+    
+    return cdp[cdp_number, "auction", "highest_bidder"], cdp[cdp_number, "auction", "top_bid"]
+ 
+@export
+def claim_unwon_bid(cdp_number: int):
+    assert cdp[cdp_number, "auction", "settled"] is True, "Auction is not over!"
+    
+    importlib
+    collateral.transfer(to=ctx.caller, amount=cdp[cdp_number, "auction", ctx.caller, "bid"])
+    cdp[cdp_number, "auction", ctx.caller, "bid"] = 0
     
     return True
     
 @export
 def sync_stability_pool(vault_type: int):
+    assert vault_type in vaults["list"], "Not an available contract!"
     
+    default_amount = vaults[vault_type, "total"] - vaults[vault_type, "issued"]
+    
+    if default_amount > stability_pool[vault_type]:
+        vaults[vault_type, "issued"] += stability_pool[vault_type]
+        stability_pool[vault_type] = 0
+        
+        return vaults[vault_type, "issued"] / vaults[vault_type, "total"] # Return new ratio
+        
+    else: # This also applies to negatives, although those situations are unlikely
+        vaults[vault_type, "issued"] = vaults[vault_type, "total"]
+        stability_pool[vault_type] -= default_amount
+        
+        return 1.0 # The ratio is perfectly equal
+        
 @export
-def settle_force_close(cdp_number: int):
-    assert now.seconds - cdp[cdp_number, "auction", "time"] > vaults[vault_type, "minimum_auction_time"], "Auction is still open!"
-    
-    do_settle_stuff_here()
-    
+def sync_burn():
+
 @export
 def change_state(key: str, new_value: str, convert_to_decimal: bool=False):
     assert state["OWNER"] == ctx.caller, "Not the owner!"
     
     if convert_to_decimal:
         new_value = decimal(new_value)
+        
     state[key] = new_value
         
     return new_value
