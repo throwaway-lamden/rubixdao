@@ -2,18 +2,17 @@ import unittest
 
 from contracting.client import ContractingClient
 
-client = ContractingClient()
-
-with open('../dai_token.py') as file:
-    code = file.read()
-    client.submit(code, name='dai_token')
-
 class TokenTests(unittest.TestCase):
     def setUp(self):
-        pass
+        self.client = ContractingClient()
+        self.client.flush()
+        
+        with open('../dai_token.py') as file:
+            code = file.read()
+        client.submit(code, name='dai_contract')
 
     def tearDown(self):
-        pass
+        self.client.flush()
 
     def test(self):
         pass
