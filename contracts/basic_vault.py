@@ -1,5 +1,6 @@
 import oracle
 import dai_contract
+
 vaults = Hash(default_value=0)
 cdp = Hash()
 stability_pool = Hash()
