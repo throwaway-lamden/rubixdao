@@ -18,26 +18,6 @@ class BasicVaultTests(unittest.TestCase):
 
     def test(self):
         pass
-
-class TokenTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def test(self):
-        pass
-    
-class OracleTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def test(self):
-        pass
     
 if __name__ == "__main__":
     unittest.main()
