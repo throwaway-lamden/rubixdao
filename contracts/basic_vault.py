@@ -197,6 +197,16 @@ def sync_stability_pool(vault_type: int):
         return 1.0 # The ratio is perfectly equal
         
 @export
+def export_rewards(vault_type: int, amount: float):
+    assert vaults["vault_type", "DSR", "owner"] == ctx.caller, "Not the owner!" # TODO: Change DSR to something else in future
+    assert stability_pool[vault_type] >= amount, "Not enough DAI in stability pool to export!"
+    
+    stability_pool[vault_type] -= amount
+    dai_contract.transfer(to=ctx.caller, amount=amount)
+    
+    return True
+        
+@export
 def sync_burn(vault_type: int, amount: float):
     assert vault_type in vaults["list"], "Not an available contract!"
     
