@@ -8,16 +8,16 @@ stability_pool = Hash()
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
     assert vault_type in vaults["list"], "Not an available contract!"
     
-    IMPORTLIB STUFF with this
-    vaults["contract"][vault_type] 
+    collateral = importlib.import_module(vaults[vault_type, "collateral_type"]) # TODO: Add interface enforcement
     
     #vault_name = vaults["list"][vault_type] #This should error out if out of range, should still do sanity checks though #Probably not needed
     
     price = oracle.get_price(vault_type)
     
-    assert (amount_of_collateral * price) / amount_of_dai > vaults["minimum_collaterization"][vault_type], "Not enough collateral!"
+    assert vaults[vault_type, "total"] <= vaults[vault_type, "cap"], "The allowance is not sufficent!"
+    assert (amount_of_collateral * price) / amount_of_dai > vaults[vault_type, "minimum_collaterization"], "Not enough collateral!"
     
-    cdp_number = cdp[current_value] 
+    cdp_number = cdp[current_value]
     cdp[current_value] += 1
     
     cdp[cdp_number, "owner"] = ctx.caller
@@ -28,7 +28,7 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     cdp[cdp_number, "collateral_amount"] = amount_of_collateral
     cdp[cdp_number, "time"] = now.seconds #TODO: make sure this works
     
-    importlib.transfer_from(amount=amount_of_collateral, to=ctx.this, main_account=ctx.caller)
+    collateral.transfer_from(amount=amount_of_collateral, to=ctx.this, main_account=ctx.caller)
     
     dai_contract.mint(amount=amount_of_dai)
     dai_contract.transfer(amount=amount_of_dai, to=ctx.caller)
@@ -43,6 +43,8 @@ def close_vault(cdp_number: int):
     assert cdp[cdp_number, "owner"] == ctx.caller, "Not the owner!"
     assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
     
+    collateral = importlib.import_module(vaults[vault_type, "collateral_type"])
+    
     stability_ratio = vaults["issued"] / vaults["total"]
     redemption_cost = cdp[number, "amount_of_dai"] * stability_ratio
     fee = redemption_cost * (stability_rate * (now.seconds - cdp[number, "time"]))
@@ -53,15 +55,17 @@ def close_vault(cdp_number: int):
     stability_pool[cdp[number, "collateral_type"]] += fee
     
     vaults[vault_type, "issued"] -= cdp[number, "dai"]
-    vaults[vault_type, "total"] -= redemption_cost
+    vaults[vault_type, "total"] -= redemption_cost # This is only different if the ratio is different
     
     cdp[cdp_number, "open"] = False
     
-    importlib.transfer(amount=cdp[cdp_number, "collateral_amount"], to=ctx.caller)
+    collateral.transfer(amount=cdp[cdp_number, "collateral_amount"], to=ctx.caller)
     
 @export
 def fast_force_close_vault(cdp_number: int):
     assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
+    
+    collateral = importlib.import_module(vaults[vault_type, "collateral_type"])
     
     stability_ratio = vaults["issued"] / vaults["total"]
     redemption_cost_without_fee = cdp[number, "amount_of_dai"] * stability_ratio 
@@ -83,8 +87,8 @@ def fast_force_close_vault(cdp_number: int):
         
         amount = (1 / price) * (redemption_cost_without_fee) * 1.03
 
-        importlib.transfer(amount=amount, to=ctx.caller)
-        importlib.transfer(amount=collateral_amount - (amount * 1.1), to=cdp[number, "owner"])
+        collateral.transfer(amount=amount, to=ctx.caller)
+        collateral.transfer(amount=collateral_amount - (amount * 1.1), to=cdp[number, "owner"])
     
         vaults[vault_type, "issued"] -= cdp[number, "dai"]
         vaults[vault_type, "total"] -= redemption_cost
@@ -97,7 +101,7 @@ def fast_force_close_vault(cdp_number: int):
         
         amount = (1 / price) * (redemption_cost_without_fee) * 1.03
 
-        importlib.transfer(amount=amount, to=ctx.caller) # TODO: Add an assert later
+        collateral.transfer(amount=amount, to=ctx.caller) # TODO: Add an assert later
 
         vaults[vault_type, "issued"] -= cdp[number, "dai"]
         vaults[vault_type, "total"] -= redemption_cost
@@ -145,6 +149,8 @@ def settle_force_close(cdp_number: int):
     
     assert now.seconds - cdp[cdp_number, "auction", "time"] > vaults[vault_type, "minimum_auction_time"], "Auction is still open!"
     
+    collateral = importlib.import_module(vaults[vault_type, "collateral_type"])
+    
     cdp[cdp_number, "auction", "settled"] = True
     cdp[cdp_number, "open"] = False
     cdp[cdp_number, "auction", "open"] = False
@@ -152,7 +158,7 @@ def settle_force_close(cdp_number: int):
     cdp[cdp_number, "auction", cdp[cdp_number, "auction", "highest_bidder"], "bid"] = 0
     
     fee = cdp[cdp_number, "dai"] * 0.1
-    dai_contract.transfer_from(amount=cdp[cdp_number, "dai"] - fee, to=ctx.caller)
+    collateral.transfer_from(amount=cdp[cdp_number, "dai"] - fee, to=ctx.caller)
     
     stability_pool[cdp[number, "collateral_type"]] += fee
     
@@ -165,8 +171,7 @@ def settle_force_close(cdp_number: int):
 def claim_unwon_bid(cdp_number: int):
     assert cdp[cdp_number, "auction", "settled"] is True, "Auction is not over!"
     
-    importlib
-    collateral.transfer(to=ctx.caller, amount=cdp[cdp_number, "auction", ctx.caller, "bid"])
+    dai_contract.transfer(to=ctx.caller, amount=cdp[cdp_number, "auction", ctx.caller, "bid"])
     cdp[cdp_number, "auction", ctx.caller, "bid"] = 0
     
     return True
@@ -190,8 +195,29 @@ def sync_stability_pool(vault_type: int):
         return 1.0 # The ratio is perfectly equal
         
 @export
-def sync_burn():
+def sync_burn(vault_type: int, amount: float):
+    assert vault_type in vaults["list"], "Not an available contract!"
+    
+    dai_contract.transfer_from(to=ctx.this, amount=amount)
+    
+    vaults[vault_type, "issued"] += amount
+    
+    return vaults[vault_type, "issued"]
 
+@export
+def add_vault(vault_type: int, collateral_type: str, collateral_amount: float, max_minted: float):
+    assert state["OWNER"] == ctx.caller, "Not the owner!"
+    vaults["list"].append(vault_type)
+    
+    vaults[vault_type, "collateral_type"] = collateral_type
+    vaults[vault_type, "minimum_collaterization"] = collateral_amount
+    vaults[vault_type, "cap"] = max_minted
+    
+@export
+def remove_vault(vault_type: int):
+    assert state["OWNER"] == ctx.caller, "Not the owner!"
+    vaults["list"].remove(vault_type)
+    
 @export
 def change_state(key: str, new_value: str, convert_to_decimal: bool=False):
     assert state["OWNER"] == ctx.caller, "Not the owner!"
