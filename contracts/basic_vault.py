@@ -1,4 +1,3 @@
-import oracle
 import dai_contract
 
 vaults = Hash(default_value=0)
@@ -10,6 +9,7 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     assert vault_type in vaults["list"], "Not an available contract!"
     
     collateral = importlib.import_module(vaults[vault_type, "collateral_type"]) # TODO: Add interface enforcement
+    oracle = importlib.import_module(vaults["oracle"])
     
     #vault_name = vaults["list"][vault_type] #This should error out if out of range, should still do sanity checks though #Probably not needed
     
@@ -67,6 +67,7 @@ def fast_force_close_vault(cdp_number: int):
     assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
     
     collateral = importlib.import_module(vaults[vault_type, "collateral_type"])
+    oracle = importlib.import_module(vaults["oracle"])
     
     stability_ratio = vaults["issued"] / vaults["total"]
     redemption_cost_without_fee = cdp[number, "amount_of_dai"] * stability_ratio 
