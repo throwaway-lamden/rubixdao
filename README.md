@@ -9,3 +9,5 @@ pETH equivalent (possibly unnecessary)
 Auction SC (can be simplified)
 
 Vaults
+
+Comprehensive tests
