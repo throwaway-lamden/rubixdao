@@ -9,7 +9,7 @@ with open('../dai_token.py') as file:
     client.submit(code, name='dai_token')
 
 
-class basicTests(unittest.TestCase):
+class BasicVaultTests(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -19,6 +19,25 @@ class basicTests(unittest.TestCase):
     def test(self):
         pass
 
+class TokenTests(unittest.TestCase):
+    def setUp(self):
+        pass
 
+    def tearDown(self):
+        pass
+
+    def test(self):
+        pass
+    
+class OracleTests(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test(self):
+        pass
+    
 if __name__ == "__main__":
     unittest.main()
