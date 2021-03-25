@@ -1,4 +1,6 @@
 balances = Hash(default_value=0)
+metadata = Hash()
+
 operator = Variable()
 total_supply = Variable()
 
@@ -8,6 +10,11 @@ def seed(vk: str, owner: str):
     total_supply.set(1000000)
     
     operator.set(owner)
+    
+    metadata['token_name'] = "Lamden MKR"
+    metadata['token_symbol'] = "lMKR"
+    metadata['token_logo_url'] = 'image.site'
+    metadata['operator'] = ctx.caller
 
 @export
 def transfer(amount: float, to: str):
@@ -80,6 +87,11 @@ def burn(amount: float):
 def get_total_supply():
     return total_supply.get()
 
+@export
+def change_metadata(key: str, value: Any):
+    assert ctx.caller == metadata['operator'], 'Only operator can set metadata!'
+    metadata[key] = value
+    
 @export
 def change_owner(new_owner: str):
     assert_owner()
