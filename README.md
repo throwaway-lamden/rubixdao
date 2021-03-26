@@ -1,9 +1,11 @@
 # lamden-mkr
 
+![Codecov](https://img.shields.io/codecov/c/github/throwaway-lamden/lamden-mkr)
+
 ## Progress:
 
 - [x] Dai SC
-  - [x] LST-001 
+  - [x] LST-001
   - [x] Metadata
   - [x] Mint/burn
   - [x] Ownership change possible
@@ -26,7 +28,7 @@
     - [x] Stability cost
     - [ ] Fee on default
     - [x] Oracle address
-  - [x] Mutable state 
+  - [x] Mutable state
   - [x] Scalable
   - [x] Vaults can be added
   - [x] Vaults can be removed
@@ -44,7 +46,7 @@
   - [ ] Auction
   - [ ] Staking
 
-- [ ] Documentation 
+- [ ] Documentation
   - [ ] Overview
   - [ ] Usage guide
   - [ ] Testing guide
@@ -57,7 +59,7 @@
   - [ ] Stake to earn excess tokens
   - [ ] Allow multiple stakes/deposits
 
-### TODO: 
+### TODO:
 Make tense consistent in progress
 
 After documentation is completed, move `Progress` to progress.md
