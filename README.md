@@ -1,7 +1,5 @@
 # lamden-mkr
 
-![Codecov](https://img.shields.io/codecov/c/github/throwaway-lamden/lamden-mkr)
-
 ## Progress:
 
 - [x] Dai SC

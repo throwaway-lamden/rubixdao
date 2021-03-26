@@ -8,9 +8,9 @@ total_supply = Variable()
 def seed(vk: str, owner: str):
     balances[vk] = 1000000
     total_supply.set(1000000)
-    
+
     operator.set(owner)
-    
+
     metadata['token_name'] = "Lamden MKR"
     metadata['token_symbol'] = "lMKR"
     metadata['token_logo_url'] = 'image.site'
@@ -61,15 +61,15 @@ def transfer_from(amount: float, to: str, main_account: str):
 @export
 def mint(amount: float):
     assert_owner()
-    
+
     assert amount > 0, 'Cannot mint negative balances!'
 
     sender = ctx.caller
     balances[sender] += amount
-    
+
     total = total_supply.get() + amount
     total_supply.set(amount)
-    
+
 @export
 def burn(amount: float):
     assert amount > 0, 'Cannot burn negative balances!'
@@ -77,12 +77,12 @@ def burn(amount: float):
     sender = ctx.caller
 
     assert balances[sender] >= amount, 'Not enough coins to burn!'
-    
+
     balances[sender] -= amount
-    
+
     total = total_supply.get() - amount
     total_supply.set(amount)
-    
+
 @export
 def get_total_supply():
     return total_supply.get()
@@ -91,12 +91,12 @@ def get_total_supply():
 def change_metadata(key: str, value: Any):
     assert ctx.caller == metadata['operator'], 'Only operator can set metadata!'
     metadata[key] = value
-    
+
 @export
 def change_owner(new_owner: str):
     assert_owner()
-    
+
     operator.set(new_owner)
-    
+
 def assert_owner():
     assert ctx.caller == operator.get(), 'Only operator can call!'
