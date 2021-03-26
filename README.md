@@ -59,4 +59,4 @@
 
 ### TODO: 
 Make tense consistent in progress
-
+After documentation is completed, move `Progress` to progress.md
