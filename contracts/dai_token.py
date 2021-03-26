@@ -68,7 +68,7 @@ def mint(amount: float):
     balances[sender] += amount
 
     total = total_supply.get() + amount
-    total_supply.set(amount)
+    total_supply.set(total)
 
 @export
 def burn(amount: float):
@@ -81,7 +81,7 @@ def burn(amount: float):
     balances[sender] -= amount
 
     total = total_supply.get() - amount
-    total_supply.set(amount)
+    total_supply.set(total)
 
 @export
 def get_total_supply():
@@ -95,7 +95,6 @@ def change_metadata(key: str, value: Any):
 @export
 def change_owner(new_owner: str):
     assert_owner()
-
     operator.set(new_owner)
 
 def assert_owner():
