@@ -12,7 +12,7 @@ class BasicVaultTests(unittest.TestCase):
         self.client.submit(code, name='dai_token', constructor_args={'vk': 'me', 'owner': 'default_owner'})
 
     def tearDown(self):
-        pass
+        self.client.flush()
 
     def test(self):
         pass
