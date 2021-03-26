@@ -8,6 +8,8 @@ stability_pool = Hash()
 def seed():
     state["OWNER"] = ctx.caller
     
+    
+    
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
     assert vault_type in vaults["list"], "Not an available contract!"
@@ -28,7 +30,7 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     cdp[cdp_number, "owner"] = ctx.caller
     cdp[cdp_number, "open"] = True
     
-    cdp[cdp_number, "collateral_type"] = vault_type
+    cdp[cdp_number, "collateral_type"] = vaults[vault_type, "collateral_type"]
     cdp[cdp_number, "dai"] = amount_of_dai
     cdp[cdp_number, "collateral_amount"] = amount_of_collateral
     cdp[cdp_number, "time"] = now.seconds #TODO: make sure this works
