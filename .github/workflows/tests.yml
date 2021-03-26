@@ -32,6 +32,6 @@ jobs:
     - name: Upload to codecov
       uses: codecov/codecov-action@v1
       with:
-        file: src/coverage.xml
+        file: contracts/coverage.xml
         flags: unittests
         env_vars: OS, PYTHON
