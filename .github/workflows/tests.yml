@@ -2,9 +2,9 @@ name: tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, tests-dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, tests-dev ]
 
 jobs:
   build:
@@ -27,4 +27,4 @@ jobs:
     - name: Test with pytest
       run: |
         cd $GITHUB_WORKSPACE/contracts/
-        sudo python3 -m pytest tests/ -n 2 --force-flaky
+        sudo python3 -m pytest tests/* -n 2 --force-flaky -v
