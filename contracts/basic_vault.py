@@ -8,7 +8,10 @@ stability_pool = Hash()
 def seed():
     state["OWNER"] = ctx.caller
     
+    cdp[current_value] = -1
     
+    vaults["list"] = [0]
+    add_vault(collateral_type="currency", collateral_amount=1.5, max_minted=10000)
     
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
@@ -225,9 +228,11 @@ def sync_burn(vault_type: int, amount: float):
     return vaults[vault_type, "issued"]
 
 @export
-def add_vault(vault_type: int, collateral_type: str, collateral_amount: float, max_minted: float):
+def add_vault(collateral_type: str, collateral_amount: float, max_minted: float):
     assert state["OWNER"] == ctx.caller, "Not the owner!"
     vaults["list"].append(vault_type)
+    vault_type = vaults["current_number"]
+    vaults["current_number"] += 1
     
     vaults[vault_type, "collateral_type"] = collateral_type
     vaults[vault_type, "minimum_collaterization"] = collateral_amount
