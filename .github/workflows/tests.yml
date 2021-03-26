@@ -27,7 +27,7 @@ jobs:
     - name: Test with pytest
       run: |
         cd $GITHUB_WORKSPACE/contracts/
-        sudo python3 -m pytest tests/* -n 2 --force-flaky -v --cov=./ --cov-report=xml
+        sudo python3 -m pytest tests/* -n 2 --force-flaky -v --cov=./ --cov-report=xml --ignore=tests/currency.py
     - name: Upload to codecov
       uses: codecov/codecov-action@v1
       with:
