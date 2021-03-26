@@ -35,18 +35,41 @@ class TokenTests(unittest.TestCase):
         assert self.token.balance_of(account='me') == 1000000
         assert self.token.balance_of(account='wallet2') == 0
 
-    def test_owner(self):
+    def test_accounts(self):
+        assert self.token.allowance(owner='me', spender='account1', signer='me') == 0
         try:
-            self.token.change_owner(new_owner='wallet2', signer='wallet2')
+            self.token.approve(amount=-1, to='account1', signer='me')
             raise
         except AssertionError as message:
-            assert 'operator' in str(message)
-        self.token.change_owner(new_owner='wallet2', signer='default_owner')
+            assert 'negative' in str(message)
+        self.token.approve(amount=42, to='account1', signer='me')
+        assert self.token.allowance(owner='me', spender='account1', signer='me') == 42
+
+    def test_transfer_from(self):
+        self.token.approve(amount=42, to='account1', signer='me')
         try:
-            self.token.change_owner(new_owner='me', signer='me')
+            self.token.transfer_from(amount=-1, to='wallet2',
+                                     main_account='me', signer='account1')
             raise
         except AssertionError as message:
-            assert 'operator' in str(message)
+            assert 'negative' in str(message)
+        try:
+            self.token.transfer_from(amount=1000000, to='wallet2',
+                                     main_account='me', signer='account1')
+            raise
+        except AssertionError as message:
+            assert 'approved' in str(message)
+        try:
+            self.token.transfer_from(amount=1000001, to='wallet2',
+                                     main_account='me', signer='account1')
+            raise
+        except AssertionError as message:
+            assert 'enough' in str(message)
+        self.token.transfer_from(amount=42, to='wallet2',
+                                 main_account='me', signer='account1')
+        assert self.token.allowance(owner='me', spender='account1', signer='me') == 0
+        assert self.token.balance_of(account='me') == 1000000 - 42
+        assert self.token.balance_of(account='wallet2') == 42
 
     def test_supply(self):
         old_supply = self.token.get_total_supply()
@@ -85,6 +108,20 @@ class TokenTests(unittest.TestCase):
         assert self.token.metadata['testing'] == 'testing'
         self.token.change_metadata(key='testing', value='again')
         assert self.token.metadata['testing'] == 'again'
-        
+
+    def test_owner(self):
+        try:
+            self.token.change_owner(new_owner='wallet2', signer='wallet2')
+            raise
+        except AssertionError as message:
+            assert 'operator' in str(message)
+        self.token.change_owner(new_owner='wallet2', signer='default_owner')
+        try:
+            self.token.change_owner(new_owner='me', signer='me')
+            raise
+        except AssertionError as message:
+            assert 'operator' in str(message)
+
+
 if __name__ == '__main__':
     unittest.main()
