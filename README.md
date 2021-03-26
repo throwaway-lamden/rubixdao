@@ -27,10 +27,10 @@
     - [ ] Fee on default
     - [x] Oracle address
   - [x] Mutable state 
-  - [x] Has infinite possible collateralization types
+  - [x] Scalable
   - [x] Vaults can be added
   - [x] Vaults can be removed
-  - [ ] Default collateral
+  - [ ] Contract starts with default vault
 
 - [x] Oracle
   - [x] Can display an arbitrary amount of token values
@@ -42,18 +42,21 @@
   - [ ] Oracle
   - [ ] Vaults
   - [ ] Auction
+  - [ ] Staking
 
 - [ ] Documentation 
   - [ ] Overview
   - [ ] Usage guide
   - [ ] Testing guide
+  - [ ] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
   - [ ] Function documentation
   - [x] Todo
 
 - [ ] Staking (DSR)
   - [x] Export excess tokens from Vaults (stability)
   - [ ] Stake to earn excess tokens
+  - [ ] Allow multiple stakes/deposits
 
 ### TODO: 
-Make tense consistent
+Make tense consistent in progress
 
