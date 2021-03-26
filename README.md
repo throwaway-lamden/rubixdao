@@ -38,7 +38,7 @@
   - [x] Has optimized stamp cost
 
 - [ ] Tests
-  - [ ] DAI token
+  - [x] DAI token
   - [ ] Oracle
   - [ ] Vaults
   - [ ] Auction
