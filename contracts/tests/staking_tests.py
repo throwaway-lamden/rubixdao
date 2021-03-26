@@ -3,7 +3,7 @@ import unittest
 from contracting.client import ContractingClient
 
 
-class OracleTests(unittest.TestCase):
+class StakingTests(unittest.TestCase):
     def setUp(self):
         self.client = ContractingClient()
         self.client.flush()
