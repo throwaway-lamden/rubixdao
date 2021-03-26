@@ -4,6 +4,10 @@ vaults = Hash(default_value=0)
 cdp = Hash()
 stability_pool = Hash()
 
+@construct
+def seed():
+    state["OWNER"] = ctx.caller
+    
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
     assert vault_type in vaults["list"], "Not an available contract!"
@@ -160,7 +164,8 @@ def settle_force_close(cdp_number: int):
     cdp[cdp_number, "auction", cdp[cdp_number, "auction", "highest_bidder"], "bid"] = 0
     
     fee = cdp[cdp_number, "dai"] * 0.1
-    collateral.transfer_from(amount=cdp[cdp_number, "dai"] - fee, to=ctx.caller)
+    collateral.transfer_from(amount=cdp[cdp_number, "collateral_amount"] - fee, to=ctx.caller)
+    dai_contract.burn(amount=cdp[cdp_number, "collateral_amount"] - fee)
     
     stability_pool[cdp[number, "collateral_type"]] += fee
     
@@ -211,6 +216,7 @@ def sync_burn(vault_type: int, amount: float):
     assert vault_type in vaults["list"], "Not an available contract!"
     
     dai_contract.transfer_from(to=ctx.this, amount=amount)
+    dai_contract.burn(amount=amount)
     
     vaults[vault_type, "issued"] += amount
     
