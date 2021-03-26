@@ -21,7 +21,7 @@ class TokenTests(unittest.TestCase):
             self.token.transfer(amount=-1, to='wallet2', signer='me')
             raise
         except AssertionError as message:
-            assert 'negative' in str(message)
+            assert 'non-positive' in str(message)
         try:
             self.token.transfer(amount=1000001, to='wallet2', signer='me')
             raise
@@ -41,7 +41,7 @@ class TokenTests(unittest.TestCase):
             self.token.approve(amount=-1, to='account1', signer='me')
             raise
         except AssertionError as message:
-            assert 'negative' in str(message)
+            assert 'non-positive' in str(message)
         self.token.approve(amount=42, to='account1', signer='me')
         assert self.token.allowance(owner='me', spender='account1', signer='me') == 42
 
@@ -52,7 +52,7 @@ class TokenTests(unittest.TestCase):
                                      main_account='me', signer='account1')
             raise
         except AssertionError as message:
-            assert 'negative' in str(message)
+            assert 'non-positive' in str(message)
         try:
             self.token.transfer_from(amount=1000000, to='wallet2',
                                      main_account='me', signer='account1')
@@ -77,7 +77,7 @@ class TokenTests(unittest.TestCase):
             self.token.burn(amount=-1, signer='me')
             raise
         except AssertionError as message:
-            assert 'negative' in str(message)
+            assert 'non-positive' in str(message)
         try:
             self.token.burn(amount=1000001, signer='me')
             raise
@@ -94,7 +94,7 @@ class TokenTests(unittest.TestCase):
             self.token.mint(amount=-1, signer='default_owner')
             raise
         except AssertionError as message:
-            assert 'negative' in str(message)
+            assert 'non-positive' in str(message)
         self.token.mint(amount=42, signer='default_owner')
         assert self.token.get_total_supply() == old_supply
 

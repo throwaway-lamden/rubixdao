@@ -39,7 +39,7 @@
 
 - [ ] Tests
   - [x] DAI token
-  - [ ] Oracle
+  - [x] Oracle
   - [ ] Vaults
   - [ ] Auction
   - [ ] Staking
