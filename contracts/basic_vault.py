@@ -231,12 +231,14 @@ def sync_burn(vault_type: int, amount: float):
 def add_vault(collateral_type: str, collateral_amount: float, max_minted: float):
     assert state["OWNER"] == ctx.caller, "Not the owner!"
     vaults["list"].append(vault_type)
-    vault_type = vaults["current_number"]
+    vault_number = vaults["current_number"]
     vaults["current_number"] += 1
     
-    vaults[vault_type, "collateral_type"] = collateral_type
-    vaults[vault_type, "minimum_collaterization"] = collateral_amount
-    vaults[vault_type, "cap"] = max_minted
+    vaults[vault_number, "collateral_type"] = collateral_type
+    vaults[vault_number, "minimum_collaterization"] = collateral_amount
+    vaults[vault_number, "cap"] = max_minted
+    
+    return vault_number
     
 @export
 def remove_vault(vault_type: int):
@@ -261,4 +263,3 @@ def change_any_state(key: Any, new_value: Any):
     state[key] = new_value
         
     return new_value
-    
