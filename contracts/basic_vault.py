@@ -218,18 +218,40 @@ def export_rewards(vault_type: int, amount: float):
     return True
 
 @export
+def mint_rewards(amount: float): # TODO: MAKE SURE MATH CHECKS OUT
+    assert vaults["vault_type", "DSR", "owner"] == ctx.caller, "Not the owner!" # TODO: Change DSR to something else in future
+
+    dai_contract.mint(amount=amount)
+    dai_contract.transfer(to=ctx.caller, amount=amount)
+    
+    total_weight = 0
+    total_funds = amount
+    
+    for vault_type in vaults["list"]:
+        total_weight += vaults[vault_type, "weight"]
+    
+    for vault_type in vaults["list"]: # To make the contract more robust, and to prevent floating point errors
+        funds_transferred = (vaults[vault_type, "weight"] / total_weight) * total_funds
+        vaults[vault_type, "total"] += funds_transferred
+        
+        total_funds -= funds_transferred 
+        total_weight -= vaults[vault_type, "weight"]
+    
+    return True
+
+@export
 def sync_burn(vault_type: int, amount: float):
     assert vault_type in vaults["list"], "Not an available contract!"
 
     dai_contract.transfer_from(to=ctx.this, amount=amount)
     dai_contract.burn(amount=amount)
 
-    vaults[vault_type, "issued"] += amount
+    vaults[vault_type, "total"] -= amount
 
-    return vaults[vault_type, "issued"]
+    return vaults[vault_type, "total"]
 
 @export
-def add_vault(collateral_type: str, collateral_amount: float, max_minted: float):
+def add_vault(collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
     assert vaults["OWNER"] == ctx.caller, "Not the owner!"
     vaults["list"].append(vault_type)
     vault_number = vaults["current_number"]
@@ -238,6 +260,7 @@ def add_vault(collateral_type: str, collateral_amount: float, max_minted: float)
     vaults[vault_number, "collateral_type"] = collateral_type
     vaults[vault_number, "minimum_collaterization"] = collateral_amount
     vaults[vault_number, "cap"] = max_minted
+    vaults[vault_number, "weight"] = weight
 
     return vault_number
 
