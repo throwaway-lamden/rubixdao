@@ -12,7 +12,7 @@ def seed():
 
     vaults["list"] = [0]
     vaults["current_number"] = 0
-    add_vault(collateral_type="currency", collateral_amount=1.5, max_minted=10000)
+    add_vault(collateral_type="currency", collateral_amount=1.5, max_minted=10000, weight=10)
 
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
