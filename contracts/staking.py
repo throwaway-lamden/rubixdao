@@ -2,7 +2,9 @@ import dai_contract
 import vaults
 
 rate = Hash()
+
 balances = Hash(default_value=0)
+metadata = Hash()
 
 total_minted = Variable()
 operator = Variable()
@@ -15,6 +17,11 @@ def seed():
     rate["start_time"] = now.seconds
     rate["rate"] = 1.000000001 # 3.2% interest yearly
     rate["start_price"] = 1
+    
+    metadata['token_name'] = "Staked DAI"
+    metadata['token_symbol'] = "sDAI"
+    metadata['token_logo_url'] = 'image.site'
+    metadata['operator'] = ctx.caller
     
 @export
 def stake(amount: float):
@@ -57,12 +64,6 @@ def change_rate(new_rate: float):
     rate["start_time"] = now.seconds
     rate["rate"] = new_rate
     rate["start_price"] = current_price
-    
-@export
-def change_owner(new_owner: str):
-    assert_owner()
-    
-    operator.set(new_owner)
    
 @export
 def transfer(amount: float, to: str):
@@ -109,6 +110,17 @@ def transfer_from(amount: float, to: str, main_account: str):
 @export 
 def get_price():
     return rate["start_price"] * rate ** (now.seconds - rate["start_time"])
+
+@export
+def change_metadata(key: str, value: Any):
+    assert ctx.caller == metadata['operator'], 'Only operator can set metadata!'
+    metadata[key] = value
+     
+@export
+def change_owner(new_owner: str):
+    assert_owner()
+    
+    operator.set(new_owner)
     
 def assert_owner():
     assert ctx.caller == operator.get(), 'Only operator can call!'
