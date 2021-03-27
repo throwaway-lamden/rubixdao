@@ -14,7 +14,8 @@ class VaultTests(unittest.TestCase):
         self.token = self.client.get_contract('dai_token')
         with open('basic_vault.py') as file:
             code = file.read()
-        # self.client.submit(code, name='basic_vault') doesn't work yet
+        self.client.submit(code, name='basic_vault')
+        self.vault = self.client.get_contract('basic_vault')
 
     def tearDown(self):
         self.client.flush()
