@@ -54,9 +54,9 @@
 
 - [ ] Staking (DSR)
   - [x] Export excess tokens from Vaults (stability)
-  - [ ] Can mint tokens if stability pool is not sufficent
-  - [ ] Updates pETH ratio
-  - [ ] Has settable burden for every liquidity pool
+  - [x] Can mint tokens if stability pool is not sufficent
+  - [x] Updates pETH ratio
+  - [x] Has settable burden for every liquidity pool
   - [ ] Stake to earn excess tokens
   - [ ] Allow multiple stakes/deposits
 
