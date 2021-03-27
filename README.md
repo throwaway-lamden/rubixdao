@@ -37,6 +37,14 @@
   - [x] Can be changed from main SC
   - [x] Has optimized stamp cost
 
+- [x] Staking (DSR)
+  - [x] Export excess tokens from Vaults (stability)
+  - [x] Can mint tokens if stability pool is not sufficent
+  - [x] Updates pETH ratio
+  - [x] Has settable burden for every liquidity pool
+  - [x] Stake to earn excess tokens
+  - [x] Allow multiple stakes/deposits
+
 - [ ] Tests
   - [x] DAI token
   - [x] Oracle
@@ -52,15 +60,7 @@
   - [ ] Function documentation
   - [x] Todo
 
-- [ ] Staking (DSR)
-  - [x] Export excess tokens from Vaults (stability)
-  - [x] Can mint tokens if stability pool is not sufficent
-  - [x] Updates pETH ratio
-  - [x] Has settable burden for every liquidity pool
-  - [ ] Stake to earn excess tokens
-  - [ ] Allow multiple stakes/deposits
-
 ### TODO:
-Make tense consistent in progress
+Make tense consistent in progress section
 
 After documentation is completed, move `Progress` to progress.md
