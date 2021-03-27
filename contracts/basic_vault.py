@@ -1,17 +1,18 @@
-import dai_contract
+import dai_token as dai_contract
 
 vaults = Hash(default_value=0)
 cdp = Hash()
 stability_pool = Hash()
+state = Hash()
+current_value = 0
 
 @construct
 def seed():
-    state["OWNER"] = ctx.caller
-
+    state["OWNER"] = ctx.signer
     cdp[current_value] = -1
 
     vaults["list"] = [0]
-    add_vault(collateral_type="currency", collateral_amount=1.5, max_minted=10000)
+    add_vault(vault_type=0, collateral_type="currency", collateral_amount=1.5, max_minted=10000) # 0 is dafault
 
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
@@ -228,8 +229,8 @@ def sync_burn(vault_type: int, amount: float):
     return vaults[vault_type, "issued"]
 
 @export
-def add_vault(collateral_type: str, collateral_amount: float, max_minted: float):
-    assert state["OWNER"] == ctx.caller, "Not the owner!"
+def add_vault(vault_type: int, collateral_type: str, collateral_amount: float, max_minted: float):
+    assert state["OWNER"] == ctx.signer, "Not the owner!"
     vaults["list"].append(vault_type)
     vault_number = vaults["current_number"]
     vaults["current_number"] += 1
