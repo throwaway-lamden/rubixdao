@@ -11,6 +11,7 @@ class AuctionTests(unittest.TestCase):
             code = file.read()
         self.client.submit(code, name='dai_token', constructor_args={
                            'vk': 'me', 'owner': 'default_owner'})
+        self.token = self.client.get_contract('dai_token')
 
     def tearDown(self):
         self.client.flush()
