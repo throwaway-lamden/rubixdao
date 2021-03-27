@@ -6,11 +6,12 @@ stability_pool = Hash()
 
 @construct
 def seed():
-    state["OWNER"] = ctx.caller
+    vaults["OWNER"] = ctx.caller
 
     cdp[current_value] = -1
 
     vaults["list"] = [0]
+    vaults["current_number"] = 0
     add_vault(collateral_type="currency", collateral_amount=1.5, max_minted=10000)
 
 @export
@@ -229,7 +230,7 @@ def sync_burn(vault_type: int, amount: float):
 
 @export
 def add_vault(collateral_type: str, collateral_amount: float, max_minted: float):
-    assert state["OWNER"] == ctx.caller, "Not the owner!"
+    assert vaults["OWNER"] == ctx.caller, "Not the owner!"
     vaults["list"].append(vault_type)
     vault_number = vaults["current_number"]
     vaults["current_number"] += 1
@@ -242,24 +243,24 @@ def add_vault(collateral_type: str, collateral_amount: float, max_minted: float)
 
 @export
 def remove_vault(vault_type: int):
-    assert state["OWNER"] == ctx.caller, "Not the owner!"
+    assert vaults["OWNER"] == ctx.caller, "Not the owner!"
     vaults["list"].remove(vault_type)
 
 @export
 def change_state(key: str, new_value: str, convert_to_decimal: bool=False):
-    assert state["OWNER"] == ctx.caller, "Not the owner!"
+    assert vaults["OWNER"] == ctx.caller, "Not the owner!"
 
     if convert_to_decimal:
         new_value = decimal(new_value)
 
-    state[key] = new_value
+    caults[key] = new_value
 
     return new_value
 
 @export
 def change_any_state(key: Any, new_value: Any):
-    assert state["OWNER"] == ctx.caller, "Not the owner!"
+    assert vaults["OWNER"] == ctx.caller, "Not the owner!"
 
-    state[key] = new_value
+    vaults[key] = new_value
 
     return new_value
