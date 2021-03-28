@@ -28,22 +28,22 @@ class TokenTests(unittest.TestCase):
         except AssertionError as message:
             assert 'enough' in str(message)
         self.token.transfer(amount=42, to='wallet2', signer='me')
-        assert self.token.balance_of(account='me') == 1000000 - 42
-        assert self.token.balance_of(account='wallet2') == 42
+        self.assertAlmostEqual(self.token.balance_of(account='me'), 1000000 - 42)
+        self.assertAlmostEqual(self.token.balance_of(account='wallet2'), 42)
 
     def test_balance(self):
-        assert self.token.balance_of(account='me') == 1000000
-        assert self.token.balance_of(account='wallet2') == 0
+        self.assertAlmostEqual(self.token.balance_of(account='me'), 1000000)
+        self.assertAlmostEqual(self.token.balance_of(account='wallet2'), 0)
 
     def test_accounts(self):
-        assert self.token.allowance(owner='me', spender='account1', signer='me') == 0
+        self.assertAlmostEqual(self.token.allowance(owner='me', spender='account1', signer='me'), 0)
         try:
             self.token.approve(amount=-1, to='account1', signer='me')
             raise
         except AssertionError as message:
             assert 'non-positive' in str(message)
         self.token.approve(amount=42, to='account1', signer='me')
-        assert self.token.allowance(owner='me', spender='account1', signer='me') == 42
+        self.assertAlmostEqual(self.token.allowance(owner='me', spender='account1', signer='me'), 42)
 
     def test_transfer_from(self):
         self.token.approve(amount=42, to='account1', signer='me')
@@ -67,9 +67,9 @@ class TokenTests(unittest.TestCase):
             assert 'enough' in str(message)
         self.token.transfer_from(amount=42, to='wallet2',
                                  main_account='me', signer='account1')
-        assert self.token.allowance(owner='me', spender='account1', signer='me') == 0
-        assert self.token.balance_of(account='me') == 1000000 - 42
-        assert self.token.balance_of(account='wallet2') == 42
+        self.assertAlmostEqual(self.token.allowance(owner='me', spender='account1', signer='me'), 0)
+        self.assertAlmostEqual(self.token.balance_of(account='me'), 1000000 - 42)
+        self.assertAlmostEqual(self.token.balance_of(account='wallet2'), 42)
 
     def test_supply(self):
         old_supply = self.token.get_total_supply()
@@ -84,7 +84,7 @@ class TokenTests(unittest.TestCase):
         except AssertionError as message:
             assert 'enough' in str(message)
         self.token.burn(amount=42, signer='me')
-        assert self.token.get_total_supply() == old_supply - 42
+        self.assertAlmostEqual(self.token.get_total_supply(), old_supply - 42)
         try:
             self.token.mint(amount=42, signer='me')
             raise
@@ -96,7 +96,7 @@ class TokenTests(unittest.TestCase):
         except AssertionError as message:
             assert 'non-positive' in str(message)
         self.token.mint(amount=42, signer='default_owner')
-        assert self.token.get_total_supply() == old_supply
+        self.assertAlmostEqual(self.token.get_total_supply(), old_supply)
 
     def test_metadata(self):
         try:

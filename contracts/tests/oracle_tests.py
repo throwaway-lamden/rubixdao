@@ -16,14 +16,14 @@ class OracleTests(unittest.TestCase):
         self.client.flush()
 
     def test_oracle(self):
-        assert self.oracle.get_price(number=0) == 0
+        self.assertAlmostEqual(self.oracle.get_price(number=0), 0)
         try:
             self.oracle.set_price(number=0, new_price=-1)
             raise
         except AssertionError as message:
             assert 'negative' in str(message)
         self.oracle.set_price(number=0, new_price=1)
-        assert self.oracle.get_price(number=0) == 1
+        self.assertAlmostEqual(self.oracle.get_price(number=0), 1)
 
 if __name__ == '__main__':
     unittest.main()

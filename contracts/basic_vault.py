@@ -277,7 +277,7 @@ def change_state(key: str, new_value: str, convert_to_decimal: bool=False):
     if convert_to_decimal:
         new_value = decimal(new_value)
 
-    caults[key] = new_value
+    vaults[key] = new_value
 
     return new_value
 
