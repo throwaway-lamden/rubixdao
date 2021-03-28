@@ -1,6 +1,6 @@
 # lamden-mkr
 
-# Progress:
+### Progress:
 
 - [x] Dai SC
    - [x] LST-001
@@ -9,8 +9,7 @@
     - [x] Ownership change possible
     - [x] Total supply recorded
 
-- [x] pETH equivalent
-   # (This implementation uses increased redemption cost instead of decreased collateral)
+- [x] pETH equivalent # (This implementation uses increased redemption cost instead of decreased collateral)
    - [x] Self equalizing after default
     - [x] Uses stability pool after default
     - [x] Additional manual burn possible
@@ -25,13 +24,13 @@
        - [x] Collateral type
         - [x] Minimum collateralization
         - [x] Stability cost
-        - [] Fee on default
+        - [ ] Fee on default
         - [x] Oracle address
     - [x] Mutable state
     - [x] Scalable
     - [x] Vaults can be added
     - [x] Vaults can be removed
-    - [] Contract starts with default vault
+    - [ ] Contract starts with default vault
 
 - [x] Oracle
    - [x] Can display an arbitrary amount of token values
@@ -46,19 +45,19 @@
     - [x] Stake to earn excess tokens
     - [x] Allow multiple stakes/deposits
 
-- [] Tests
+- [ ] Tests
    - [x] DAI token
     - [x] Oracle
-    - [] Vaults
-    - [] Auction
-    - [] Staking
+    - [ ] Vaults
+    - [ ] Auction
+    - [ ] Staking
 
-- [] Documentation
-    - [] Overview
-    - [] Usage guide
-    - [] Testing guide
-    - [] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
-    - [] Function documentation
+- [ ] Documentation
+    - [ ] Overview
+    - [ ] Usage guide
+    - [ ] Testing guide
+    - [ ] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
+    - [ ] Function documentation
     - [x] Todo
 
 # TODO:
