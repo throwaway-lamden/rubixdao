@@ -1,8 +1,10 @@
 balances = Hash(default_value=0)
 
+
 @construct
 def seed():
     balances[ctx.caller] = 288_090_567
+
 
 @export
 def transfer(amount: float, to: str):
@@ -15,13 +17,16 @@ def transfer(amount: float, to: str):
     balances[sender] -= amount
     balances[to] += amount
 
+
 @export
 def balance_of(account: str):
     return balances[account]
 
+
 @export
 def allowance(owner: str, spender: str):
     return balances[owner, spender]
+
 
 @export
 def approve(amount: float, to: str):
@@ -30,6 +35,7 @@ def approve(amount: float, to: str):
     sender = ctx.caller
     balances[sender, to] += amount
     return balances[sender, to]
+
 
 @export
 def transfer_from(amount: float, to: str, main_account: str):

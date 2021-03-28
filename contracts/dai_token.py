@@ -4,6 +4,7 @@ metadata = Hash()
 operator = Variable()
 total_supply = Variable()
 
+
 @construct
 def seed(vk: str, owner: str):
     balances[vk] = 1000000
@@ -16,6 +17,7 @@ def seed(vk: str, owner: str):
     metadata['token_logo_url'] = 'image.site'
     metadata['operator'] = ctx.caller
 
+
 @export
 def transfer(amount: float, to: str):
     assert amount > 0, 'Cannot send non-positive balances!'
@@ -27,13 +29,16 @@ def transfer(amount: float, to: str):
     balances[sender] -= amount
     balances[to] += amount
 
+
 @export
 def balance_of(account: str):
     return balances[account]
 
+
 @export
 def allowance(owner: str, spender: str):
     return balances[owner, spender]
+
 
 @export
 def approve(amount: float, to: str):
@@ -42,6 +47,7 @@ def approve(amount: float, to: str):
     sender = ctx.caller
     balances[sender, to] += amount
     return balances[sender, to]
+
 
 @export
 def transfer_from(amount: float, to: str, main_account: str):
@@ -58,6 +64,7 @@ def transfer_from(amount: float, to: str, main_account: str):
 
     balances[to] += amount
 
+
 @export
 def mint(amount: float):
     assert_owner()
@@ -69,6 +76,7 @@ def mint(amount: float):
 
     total = total_supply.get() + amount
     total_supply.set(total)
+
 
 @export
 def burn(amount: float):
@@ -83,19 +91,23 @@ def burn(amount: float):
     total = total_supply.get() - amount
     total_supply.set(total)
 
+
 @export
 def get_total_supply():
     return total_supply.get()
+
 
 @export
 def change_metadata(key: str, value: Any):
     assert ctx.caller == metadata['operator'], 'Only operator can set metadata!'
     metadata[key] = value
 
+
 @export
 def change_owner(new_owner: str):
     assert_owner()
     operator.set(new_owner)
+
 
 def assert_owner():
     assert ctx.caller == operator.get(), 'Only operator can call!'

@@ -25,5 +25,6 @@ class OracleTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=1)
         self.assertAlmostEqual(self.oracle.get_price(number=0), 1)
 
+
 if __name__ == '__main__':
     unittest.main()
