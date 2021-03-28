@@ -14,7 +14,7 @@ def seed():
 
     vaults["list"] = [0]
     vaults["current_number"] = 0
-    add_vault(vault_type=0, collateral_type="currency",
+    add_vault(collateral_type="currency",
               collateral_amount=1.5, max_minted=10000, weight=10)
 
 
@@ -302,7 +302,7 @@ def sync_burn(vault_type: int, amount: float):
 
 
 @export
-def add_vault(vault_type: int, collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
+def add_vault(collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
     assert vaults["OWNER"] == ctx.signer, "Not the owner!"
     vaults["list"].append(vault_type)
     vault_number = vaults["current_number"]
