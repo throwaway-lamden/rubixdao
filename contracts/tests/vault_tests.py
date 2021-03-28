@@ -13,14 +13,28 @@ class VaultTests(unittest.TestCase):
             dai = file.read()
         with open('basic_vault.py') as file:
             vault = file.read()
+        with open('currency.py') as file:
+            currency = file.read()
         self.client.submit(dai, name='dai_contract', constructor_args={
                            'vk': 'me', 'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
+        self.client.submit(currency, name='currency')
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
+        self.currency = client.get_contract("currency")
 
     def tearDown(self):
         self.client.flush()
+
+    def test_create_vault(self):
+        try:
+            self.vault.create_vault(vault_type=-1, amount_of_dai=100, amount_of_collateral=100)
+            raise
+        except AssertionError as message:
+            assert 'available' in str(message)
+        self.vault.create_vault(vault_type=0, amount_of_dai=100, amount_of_collateral=100)
+        # test for allowance
+        # test for collateral
 
     def test_state(self):
         try:

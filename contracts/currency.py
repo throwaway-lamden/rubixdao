@@ -1,3 +1,5 @@
+# dummy interface for testing purposes only
+
 balances = Hash(default_value=0)
 
 

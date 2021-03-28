@@ -21,7 +21,6 @@ def seed():
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
     assert vault_type in vaults["list"], "Not an available contract!"
-
     collateral = importlib.import_module(
         vaults[vault_type, "collateral_type"])  # TODO: Add interface enforcement
     oracle = importlib.import_module(vaults["oracle"])
@@ -255,7 +254,7 @@ def sync_stability_pool(vault_type: int):
 @export
 def export_rewards(vault_type: int, amount: float):
     # TODO: Change DSR to something else in future
-    assert vaults["vault_type", "DSR", "owner"] == ctx.caller, "Not the owner!"
+    assert vaults[vault_type, "DSR", "owner"] == ctx.caller, "Not the owner!"
     assert stability_pool[vault_type] >= amount, "Not enough DAI in stability pool to export!"
 
     stability_pool[vault_type] -= amount
@@ -267,7 +266,7 @@ def export_rewards(vault_type: int, amount: float):
 @export
 def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
     # TODO: Change DSR to something else in future
-    assert vaults["vault_type", "DSR", "owner"] == ctx.caller, "Not the owner!"
+    assert vaults[vault_type, "DSR", "owner"] == ctx.caller, "Not the owner!"
 
     dai_contract.mint(amount=amount)
     dai_contract.transfer(to=ctx.caller, amount=amount)
