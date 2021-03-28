@@ -8,11 +8,12 @@ stability_pool = Hash()
 def seed():
     vaults["OWNER"] = ctx.caller
 
+    current_value = 0
     cdp[current_value] = -1
 
     vaults["list"] = [0]
     vaults["current_number"] = 0
-    add_vault(collateral_type="currency", collateral_amount=1.5, max_minted=10000, weight=10)
+    add_vault(vault_type=0, collateral_type="currency", collateral_amount=1.5, max_minted=10000, weight=10)
 
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
@@ -223,20 +224,20 @@ def mint_rewards(amount: float): # TODO: MAKE SURE MATH CHECKS OUT
 
     dai_contract.mint(amount=amount)
     dai_contract.transfer(to=ctx.caller, amount=amount)
-    
+
     total_weight = 0
     total_funds = amount
-    
+
     for vault_type in vaults["list"]:
         total_weight += vaults[vault_type, "weight"]
-    
+
     for vault_type in vaults["list"]: # To make the contract more robust, and to prevent floating point errors
         funds_transferred = (vaults[vault_type, "weight"] / total_weight) * total_funds
         vaults[vault_type, "total"] += funds_transferred
-        
-        total_funds -= funds_transferred 
+
+        total_funds -= funds_transferred
         total_weight -= vaults[vault_type, "weight"]
-    
+
     return True
 
 @export
@@ -251,8 +252,8 @@ def sync_burn(vault_type: int, amount: float):
     return vaults[vault_type, "total"]
 
 @export
-def add_vault(collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
-    assert vaults["OWNER"] == ctx.caller, "Not the owner!"
+def add_vault(vault_type: int, collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
+    assert vaults["OWNER"] == ctx.signer, "Not the owner!"
     vaults["list"].append(vault_type)
     vault_number = vaults["current_number"]
     vaults["current_number"] += 1

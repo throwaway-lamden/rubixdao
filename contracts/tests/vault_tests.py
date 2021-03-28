@@ -2,27 +2,25 @@ import unittest
 
 from contracting.client import ContractingClient
 
+client = ContractingClient()
+
 
 class VaultTests(unittest.TestCase):
     def setUp(self):
         self.client = ContractingClient()
         self.client.flush()
         with open('dai_token.py') as file:
-            code = file.read()
-        self.client.submit(code, name='dai_token', constructor_args={
-                           'vk': 'me', 'owner': 'default_owner'})
-        self.token = self.client.get_contract('dai_token')
+            dai = file.read()
         with open('basic_vault.py') as file:
-            code = file.read()
-        self.client.submit(code, name='basic_vault')
-        self.vault = self.client.get_contract('basic_vault')
+            vault = file.read()
+        self.client.submit(dai, name='dai_contract', constructor_args={
+                           'vk': 'me', 'owner': 'default_owner'})
+        self.client.submit(vault, name = 'vault_contract')
+        self.dai = self.client.get_contract('dai_contract')
+        self.vault = self.client.get_contract('vault_contract')
 
     def tearDown(self):
         self.client.flush()
 
     def test(self):
         pass
-
-
-if __name__ == "__main__":
-    unittest.main()
