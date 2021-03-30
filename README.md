@@ -46,11 +46,18 @@
     - [x] Allow multiple stakes/deposits
 
 - [ ] Tests
-   - [x] DAI token
-    - [x] Oracle
-    - [ ] Vaults
-    - [ ] Auction
-    - [ ] Staking
+    - [ ] Functionality tests
+      - [x] DAI token
+      - [x] Oracle
+      - [ ] Vaults
+      - [ ] Auction
+      - [ ] Staking
+    - [ ] Edge case tests
+      - [ ] DAI token
+      - [ ] Oracle
+      - [ ] Vaults
+      - [ ] Auction
+      - [ ] Staking
 
 - [ ] Documentation
     - [ ] Overview
