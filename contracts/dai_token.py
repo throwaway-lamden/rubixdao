@@ -6,9 +6,8 @@ total_supply = Variable()
 
 
 @construct
-def seed(vk: str, owner: str):
-    balances[vk] = 1000000
-    total_supply.set(1000000)
+def seed(owner: str):
+    total_supply.set(0)
 
     operator.set(owner)
 
