@@ -32,6 +32,7 @@ class VaultTests(unittest.TestCase):
         self.currency = self.client.get_contract("currency")
         self.oracle = self.client.get_contract("oracle")
 
+        self.dai.change_owner(new_owner="vault_contract")
     def tearDown(self):
         self.client.flush()
 
