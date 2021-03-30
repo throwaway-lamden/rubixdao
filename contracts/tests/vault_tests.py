@@ -121,17 +121,17 @@ class VaultTests(unittest.TestCase):
 
     def test_change_owner_works(self):
         self.vault.change_state(key="OWNER", new_value="stu")
-        self.assertEqual(self.vault.state["OWNER"], "stu")
+        self.assertEqual(self.vault.vaults["OWNER"], "stu")
         
         self.vault.change_state(key="OWNER", new_value="jeff", signer="stu")
-        self.assertEqual(self.vault.state["OWNER"], "jeff")
+        self.assertEqual(self.vault.vaults["OWNER"], "jeff")
         
         self.vault.change_state(key="FOO", new_value=1, convert_to_decimal=True, signer="jeff")
-        self.assertEqual(self.vault.state["FOO"], 1)
+        self.assertEqual(self.vault.vaults["FOO"], 1)
         
     def test_change_owner_twice_fails(self):
         self.vault.change_state(key="OWNER", new_value="stu")
-        self.assertEqual(self.vault.state["OWNER"], "stu")
+        self.assertEqual(self.vault.caults["OWNER"], "stu")
         
         with self.assertRaises(AssertionError):
             self.vault.change_state(key="OWNER", new_value="stu")
