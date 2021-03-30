@@ -71,3 +71,7 @@
 Make tense consistent in progress section
 
 After documentation is completed, move `Progress` to progress.md
+
+Add badges for CodeQL and pytest
+
+A test TODO section/file
