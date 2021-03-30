@@ -173,8 +173,8 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEquals(self.vault.cdp[id, "issued"], 0)
-        self.assertEquals(self.vault.cdp[id, "total"], 0)
+        self.assertEquals(self.vault.cdp[id, "issued"], 100)
+        self.assertEquals(self.vault.cdp[id, "total"], 100)
         
         self.vault.close_vault(cdp_number=id)
         
@@ -182,8 +182,15 @@ class VaultTests(unittest.TestCase):
         self.assertEquals(self.vault.cdp[id, "total"], 0)
     
     def close_vault_takes_dai(self):
-        self.assertEquals(self.vault.cdp[id, "issued"], 0)
-        self.assertEquals(self.vault.cdp[id, "total"], 0)
+        pass
+    
+        # fix later
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500)
+        
+        self.assertEquals(self.vault.cdp[id, "issued"], 100)
+        
+        self.vault.close_vault(cdp_number=id)
     
     def close_vault_takes_dai_and_stability_fee(self):
         pass
