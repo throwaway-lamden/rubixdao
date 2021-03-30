@@ -3,7 +3,7 @@ import dai_contract
 vaults = Hash(default_value=0)
 cdp = Hash()
 stability_pool = Hash()
-
+vault_type = 0 # dummy for testing purposes
 
 @construct
 def seed():
