@@ -1,6 +1,6 @@
 # dummy interface for testing purposes only
 
-balances = Hash(default_value=288_090_567)
+balances = Hash(default_value=0)
 
 
 @construct
