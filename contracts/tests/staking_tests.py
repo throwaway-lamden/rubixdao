@@ -19,7 +19,7 @@ class StakingTests(unittest.TestCase):
                            'vk': 'me', 'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
-        self.client.submit(currency, name='oracle')
+        self.client.submit(oracle, name='oracle')
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract("currency")

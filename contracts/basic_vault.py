@@ -1,7 +1,7 @@
 import dai_contract
 
 vaults = Hash(default_value=0)
-cdp = Hash()
+cdp = Hash(default_value=0)
 stability_pool = Hash()
 vault_type = 0 # dummy for testing purposes
 vaults["oracle"] = "oracle" # dummy for testing purposes
@@ -33,9 +33,10 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
                                                  "cap"], "The allowance is not sufficent!"
     assert amount_of_dai <= vaults[vault_type, "cap"], "The allowance is not sufficent!" # extra check for the first created vault
     assert (amount_of_collateral * price) / \
-        amount_of_dai > vaults[vault_type,
+        amount_of_dai >= vaults[vault_type,
                                "minimum_collaterization"], "Not enough collateral!"
 
+    current_value = 0
     cdp_number = cdp[current_value]
     cdp[current_value] += 1
 
@@ -45,12 +46,13 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     cdp[cdp_number, "collateral_type"] = vaults[vault_type, "collateral_type"]
     cdp[cdp_number, "dai"] = amount_of_dai
     cdp[cdp_number, "collateral_amount"] = amount_of_collateral
-    cdp[cdp_number, "time"] = now.seconds  # TODO: make sure this works
+    cdp[cdp_number, "time"] = now.seconds
 
+    collateral.approve(amount=amount_of_collateral, to=ctx.this)
     collateral.transfer_from(amount=amount_of_collateral,
                              to=ctx.this, main_account=ctx.caller)
 
-    dai_contract.mint(amount=amount_of_dai)
+    dai_contract.mint(amount=amount_of_dai) # currently not authorised to mint
     dai_contract.transfer(amount=amount_of_dai, to=ctx.caller)
 
     vaults[vault_type, "issued"] += amount_of_dai

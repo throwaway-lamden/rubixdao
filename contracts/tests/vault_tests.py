@@ -19,7 +19,7 @@ class VaultTests(unittest.TestCase):
                            'vk': 'me', 'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
-        self.client.submit(currency, name='oracle')
+        self.client.submit(oracle, name='oracle')
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract("currency")
@@ -59,6 +59,11 @@ class VaultTests(unittest.TestCase):
             raise
         except AssertionError as message:
             assert 'collateral' in str(message)
+
+    def test_create_vault_normal(self):
+        pass
+        # self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                # amount_of_collateral=150)
 
     def test_any_state_unauthorised(self):
         try:
