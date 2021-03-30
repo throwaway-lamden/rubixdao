@@ -21,7 +21,7 @@ class VaultTests(unittest.TestCase):
             oracle = file.read()
             
         self.client.submit(dai, name='dai_contract', constructor_args={
-                           'vk': 'me', 'owner': 'vault_contract'})
+                           'owner': 'vault_contract'})
         
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
