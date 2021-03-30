@@ -119,14 +119,14 @@ class TokenTests(unittest.TestCase):
 
     def test_mint_negative(self):
         try:
-            self.token.mint(amount=-1, signer='default_owner')
+            self.token.mint(amount=-1, signer='me')
             raise
         except AssertionError as message:
             assert 'non-positive' in str(message)
 
     def test_mint_unauthorised(self):
         try:
-            self.token.mint(amount=42, signer='me')
+            self.token.mint(amount=42, signer='wallet1')
             raise
         except AssertionError as message:
             assert 'operator' in str(message)
@@ -158,7 +158,7 @@ class TokenTests(unittest.TestCase):
             assert 'operator' in str(message)
 
     def test_change_owner_normal(self):
-        self.token.change_owner(new_owner='wallet2', signer='default_owner')
+        self.token.change_owner(new_owner='wallet2', signer='me')
         try:
             self.token.change_owner(new_owner='me', signer='me')
             raise
