@@ -16,7 +16,7 @@ operator = Variable()
 def seed():
     operator.set(ctx.caller)
 
-    rate["start_time"] = now.total_seconds()
+    rate["start_time"] = get_seconds((now - datetime.datetime(1970, 1, 1)))
     rate["rate"] = 1.000000001  # 3.2% interest yearly
     rate["start_price"] = 1
 
@@ -24,6 +24,10 @@ def seed():
     metadata['token_symbol'] = "sDAI"
     metadata['token_logo_url'] = 'image.site'
     metadata['operator'] = ctx.caller
+
+
+def get_seconds(td):
+    return td.days * 86400 + td.seconds * 1 + td.minutes * 60 + td.hours * 3600 + td.weeks * 604800
 
 
 @export
@@ -67,7 +71,7 @@ def change_rate(new_rate: float):
 
     current_price = get_price()
 
-    rate["start_time"] = now.total_seconds()
+    rate["start_time"] = get_seconds((now - datetime.datetime(1970, 1, 1)))
     rate["rate"] = new_rate
     rate["start_price"] = current_price
 
@@ -121,7 +125,7 @@ def transfer_from(amount: float, to: str, main_account: str):
 
 @export
 def get_price():
-    return rate["start_price"] * rate ** (now.total_seconds() - rate["start_time"])
+    return rate["start_price"] * rate ** (get_seconds((now - datetime.datetime(1970, 1, 1))) - rate["start_time"])
 
 
 @export
