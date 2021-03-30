@@ -4,6 +4,7 @@ vaults = Hash(default_value=0)
 cdp = Hash()
 stability_pool = Hash()
 vault_type = 0 # dummy for testing purposes
+vaults["oracle"] = "oracle" # dummy for testing purposes
 
 @construct
 def seed():
@@ -21,10 +22,8 @@ def seed():
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
     assert vault_type in vaults["list"], "Not an available contract!"
-    collateral = importlib.import_module(
-        vaults[vault_type, "collateral_type"])  # TODO: Add interface enforcement
+    collateral = importlib.import_module(vaults[vault_type, "collateral_type"])  # TODO: Add interface enforcement
     oracle = importlib.import_module(vaults["oracle"])
-
     # vault_name = vaults["list"][vault_type] #This should error out if out of range, should still do sanity checks though #Probably not needed
 
     price = oracle.get_price(vault_type)

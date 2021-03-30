@@ -2,8 +2,6 @@ import unittest
 
 from contracting.client import ContractingClient
 
-client = ContractingClient()
-
 
 class VaultTests(unittest.TestCase):
     def setUp(self):
@@ -15,24 +13,28 @@ class VaultTests(unittest.TestCase):
             vault = file.read()
         with open('currency.py') as file:
             currency = file.read()
+        with open('oracle.py') as file:
+            oracle = file.read()
         self.client.submit(dai, name='dai_contract', constructor_args={
                            'vk': 'me', 'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
+        self.client.submit(currency, name='oracle')
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
-        self.currency = client.get_contract("currency")
+        self.currency = self.client.get_contract("currency")
+        self.oracle = self.client.get_contract("oracle")
 
     def tearDown(self):
         self.client.flush()
 
-    #def test_create_vault(self):
-        #try:
-            #self.vault.create_vault(vault_type=-1, amount_of_dai=100, #amount_of_collateral=100)
-        #    raise
-        #except AssertionError as message:
-        #    assert 'available' in str(message)
-        # self.vault.create_vault(vault_type=0, amount_of_dai=100,  amount_of_collateral=100)
+    def test_create_vault(self):
+        try:
+            self.vault.create_vault(vault_type=-1, amount_of_dai=100, amount_of_collateral=100)
+            raise
+        except AssertionError as message:
+            assert 'available' in str(message)
+        self.vault.create_vault(vault_type=0, amount_of_dai=100,  amount_of_collateral=100)
         # test for allowance
         # test for collateral
 
