@@ -307,8 +307,9 @@ def sync_burn(vault_type: int, amount: float):
 @export
 def add_vault(collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
     assert vaults["OWNER"] == ctx.signer, "Not the owner!"
-    vaults["list"].append(vault_type)
+    
     vault_number = vaults["current_number"]
+    vaults["list"].append(vault_number)
     vaults["current_number"] += 1
 
     vaults[vault_number, "collateral_type"] = collateral_type
