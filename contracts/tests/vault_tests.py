@@ -101,8 +101,8 @@ class VaultTests(unittest.TestCase):
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEquals(self.vault.cdp[0, "issued"], 100)
-        self.assertEquals(self.vault.cdp[0, "total"], 100)
+        self.assertEquals(self.vault.vaults[0, "issued"], 100)
+        self.assertEquals(self.vault.vaults[0, "total"], 100)
         
     def test_any_state_unauthorised(self):
         try:
@@ -178,7 +178,7 @@ class VaultTests(unittest.TestCase):
         
         self.vault.close_vault(cdp_number=id)
         
-        self.assertEquals(self.vault.cdp[id, "open"], False)
+        self.assertEquals(self.vault.vaults[id, "open"], False)
     
     def close_vault_updates_reserves(self):
         self.currency.approve(to="vault_contract", amount=1500)
@@ -186,13 +186,13 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEquals(self.vault.cdp[0, "issued"], 100)
-        self.assertEquals(self.vault.cdp[0, "total"], 100)
+        self.assertEquals(self.vault.vaults[0, "issued"], 100)
+        self.assertEquals(self.vault.vaults[0, "total"], 100)
         
         self.vault.close_vault(cdp_number=id)
         
-        self.assertEquals(self.vault.cdp[0, "issued"], 0)
-        self.assertEquals(self.vault.cdp[0, "total"], 0)
+        self.assertEquals(self.vault.vaults[0, "issued"], 0)
+        self.assertEquals(self.vault.vaults[0, "total"], 0)
     
     def close_vault_takes_dai(self):
         pass
@@ -201,7 +201,7 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEquals(self.vault.cdp[0, "issued"], 100)
+        self.assertEquals(self.vault.vaults[0, "issued"], 100)
         
         self.vault.close_vault(cdp_number=id)
     
