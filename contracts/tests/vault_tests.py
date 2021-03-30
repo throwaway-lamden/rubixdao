@@ -95,21 +95,21 @@ class VaultTests(unittest.TestCase):
             assert 'owner' in str(message)
 
     def test_change_owner_works(self):
-        self.dex.change_state(key="OWNER", new_value="stu")
-        self.assertEqual(self.dex.state["OWNER"], "stu")
+        self.vault.change_state(key="OWNER", new_value="stu")
+        self.assertEqual(self.vault.state["OWNER"], "stu")
         
-        self.dex.change_state(key="OWNER", new_value="jeff", signer="stu")
-        self.assertEqual(self.dex.state["OWNER"], "jeff")
+        self.vault.change_state(key="OWNER", new_value="jeff", signer="stu")
+        self.assertEqual(self.vault.state["OWNER"], "jeff")
         
-        self.dex.change_state(key="FOO", new_value=1, convert_to_decimal=True, signer="jeff")
-        self.assertEqual(self.dex.state["FOO"], 1)
+        self.vault.change_state(key="FOO", new_value=1, convert_to_decimal=True, signer="jeff")
+        self.assertEqual(self.vault.state["FOO"], 1)
         
     def test_change_owner_twice_fails(self):
-        self.dex.change_state(key="OWNER", new_value="stu")
-        self.assertEqual(self.dex.state["OWNER"], "stu")
+        self.vault.change_state(key="OWNER", new_value="stu")
+        self.assertEqual(self.vault.state["OWNER"], "stu")
         
         with self.assertRaises(AssertionError):
-            self.dex.change_state(key="OWNER", new_value="stu")
+            self.vault.change_state(key="OWNER", new_value="stu")
             
     def test_state_invalid_type(self):
         try:
