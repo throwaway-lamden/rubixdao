@@ -20,8 +20,7 @@ class VaultTests(unittest.TestCase):
         with open('oracle.py') as file:
             oracle = file.read()
             
-        self.client.submit(dai, name='dai_contract', constructor_args={
-                           'vk': 'me', 'owner': 'default_owner'})
+        self.client.submit(dai, name='dai_contract')
         
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
@@ -33,6 +32,7 @@ class VaultTests(unittest.TestCase):
         self.oracle = self.client.get_contract("oracle")
 
         self.dai.change_owner(new_owner="vault_contract")
+        
     def tearDown(self):
         self.client.flush()
 
