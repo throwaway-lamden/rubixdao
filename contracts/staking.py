@@ -16,7 +16,7 @@ operator = Variable()
 def seed():
     operator.set(ctx.caller)
 
-    rate["start_time"] = now.seconds
+    rate["start_time"] = now.total_seconds()
     rate["rate"] = 1.000000001  # 3.2% interest yearly
     rate["start_price"] = 1
 
@@ -67,7 +67,7 @@ def change_rate(new_rate: float):
 
     current_price = get_price()
 
-    rate["start_time"] = now.seconds
+    rate["start_time"] = now.total_seconds()
     rate["rate"] = new_rate
     rate["start_price"] = current_price
 
@@ -121,7 +121,7 @@ def transfer_from(amount: float, to: str, main_account: str):
 
 @export
 def get_price():
-    return rate["start_price"] * rate ** (now.seconds - rate["start_time"])
+    return rate["start_price"] * rate ** (now.total_seconds() - rate["start_time"])
 
 
 @export
