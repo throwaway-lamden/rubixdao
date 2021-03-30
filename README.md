@@ -24,13 +24,13 @@
        - [x] Collateral type
         - [x] Minimum collateralization
         - [x] Stability cost
-        - [ ] Fee on default
+        - [x] Fee on default
         - [x] Oracle address
     - [x] Mutable state
     - [x] Scalable
     - [x] Vaults can be added
     - [x] Vaults can be removed
-    - [ ] Contract starts with default vault
+    - [x] Contract starts with default vault
 
 - [x] Oracle
    - [x] Can display an arbitrary amount of token values
