@@ -53,3 +53,7 @@ def transfer_from(amount: float, to: str, main_account: str):
     balances[main_account] -= amount
 
     balances[to] += amount
+
+@export # FOR MOCKing
+def set_balance(amount: float):
+    balances[ctx.caller] = amount
