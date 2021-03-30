@@ -143,3 +143,6 @@ def change_owner(new_owner: str):
 
 def assert_owner():
     assert ctx.caller == operator.get(), 'Only operator can call!'
+    
+def get_seconds(td):
+    return td.days * 86400 + td.seconds * 1 + td.minutes * 60 + td.hours * 3600 + td.weeks * 604800
