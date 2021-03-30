@@ -62,6 +62,8 @@ class VaultTests(unittest.TestCase):
             assert 'allowance' in str(message)
 
     def test_create_vault_insufficient_collateral(self):
+        self.currency.approve(to="vault_contract", amount=100)
+        
         try:
             self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                     amount_of_collateral=100)
@@ -70,12 +72,14 @@ class VaultTests(unittest.TestCase):
             assert 'collateral' in str(message)
 
     def test_create_vault_normal(self):
-        # pass
+        self.currency.approve(to="vault_contract", amount=1500)
+        
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500) # Might fail, not sure why commented
 
     def test_create_vault_takes_collateral(self):
         self.currency.transfer(to="stu", amount=1500)
+        self.currency.approve(to="vault_contract", amount=1500, signer="stu")
         
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500, signer="stu") # Might fail, not sure why commented
@@ -84,6 +88,7 @@ class VaultTests(unittest.TestCase):
     
     def test_create_vault_gives_dai(self):
         self.currency.transfer(to="stu", amount=1500)
+        self.currency.approve(to="vault_contract", amount=1500, signer="stu")
         
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500, signer="stu") # Might fail, not sure why commented
@@ -91,6 +96,8 @@ class VaultTests(unittest.TestCase):
         self.assertEquals(self.dai.balances["stu"], 100)
         
     def test_create_vault_updates_reserves(self):
+        self.currency.approve(to="vault_contract", amount=1500)
+        
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
@@ -156,12 +163,16 @@ class VaultTests(unittest.TestCase):
         assert self.vault.vaults['testing2'] == 'again2'
         
     def close_vault_works(self):
+        self.currency.approve(to="vault_contract", amount=1500)
+        
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
         self.vault.close_vault(cdp_number=id)
     
     def close_vault_closes_vault(self):
+        self.currency.approve(to="vault_contract", amount=1500)
+        
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
@@ -170,6 +181,8 @@ class VaultTests(unittest.TestCase):
         self.assertEquals(self.vault.cdp[id, "open"], False)
     
     def close_vault_updates_reserves(self):
+        self.currency.approve(to="vault_contract", amount=1500)
+        
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
