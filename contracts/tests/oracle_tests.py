@@ -16,11 +16,8 @@ class OracleTests(unittest.TestCase):
         self.client.flush()
 
     def test_oracle_price_negative(self):
-        try:
+        with self.assertRaisesRegex(AssertionError, 'negative'):
             self.oracle.set_price(number=1, new_price=-1)
-            raise
-        except AssertionError as message:
-            assert 'negative' in str(message)
 
     def test_oracle_price_normal(self):
         self.assertAlmostEqual(self.oracle.get_price(number=1), 0)
