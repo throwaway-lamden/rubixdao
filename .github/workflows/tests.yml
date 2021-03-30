@@ -24,9 +24,9 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/contracts/
         python3 -m pytest tests/* --force-flaky --count=2 -v --cov=./ --cov-report=xml 
-    - name: Upload to codecov
-      uses: codecov/codecov-action@v1
-      with:
-        file: contracts/coverage.xml
-        flags: unittests
-        env_vars: OS, PYTHON
+    # - name: Upload to codecov
+    #  uses: codecov/codecov-action@v1
+    #  with:
+    #    file: contracts/coverage.xml
+    #    flags: unittests
+    #    env_vars: OS, PYTHON
