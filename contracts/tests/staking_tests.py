@@ -16,7 +16,7 @@ class StakingTests(unittest.TestCase):
         with open('oracle.py') as file:
             oracle = file.read()
         self.client.submit(dai, name='dai_contract', constructor_args={
-                           'vk': 'me', 'owner': 'default_owner'})
+                           'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
