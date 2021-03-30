@@ -28,15 +28,37 @@ class VaultTests(unittest.TestCase):
     def tearDown(self):
         self.client.flush()
 
-    def test_create_vault(self):
+    def test_create_vault_unavailable(self):
         try:
-            self.vault.create_vault(vault_type=-1, amount_of_dai=100, amount_of_collateral=100)
+            self.vault.create_vault(
+                vault_type=-1, amount_of_dai=100, amount_of_collateral=100)
             raise
         except AssertionError as message:
             assert 'available' in str(message)
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,  amount_of_collateral=100)
-        # test for allowance
-        # test for collateral
+
+    def test_create_vault_negative(self):
+        try:
+            self.vault.create_vault(vault_type=0, amount_of_dai=-
+                                    1,  amount_of_collateral=100)
+            raise
+        except AssertionError as message:
+            assert 'positive' in str(message)
+
+    def test_create_vault_insufficient_allowance(self):
+        try:
+            self.vault.create_vault(
+                vault_type=0, amount_of_dai=1000001,  amount_of_collateral=1000001)
+            raise
+        except AssertionError as message:
+            assert 'allowance' in str(message)
+
+    def test_create_vault_insufficient_collateral(self):
+        try:
+            self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                    amount_of_collateral=100)
+            raise
+        except AssertionError as message:
+            assert 'collateral' in str(message)
 
     def test_any_state_unauthorised(self):
         try:

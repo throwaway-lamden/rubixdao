@@ -16,7 +16,7 @@ def seed():
     vaults["list"] = [0]
     vaults["current_number"] = 0
     add_vault(collateral_type="currency",
-              collateral_amount=1.5, max_minted=10000, weight=10)
+              collateral_amount=1.5, max_minted=100000, weight=10)
 
 
 @export
@@ -28,8 +28,10 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
 
     price = oracle.get_price(vault_type)
 
+    assert amount_of_dai > 0, "Amount of DAI must be positive!"
     assert vaults[vault_type, "total"] <= vaults[vault_type,
                                                  "cap"], "The allowance is not sufficent!"
+    assert amount_of_dai <= vaults[vault_type, "cap"], "The allowance is not sufficent!" # extra check for the first created vault
     assert (amount_of_collateral * price) / \
         amount_of_dai > vaults[vault_type,
                                "minimum_collaterization"], "Not enough collateral!"
