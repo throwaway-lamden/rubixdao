@@ -68,10 +68,33 @@ class VaultTests(unittest.TestCase):
             assert 'collateral' in str(message)
 
     def test_create_vault_normal(self):
-        pass
-        # self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                # amount_of_collateral=150)
+        # pass
+        self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500) # Might fail, not sure why commented
 
+    def test_create_vault_takes_collateral(self):
+        self.currency.transfer(to="stu", amount=1500)
+        
+        self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500, signer="stu") # Might fail, not sure why commented
+        
+        self.assertEquals(self.currency.balances["stu"], 0)
+    
+    def test_create_vault_gives_dai(self):
+        self.currency.transfer(to="stu", amount=1500)
+        
+        self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500, signer="stu") # Might fail, not sure why commented
+        
+        self.assertEquals(self.dai.balances["stu"], 100)
+        
+    def test_create_vault_updates_reserves(self):
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500)
+        
+        self.assertEquals(self.vault.cdp[id, "issued"], 100)
+        self.assertEquals(self.vault.cdp[id, "total"], 100)
+        
     def test_any_state_unauthorised(self):
         try:
             self.vault.change_any_state(
@@ -131,16 +154,34 @@ class VaultTests(unittest.TestCase):
         assert self.vault.vaults['testing2'] == 'again2'
         
     def close_vault_works(self):
-        pass
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500)
+        
+        self.vault.close_vault(cdp_number=id)
     
     def close_vault_closes_vault(self):
-        pass
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500)
+        
+        self.vault.close_vault(cdp_number=id)
+        
+        self.assertEquals(self.vault.cdp[id, "open"], False)
     
     def close_vault_updates_reserves(self):
-        pass
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                amount_of_collateral=1500)
+        
+        self.assertEquals(self.vault.cdp[id, "issued"], 0)
+        self.assertEquals(self.vault.cdp[id, "total"], 0)
+        
+        self.vault.close_vault(cdp_number=id)
+        
+        self.assertEquals(self.vault.cdp[id, "issued"], 0)
+        self.assertEquals(self.vault.cdp[id, "total"], 0)
     
     def close_vault_takes_dai(self):
-        pass
+        self.assertEquals(self.vault.cdp[id, "issued"], 0)
+        self.assertEquals(self.vault.cdp[id, "total"], 0)
     
     def close_vault_takes_dai_and_stability_fee(self):
         pass
