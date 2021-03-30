@@ -133,7 +133,7 @@ class TokenTests(unittest.TestCase):
 
     def test_mint_normal(self):
         old_supply = self.token.get_total_supply()
-        self.token.mint(amount=42, signer='default_owner')
+        self.token.mint(amount=42, signer='me')
         self.assertAlmostEqual(self.token.get_total_supply(), old_supply + 42)
 
     def test_metadata_unauthorised(self):
