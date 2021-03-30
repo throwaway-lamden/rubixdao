@@ -15,13 +15,15 @@ class OracleTests(unittest.TestCase):
     def tearDown(self):
         self.client.flush()
 
-    def test_oracle(self):
-        self.assertAlmostEqual(self.oracle.get_price(number=0), 0)
+    def test_oracle_price_negative(self):
         try:
             self.oracle.set_price(number=0, new_price=-1)
             raise
         except AssertionError as message:
             assert 'negative' in str(message)
+
+    def test_oracle_price_normal(self):
+        self.assertAlmostEqual(self.oracle.get_price(number=0), 0)
         self.oracle.set_price(number=0, new_price=1)
         self.assertAlmostEqual(self.oracle.get_price(number=0), 1)
 
