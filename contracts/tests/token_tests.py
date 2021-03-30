@@ -10,9 +10,11 @@ class TokenTests(unittest.TestCase):
         with open('dai_token.py') as file:
             code = file.read()
         self.client.submit(code, name='dai_token', constructor_args={
-                           'owner': 'default_owner'})
+                           'owner': 'me'})
         self.token = self.client.get_contract('dai_token')
 
+        self.token.mint(amount=1000000, signer='me')
+        
     def tearDown(self):
         self.client.flush()
 
