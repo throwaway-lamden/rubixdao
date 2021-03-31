@@ -19,11 +19,17 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install --upgrade setuptools
-        python3 -m pip install pytest requests contracting flaky pytest-github-actions-annotate-failures pytest-cov pytest-repeat
+        python3 -m pip install -r requirements.txt
+        python3 -m pip install pytest flake8 flaky pytest-github-actions-annotate-failures pytest-cov
+    - name: Setup flake8 annotations
+      uses: rbialon/flake8-annotations@v1
+    - name: Actually annotate with flake8
+      run: |           
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=80--statistics # treats errors as warnings
     - name: Test with pytest
       run: |
         cd $GITHUB_WORKSPACE/contracts/
-        python3 -m pytest tests/* --force-flaky --count=2 -v # --cov=./ --cov-report=xml 
+        python3 -m pytest tests/* --force-flaky -v # --cov=./ --cov-report=xml -n 2
     # - name: Upload to codecov
     #  uses: codecov/codecov-action@v1
     #  with:
