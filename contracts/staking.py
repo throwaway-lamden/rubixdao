@@ -144,4 +144,3 @@ def change_owner(new_owner: str):
 
 def assert_owner():
     assert ctx.caller == operator.get(), 'Only operator can call!'
-

@@ -75,14 +75,14 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
 
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500) # Might fail, not sure why commented
+                                amount_of_collateral=1500)  # Might fail, not sure why commented
 
     def test_create_vault_takes_collateral(self):
         self.currency.transfer(to='stu', amount=1500)
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
 
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500, signer='stu') # Might fail, not sure why commented
+                                amount_of_collateral=1500, signer='stu')  # Might fail, not sure why commented
 
         self.assertEqual(self.currency.balances['stu'], 0)
 
@@ -91,7 +91,7 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
 
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500, signer='stu') # Might fail, not sure why commented
+                                amount_of_collateral=1500, signer='stu')  # Might fail, not sure why commented
 
         self.assertEqual(self.dai.balances['stu'], 100)
 
@@ -133,7 +133,8 @@ class VaultTests(unittest.TestCase):
         self.vault.change_state(key='OWNER', new_value='jeff', signer='stu')
         self.assertEqual(self.vault.vaults['OWNER'], 'jeff')
 
-        self.vault.change_state(key='FOO', new_value=1, convert_to_decimal=True, signer='jeff')
+        self.vault.change_state(key='FOO', new_value=1,
+                                convert_to_decimal=True, signer='jeff')
         self.assertEqual(self.vault.vaults['FOO'], 1)
 
     def test_change_owner_twice_fails(self):
@@ -184,7 +185,7 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
 
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500)
+                                     amount_of_collateral=1500)
 
         self.vault.close_vault(cdp_number=id)
 
@@ -192,7 +193,7 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
 
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500)
+                                     amount_of_collateral=1500)
 
         self.vault.close_vault(cdp_number=id)
 
@@ -202,7 +203,7 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
 
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500)
+                                     amount_of_collateral=1500)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
         self.assertEqual(self.vault.vaults[0, 'total'], 100)
@@ -217,7 +218,7 @@ class VaultTests(unittest.TestCase):
 
         # fix later
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500)
+                                     amount_of_collateral=1500)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
 
@@ -226,10 +227,11 @@ class VaultTests(unittest.TestCase):
     def close_vault_takes_dai_and_stability_fee(self):
         pass
 
-    def close_vault_adjusts_based_on_reserves(self): # use ENV
+    def close_vault_adjusts_based_on_reserves(self):  # use ENV
         pass
 
-    def close_vault_adjusts_based_on_reserves_and_stability_fee(self): # use ENV
+    # use ENV
+    def close_vault_adjusts_based_on_reserves_and_stability_fee(self):
         pass
 
     def close_vault_takes_dai(self):

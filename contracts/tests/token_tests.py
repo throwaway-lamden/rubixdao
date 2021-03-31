@@ -14,7 +14,7 @@ class TokenTests(unittest.TestCase):
         self.token = self.client.get_contract('dai_token')
 
         self.token.mint(amount=1000000, signer='me')
-        
+
     def tearDown(self):
         self.client.flush()
 
@@ -70,7 +70,7 @@ class TokenTests(unittest.TestCase):
         except AssertionError as message:
             assert 'non-positive' in str(message)
 
-    def test_transfer_from_negative(self):
+    def test_transfer_from_excess(self):
         self.token.approve(amount=42, to='account1', signer='me')
         try:
             self.token.transfer_from(amount=1000001, to='wallet2',

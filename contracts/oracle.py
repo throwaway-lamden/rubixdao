@@ -1,5 +1,6 @@
 current_price = Hash(default_value=0)
-current_price[0] = 1 # dummy for testing purposes
+current_price[0] = 1  # dummy for testing purposes
+
 
 @export
 def set_price(number: int, new_price: float):

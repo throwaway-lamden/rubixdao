@@ -3,8 +3,9 @@ import dai_contract
 vaults = Hash(default_value=0)
 cdp = Hash(default_value=0)
 stability_pool = Hash()
-vault_type = 0 # dummy for testing purposes
-vaults['oracle'] = 'oracle' # dummy for testing purposes
+vault_type = 0  # dummy for testing purposes
+vaults['oracle'] = 'oracle'  # dummy for testing purposes
+
 
 @construct
 def seed():
@@ -18,14 +19,17 @@ def seed():
     add_vault(collateral_type='currency',
               collateral_amount=1.5, max_minted=100000, weight=10)
 
+
 def get_timestamp():
     td = now - datetime.datetime(1970, 1, 1)
     return td.days * 86400 + td.seconds * 1 + td.minutes * 60 + td.hours * 3600 + td.weeks * 604800
 
+
 @export
 def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
-    collateral = importlib.import_module(vaults[vault_type, 'collateral_type'])  # TODO: Add interface enforcement
+    collateral = importlib.import_module(
+        vaults[vault_type, 'collateral_type'])  # TODO: Add interface enforcement
     oracle = importlib.import_module(vaults['oracle'])
     # vault_name = vaults['list'][vault_type] #This should error out if out of range, should still do sanity checks though #Probably not needed
 
@@ -34,10 +38,12 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     assert amount_of_dai > 0, 'Amount of DAI must be positive!'
     assert vaults[vault_type, 'total'] <= vaults[vault_type,
                                                  'cap'], 'The allowance is not sufficent!'
-    assert amount_of_dai <= vaults[vault_type, 'cap'], 'The allowance is not sufficent!' # extra check for the first created vault
+    # extra check for the first created vault
+    assert amount_of_dai <= vaults[vault_type,
+                                   'cap'], 'The allowance is not sufficent!'
     assert (amount_of_collateral * price) / \
         amount_of_dai >= vaults[vault_type,
-                               'minimum_collaterization'], 'Not enough collateral!'
+                                'minimum_collaterization'], 'Not enough collateral!'
 
     current_value = 0
     cdp_number = cdp[current_value]
@@ -51,12 +57,11 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     cdp[cdp_number, 'collateral_amount'] = amount_of_collateral
     cdp[cdp_number, 'time'] = get_timestamp()
 
-
     collateral.approve(amount=amount_of_collateral, to=ctx.this)
     collateral.transfer_from(amount=amount_of_collateral,
                              to=ctx.this, main_account=ctx.caller)
 
-    dai_contract.mint(amount=amount_of_dai) # currently not authorised to mint
+    dai_contract.mint(amount=amount_of_dai)  # currently not authorised to mint
     dai_contract.transfer(amount=amount_of_dai, to=ctx.caller)
 
     vaults[vault_type, 'issued'] += amount_of_dai
@@ -202,7 +207,7 @@ def settle_force_close(cdp_number: int):
     assert cdp[cdp_number, 'auction', 'open'] is True, 'Auction is not open!'
 
     assert get_timestamp() - cdp[cdp_number, 'auction', 'time'] > vaults[vault_type,
-                                                                     'minimum_auction_time'], 'Auction is still open!'
+                                                                         'minimum_auction_time'], 'Auction is still open!'
 
     collateral = importlib.import_module(vaults[vault_type, 'collateral_type'])
 
