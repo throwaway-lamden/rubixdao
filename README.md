@@ -1,5 +1,9 @@
 # lamden-mkr
 
+![Python Version](https://img.shields.io/badge/Python-3.6-blue?style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/tests?label=Tests&style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/CodeQL?label=CodeQL&style=flat-square)
+
 ### Progress:
 
 - [x] Dai SC
@@ -71,7 +75,5 @@
 Make tense consistent in progress section
 
 After documentation is completed, move `Progress` to progress.md
-
-Add badges for CodeQL and pytest
 
 A test TODO section/file
