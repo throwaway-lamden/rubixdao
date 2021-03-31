@@ -29,10 +29,10 @@ class VaultTests(unittest.TestCase):
         
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
-        self.currency = self.client.get_contract("currency")
-        self.oracle = self.client.get_contract("oracle")
+        self.currency = self.client.get_contract('currency')
+        self.oracle = self.client.get_contract('oracle')
 
-        # self.dai.change_owner(new_owner="vault_contract")
+        # self.dai.change_owner(new_owner='vault_contract')
         
     def tearDown(self):
         self.client.flush()
@@ -62,7 +62,7 @@ class VaultTests(unittest.TestCase):
             assert 'allowance' in str(message)
 
     def test_create_vault_insufficient_collateral(self):
-        self.currency.approve(to="vault_contract", amount=100)
+        self.currency.approve(to='vault_contract', amount=100)
         
         try:
             self.vault.create_vault(vault_type=0, amount_of_dai=100,
@@ -72,37 +72,37 @@ class VaultTests(unittest.TestCase):
             assert 'collateral' in str(message)
 
     def test_create_vault_normal(self):
-        self.currency.approve(to="vault_contract", amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500)
         
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500) # Might fail, not sure why commented
 
     def test_create_vault_takes_collateral(self):
-        self.currency.transfer(to="stu", amount=1500)
-        self.currency.approve(to="vault_contract", amount=1500, signer="stu")
+        self.currency.transfer(to='stu', amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500, signer='stu')
         
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500, signer="stu") # Might fail, not sure why commented
+                                amount_of_collateral=1500, signer='stu') # Might fail, not sure why commented
         
-        self.assertEqual(self.currency.balances["stu"], 0)
+        self.assertEqual(self.currency.balances['stu'], 0)
     
     def test_create_vault_gives_dai(self):
-        self.currency.transfer(to="stu", amount=1500)
-        self.currency.approve(to="vault_contract", amount=1500, signer="stu")
+        self.currency.transfer(to='stu', amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500, signer='stu')
         
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500, signer="stu") # Might fail, not sure why commented
+                                amount_of_collateral=1500, signer='stu') # Might fail, not sure why commented
         
-        self.assertEqual(self.dai.balances["stu"], 100)
+        self.assertEqual(self.dai.balances['stu'], 100)
         
     def test_create_vault_updates_reserves(self):
-        self.currency.approve(to="vault_contract", amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500)
         
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEqual(self.vault.vaults[0, "issued"], 100)
-        self.assertEqual(self.vault.vaults[0, "total"], 100)
+        self.assertEqual(self.vault.vaults[0, 'issued'], 100)
+        self.assertEqual(self.vault.vaults[0, 'total'], 100)
         
     def test_any_state_unauthorised(self):
         try:
@@ -127,21 +127,21 @@ class VaultTests(unittest.TestCase):
             assert 'owner' in str(message)
 
     def test_change_owner_works(self):
-        self.vault.change_state(key="OWNER", new_value="stu")
-        self.assertEqual(self.vault.vaults["OWNER"], "stu")
+        self.vault.change_state(key='OWNER', new_value='stu')
+        self.assertEqual(self.vault.vaults['OWNER'], 'stu')
         
-        self.vault.change_state(key="OWNER", new_value="jeff", signer="stu")
-        self.assertEqual(self.vault.vaults["OWNER"], "jeff")
+        self.vault.change_state(key='OWNER', new_value='jeff', signer='stu')
+        self.assertEqual(self.vault.vaults['OWNER'], 'jeff')
         
-        self.vault.change_state(key="FOO", new_value=1, convert_to_decimal=True, signer="jeff")
-        self.assertEqual(self.vault.vaults["FOO"], 1)
+        self.vault.change_state(key='FOO', new_value=1, convert_to_decimal=True, signer='jeff')
+        self.assertEqual(self.vault.vaults['FOO'], 1)
         
     def test_change_owner_twice_fails(self):
-        self.vault.change_state(key="OWNER", new_value="stu")
-        self.assertEqual(self.vault.vaults["OWNER"], "stu")
+        self.vault.change_state(key='OWNER', new_value='stu')
+        self.assertEqual(self.vault.vaults['OWNER'], 'stu')
         
         with self.assertRaises(AssertionError):
-            self.vault.change_state(key="OWNER", new_value="stu")
+            self.vault.change_state(key='OWNER', new_value='stu')
             
     def test_state_invalid_type(self):
         try:
@@ -163,7 +163,7 @@ class VaultTests(unittest.TestCase):
         assert self.vault.vaults['testing2'] == 'again2'
         
     def close_vault_works(self):
-        self.currency.approve(to="vault_contract", amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500)
         
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
@@ -171,28 +171,28 @@ class VaultTests(unittest.TestCase):
         self.vault.close_vault(cdp_number=id)
     
     def close_vault_closes_vault(self):
-        self.currency.approve(to="vault_contract", amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500)
         
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
         self.vault.close_vault(cdp_number=id)
         
-        self.assertEqual(self.vault.vaults[id, "open"], False)
+        self.assertEqual(self.vault.vaults[id, 'open'], False)
     
     def close_vault_updates_reserves(self):
-        self.currency.approve(to="vault_contract", amount=1500)
+        self.currency.approve(to='vault_contract', amount=1500)
         
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEqual(self.vault.vaults[0, "issued"], 100)
-        self.assertEqual(self.vault.vaults[0, "total"], 100)
+        self.assertEqual(self.vault.vaults[0, 'issued'], 100)
+        self.assertEqual(self.vault.vaults[0, 'total'], 100)
         
         self.vault.close_vault(cdp_number=id)
         
-        self.assertEqual(self.vault.vaults[0, "issued"], 0)
-        self.assertEqual(self.vault.vaults[0, "total"], 0)
+        self.assertEqual(self.vault.vaults[0, 'issued'], 0)
+        self.assertEqual(self.vault.vaults[0, 'total'], 0)
     
     def close_vault_takes_dai(self):
         pass
@@ -201,7 +201,7 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                 amount_of_collateral=1500)
         
-        self.assertEqual(self.vault.vaults[0, "issued"], 100)
+        self.assertEqual(self.vault.vaults[0, 'issued'], 100)
         
         self.vault.close_vault(cdp_number=id)
     

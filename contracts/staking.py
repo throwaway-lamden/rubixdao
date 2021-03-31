@@ -16,12 +16,12 @@ operator = Variable()
 def seed():
     operator.set(ctx.caller)
 
-    rate["start_time"] = get_timestamp()
-    rate["rate"] = 1.000000001  # 3.2% interest yearly
-    rate["start_price"] = 1
+    rate['start_time'] = get_timestamp()
+    rate['rate'] = 1.000000001  # 3.2% interest yearly
+    rate['start_price'] = 1
 
-    metadata['token_name'] = "Staked DAI"
-    metadata['token_symbol'] = "sDAI"
+    metadata['token_name'] = 'Staked DAI'
+    metadata['token_symbol'] = 'sDAI'
     metadata['token_logo_url'] = 'image.site'
     metadata['operator'] = ctx.caller
 
@@ -33,7 +33,7 @@ def get_timestamp():
 
 @export
 def stake(amount: float):
-    assert amount >= 0, "Stake amount must be positive!"
+    assert amount >= 0, 'Stake amount must be positive!'
     dai_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
 
@@ -47,7 +47,7 @@ def stake(amount: float):
 
 @export
 def withdraw_stake(amount: float):
-    assert amount >= 0, "Stake amount must be positive!"
+    assert amount >= 0, 'Stake amount must be positive!'
     assert balances[ctx.caller] >= amount, 'Not enough coins to send!'
 
     current_price = get_price()
@@ -68,13 +68,13 @@ def withdraw_stake(amount: float):
 @export
 def change_rate(new_rate: float):
     assert_owner()
-    assert new_rate >= 1, "Cannot have negative staking!"
+    assert new_rate >= 1, 'Cannot have negative staking!'
 
     current_price = get_price()
 
-    rate["start_time"] = get_timestamp()
-    rate["rate"] = new_rate
-    rate["start_price"] = current_price
+    rate['start_time'] = get_timestamp()
+    rate['rate'] = new_rate
+    rate['start_price'] = current_price
 
 
 @export
@@ -126,7 +126,7 @@ def transfer_from(amount: float, to: str, main_account: str):
 
 @export
 def get_price():
-    return rate["start_price"] * rate ** (get_timestamp() - rate["start_time"])
+    return rate['start_price'] * rate ** (get_timestamp() - rate['start_time'])
 
 
 @export

@@ -22,8 +22,8 @@ class AuctionTests(unittest.TestCase):
         self.client.submit(oracle, name='oracle')
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
-        self.currency = self.client.get_contract("currency")
-        self.oracle = self.client.get_contract("oracle")
+        self.currency = self.client.get_contract('currency')
+        self.oracle = self.client.get_contract('oracle')
 
     def tearDown(self):
         self.client.flush()
@@ -32,5 +32,5 @@ class AuctionTests(unittest.TestCase):
         pass
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
