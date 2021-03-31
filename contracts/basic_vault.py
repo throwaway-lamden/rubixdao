@@ -18,7 +18,8 @@ def seed():
     add_vault(collateral_type="currency",
               collateral_amount=1.5, max_minted=100000, weight=10)
 
-def get_seconds(td):
+def get_timestamp():
+    td = now - datetime.datetime(1970, 1, 1)
     return td.days * 86400 + td.seconds * 1 + td.minutes * 60 + td.hours * 3600 + td.weeks * 604800
 
 @export
@@ -48,7 +49,7 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     cdp[cdp_number, "collateral_type"] = vaults[vault_type, "collateral_type"]
     cdp[cdp_number, "dai"] = amount_of_dai
     cdp[cdp_number, "collateral_amount"] = amount_of_collateral
-    cdp[cdp_number, "time"] = get_seconds((now - datetime.datetime(1970, 1, 1)))
+    cdp[cdp_number, "time"] = get_timestamp()
 
 
     collateral.approve(amount=amount_of_collateral, to=ctx.this)
@@ -74,7 +75,7 @@ def close_vault(cdp_number: int):
     stability_ratio = vaults["issued"] / vaults["total"]
     redemption_cost = cdp[number, "amount_of_dai"] * stability_ratio
     fee = redemption_cost * \
-        (stability_rate * (get_seconds((now - datetime.datetime(1970, 1, 1))) - cdp[number, "time"]))
+        (stability_rate * (get_timestamp() - cdp[number, "time"]))
 
     dai_contract.transfer_from(
         amount=redemption_cost + fee, to=ctx.this, main_account=ctx.caller)
@@ -105,7 +106,7 @@ def fast_force_close_vault(cdp_number: int):
                                       "amount_of_dai"] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost * \
-        (stability_rate * (get_seconds((now - datetime.datetime(1970, 1, 1))) - cdp[number, time]))
+        (stability_rate * (get_timestamp() - cdp[number, time]))
     redemption_cost += fee
 
     amount_of_collateral = cdp[number, "collateral_amount"]
@@ -167,7 +168,7 @@ def open_force_close_auction(cdp_number: int):
     cdp[cdp_number, "auction", "highest_bidder"] = ctx.caller
     cdp[cdp_number, "auction", "top_bid"] = 0.0
     # TODO: make sure this works
-    cdp[cdp_number, "auction", "time"] = get_seconds((now - datetime.datetime(1970, 1, 1)))
+    cdp[cdp_number, "auction", "time"] = get_timestamp()
 
     return True
 
@@ -200,7 +201,7 @@ def settle_force_close(cdp_number: int):
     assert cdp[cdp_number, "open"] is True, "Vault has already been closed!"
     assert cdp[cdp_number, "auction", "open"] is True, "Auction is not open!"
 
-    assert get_seconds((now - datetime.datetime(1970, 1, 1))) - cdp[cdp_number, "auction", "time"] > vaults[vault_type,
+    assert get_timestamp() - cdp[cdp_number, "auction", "time"] > vaults[vault_type,
                                                                      "minimum_auction_time"], "Auction is still open!"
 
     collateral = importlib.import_module(vaults[vault_type, "collateral_type"])
