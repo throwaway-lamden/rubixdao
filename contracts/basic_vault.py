@@ -13,7 +13,7 @@ def seed():
     current_value = 0
     cdp[current_value] = -1
 
-    vaults['list'] = [0]
+    vaults['list'] = []
     vaults['current_number'] = 0
     add_vault(collateral_type='currency',
               collateral_amount=1.5, max_minted=100000, weight=10)
