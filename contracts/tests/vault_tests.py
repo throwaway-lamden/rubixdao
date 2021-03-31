@@ -162,6 +162,10 @@ class VaultTests(unittest.TestCase):
         self.vault.change_state(key='testing2', new_value='again2')
         assert self.vault.vaults['testing2'] == 'again2'
 
+    def test_sync_burn_nonexistent(self):
+        with self.assertRaisesRegex(AssertionError, 'available'):
+            self.vault.sync_burn(vault_type=-1, amount=1)
+
     def test_remove_vault_unauthorised(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
