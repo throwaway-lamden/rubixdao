@@ -53,8 +53,8 @@
       - [ ] Auction
       - [ ] Staking
     - [ ] Edge case tests
-      - [ ] DAI token
-      - [ ] Oracle
+      - [x] DAI token
+      - [x] Oracle
       - [ ] Vaults
       - [ ] Auction
       - [ ] Staking
