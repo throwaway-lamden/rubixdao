@@ -13,13 +13,13 @@
     - [x] Ownership change possible
     - [x] Total supply recorded
 
-- [x] pETH equivalent # (This implementation uses increased redemption cost instead of decreased collateral)
+- [x] pETH equivalent (This implementation uses increased redemption cost instead of decreased collateral)
    - [x] Self equalizing after default
     - [x] Uses stability pool after default
     - [x] Additional manual burn possible
        - [x] Allow manual burns from anyone
 
-- [x] Auction SC(can be simplified)
+- [x] Auction SC (can be simplified)
    - [x] Instant buy for small profit
     - [x] Standard auction
 
@@ -41,7 +41,7 @@
     - [x] Can be changed from main SC
     - [x] Has optimized stamp cost
 
-- [x] Staking(DSR)
+- [x] Staking (DSR)
    - [x] Export excess tokens from Vaults (stability)
     - [x] Can mint tokens if stability pool is not sufficent
     - [x] Updates pETH ratio
