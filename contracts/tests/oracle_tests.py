@@ -15,6 +15,9 @@ class OracleTests(unittest.TestCase):
     def tearDown(self):
         self.client.flush()
 
+    def test_proper_test_setup(self):
+        self.assertAlmostEqual(self.oracle.current_price[0], 1)
+
     def test_oracle_price_negative(self):
         with self.assertRaisesRegex(AssertionError, 'negative'):
             self.oracle.set_price(number=1, new_price=-1)
