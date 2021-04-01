@@ -1,5 +1,5 @@
-import dai_contract
-import vault_contract
+dai_contract = importlib.import_module("dai_contract")
+vault_contract = importlib.import_module("vault_contract")
 
 rate = Hash()
 
