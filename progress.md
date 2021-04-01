@@ -1,9 +1,3 @@
-# lamden-mkr
-
-![Python Version](https://img.shields.io/badge/Python-3.6-blue?style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/tests?label=Tests&style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/CodeQL?label=CodeQL&style=flat-square)
-
 ### Progress:
 
 - [x] Dai SC
@@ -70,10 +64,3 @@
     - [ ] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
     - [ ] Function documentation
     - [x] Todo
-
-# TODO:
-Make tense consistent in progress section
-
-After documentation is completed, move `Progress` to progress.md
-
-A test TODO section/file
