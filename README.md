@@ -8,7 +8,7 @@ This repo contains the backend code for the Lamden MKR clone and some associated
 
 ## Progress
 
-You can see the current progress of the project in [project.md](https://github.com/throwaway-lamden/lamden-mkr/blob/main/progress.md).
+You can see the current progress of the project in [progress.md](https://github.com/throwaway-lamden/lamden-mkr/blob/main/progress.md).
 
 ## Testing
 
