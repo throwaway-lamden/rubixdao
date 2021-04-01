@@ -35,7 +35,7 @@ def get_timestamp():
 
 @export
 def stake(amount: float):
-    assert amount >= 0, 'Stake amount must be positive!'
+    assert amount > 0, 'Stake amount must be positive!'
     dai_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
 

@@ -55,7 +55,12 @@ class StakingTests(unittest.TestCase):
             self.staking.change_owner(new_owner='me')
 
     def test_stake_negative(self):
-        self.staking.stake(amount=-1)
+        with self.assertRaisesRegex(AssertionError, 'positive'):
+            self.staking.stake(amount=-1)
+
+    def test_stake_insufficient(self):
+        with self.assertRaisesRegex(AssertionError, 'enough'):
+            self.staking.stake(amount=1000001)
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
