@@ -6,6 +6,10 @@
 
 This repo contains the backend code for the Lamden MKR clone and some associated tests. 
 
+## Progress
+
+You can see the current progress of the project in [project.md](https://github.com/throwaway-lamden/lamden-mkr/blob/main/progress.md).
+
 ## Testing
 
 You can run unittests by calling the builtin python module.
