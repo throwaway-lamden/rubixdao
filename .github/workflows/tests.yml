@@ -20,7 +20,7 @@ jobs:
         sudo timedatectl set-timezone America/New_York
         python3 -m pip install --upgrade pip
         python3 -m pip install --upgrade setuptools
-        python3 -m pip install -r $GITHUB_WORKSPACE/contracts/requirements.txt
+        python3 -m pip install -r $GITHUB_WORKSPACE/requirements.txt
         python3 -m pip install pytest flake8 flaky pytest-github-actions-annotate-failures pytest-cov
     - name: Setup flake8 annotations
       uses: rbialon/flake8-annotations@v1
