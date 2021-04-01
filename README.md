@@ -15,12 +15,12 @@ You can see the current progress of the project in [project.md](https://github.c
 You can run unittests by calling the builtin python module.
 
 ```bash
-python3 -m unittest test_refactor.py
+python3 -m unittest tests
 ```
 For better performance, you can run tests multithreaded with [Pytest](https://pytest.org/), but this requires [pytest-xdist](https://github.com/pytest-dev/pytest-xdist) and [flaky](https://github.com/box/flaky).
 
 ```bash
-pytest test_refactor.py -n {amount of threads} --force-flaky
+pytest tests -n {amount of threads} --force-flaky
 ```
 
 You can see the current build status in the Actions tab of this repo.
