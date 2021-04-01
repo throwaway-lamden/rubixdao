@@ -7,7 +7,7 @@ class TokenTests(unittest.TestCase):
     def setUp(self):
         self.client = ContractingClient()
         self.client.flush()
-        with open('dai_token.py') as file:
+        with open('dai.py') as file:
             code = file.read()
         self.client.submit(code, name='dai_token', constructor_args={
                            'owner': 'me'})
