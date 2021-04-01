@@ -131,6 +131,4 @@ Takes `contract: str, currency_amount: float=0, token_amount: float=0`
 
 Make tense consistent in progress section
 
-After documentation is completed, move `Progress` to progress.md
-
 A test TODO section/file
