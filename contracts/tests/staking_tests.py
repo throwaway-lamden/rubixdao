@@ -52,6 +52,10 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'operator'):
             self.staking.change_owner(new_owner='me')
 
+    def test_timestamp(self):
+        assert abs(datetime.datetime.utcnow().timestamp() -
+                   self.staking.get_timestamp()) < 60
+
 
 if __name__ == '__main__':
     unittest.main()

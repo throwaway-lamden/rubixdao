@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 from contracting.client import ContractingClient
@@ -249,3 +250,7 @@ class VaultTests(unittest.TestCase):
 
     def close_vault_twice_fails(self):
         pass
+
+    def test_timestamp(self):
+        assert abs(datetime.datetime.utcnow().timestamp() -
+                   self.vault.get_timestamp()) < 60

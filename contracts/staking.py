@@ -26,8 +26,9 @@ def seed():
     metadata['operator'] = ctx.caller
 
 
+@export
 def get_timestamp():
-    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + datetime.timedelta(seconds=14400) # have to manually patch timezone since imports aren't on blockchain
+    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + datetime.timedelta(seconds=28800) # have to manually patch timezone since imports aren't on blockchain, this gives the utc timestamp for someone whose current locale is est
     return td.seconds
 
 
