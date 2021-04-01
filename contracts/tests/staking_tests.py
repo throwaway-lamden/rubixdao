@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 from contracting.client import ContractingClient
@@ -54,7 +55,7 @@ class StakingTests(unittest.TestCase):
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.staking.get_timestamp()) < 60
+                   self.staking.get_timestamp()) < 120
 
 
 if __name__ == '__main__':

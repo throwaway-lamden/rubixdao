@@ -17,7 +17,8 @@ def seed():
     operator.set(ctx.caller)
 
     rate['start_time'] = get_timestamp()
-    rate['rate'] = 1.000000001  # 3.2% interest yearly
+    yearly_rate = 0.05  # yearly interest
+    rate['rate'] = 1 + yearly_rate / 31540000  # interest per second
     rate['start_price'] = 1
 
     metadata['token_name'] = 'Staked DAI'

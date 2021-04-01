@@ -253,4 +253,4 @@ class VaultTests(unittest.TestCase):
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) < 60
+                   self.vault.get_timestamp()) < 120
