@@ -15,21 +15,42 @@ class StakingTests(unittest.TestCase):
             currency = file.read()
         with open('oracle.py') as file:
             oracle = file.read()
+        with open('staking.py') as file:
+            staking = file.read()
         self.client.submit(dai, name='dai_contract', constructor_args={
                            'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
+        self.client.submit(staking, name='staking')
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
+        self.staking = self.client.get_contract('staking')
 
     def tearDown(self):
         self.client.flush()
 
-    def test(self):
-        pass
+    def test_metadata_unauthorised(self):
+        with self.assertRaisesRegex(AssertionError, 'operator'):
+            self.staking.change_metadata(
+                key='testing', value='testing', signer='me')
+
+    def test_metadata_normal(self):
+        self.staking.change_metadata(key='testing', value='testing')
+        assert self.staking.metadata['testing'] == 'testing'
+        self.staking.change_metadata(key='testing', value='again')
+        assert self.staking.metadata['testing'] == 'again'
+
+    def test_change_owner_unauthorised(self):
+        with self.assertRaisesRegex(AssertionError, 'operator'):
+            self.staking.change_owner(new_owner='wallet2', signer='wallet2')
+
+    def test_change_owner_normal(self):
+        self.staking.change_owner(new_owner='wallet2')
+        with self.assertRaisesRegex(AssertionError, 'operator'):
+            self.staking.change_owner(new_owner='me')
 
 
 if __name__ == '__main__':

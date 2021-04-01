@@ -1,5 +1,5 @@
 import dai_contract
-import vaults
+import vault_contract
 
 rate = Hash()
 
@@ -138,7 +138,6 @@ def change_metadata(key: str, value: Any):
 @export
 def change_owner(new_owner: str):
     assert_owner()
-
     operator.set(new_owner)
 
 
