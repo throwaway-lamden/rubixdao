@@ -29,6 +29,7 @@ class StakingTests(unittest.TestCase):
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
         self.staking = self.client.get_contract('staking')
+        self.dai.mint(amount=1000000, signer='default_owner')
 
     def tearDown(self):
         self.client.flush()
@@ -53,7 +54,9 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'operator'):
             self.staking.change_owner(new_owner='me')
 
-    def 
+    def test_stake_negative(self):
+        self.staking.stake(amount=-1)
+
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.staking.get_timestamp()) < 120
