@@ -37,7 +37,7 @@ print(client.closure_to_code_string(function)[0]) #Prints only the code, and not
 
 You can now deploy this code via the wallet or by following the instructions in the [Contracting documentation](https://contracting.lamden.io/submitting/).
 
-##  Dependencies
+## Dependencies
 
 To test, `Contracting` and `Requests` are required. To deploy, `Lamden` or the browser wallet is required.
 
@@ -75,9 +75,43 @@ requests.post("https://testnet-master-1.lamden.io/", data = tx) #Submits transac
 
 ## Modules
 
-Placeholder
+### vault
 
-## Functions
+This is the main SC. It handles creating CDPs and closing CDPs as well as auctions for undercollateralized CDPs. This contract should be the only contract that can mint DAI. The staking contract (`stake.py`) calls this to pay out rewards. As well, future contracts can pay stability pool rewards to lMKR holders with `export_rewards()`.
+
+[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/vault.py)
+
+[Documentation]()
+
+### stake
+
+This is the equivalent to the DSR. It has an adjustable interest rate. Payouts are made through the vault contract. The staked token conforms to LST-001 and LST-002. 
+
+[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/stake.py)
+
+[Documentation]()
+
+### dai
+
+This is the DAI equivalent. It conforms to LST-001 and LST-002. 
+
+[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/dai.py)
+
+[Documentation]()
+
+### oracle
+
+This is the base oracle contract. 
+
+[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/oracle.py)
+
+[Documentation]()
+
+## API Guide
+
+*The primary documentation should always be the [Official Lamden Documentation](https://docs.lamden.io). This section only serves as a TL;DR.*
+
+Placeholder
 
 ### seed
 
