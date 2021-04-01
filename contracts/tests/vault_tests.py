@@ -31,7 +31,6 @@ class VaultTests(unittest.TestCase):
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
-
         # self.dai.change_owner(new_owner='vault_contract')
 
     def tearDown(self):
@@ -182,11 +181,10 @@ class VaultTests(unittest.TestCase):
         assert 0 not in self.vault.vaults['list']
 
     def close_vault_works(self):
+        self.dai.mint(amount=1000000, signer='vault_contract')
         self.currency.approve(to='vault_contract', amount=1500)
-
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
-
         self.vault.close_vault(cdp_number=id)
 
     def close_vault_closes_vault(self):

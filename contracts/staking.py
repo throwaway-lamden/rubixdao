@@ -27,8 +27,8 @@ def seed():
 
 
 def get_timestamp():
-    td = now - datetime.datetime(1970, 1, 1)
-    return td.days * 86400 + td.seconds * 1 + td.minutes * 60 + td.hours * 3600 + td.weeks * 604800
+    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + datetime.timedelta(seconds=14400) # have to manually patch timezone since imports aren't on blockchain
+    return td.seconds
 
 
 @export
