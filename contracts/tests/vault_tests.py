@@ -9,13 +9,13 @@ class VaultTests(unittest.TestCase):
         self.client = ContractingClient()
         self.client.flush()
 
-        with open('dai_token.py') as file:
+        with open('dai.py') as file:
             dai = file.read()
 
-        with open('basic_vault.py') as file:
+        with open('vault.py') as file:
             vault = file.read()
 
-        with open('currency.py') as file:
+        with open('test_currency.py') as file:
             currency = file.read()
 
         with open('oracle.py') as file:
