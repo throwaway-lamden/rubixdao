@@ -1,4 +1,4 @@
-import dai_contract
+dai_contract = importlib.import_module("dai_contract")
 
 vaults = Hash(default_value=0)
 cdp = Hash(default_value=0)
