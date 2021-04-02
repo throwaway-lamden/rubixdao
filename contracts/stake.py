@@ -25,6 +25,7 @@ def seed():
     metadata['token_symbol'] = 'sDAI'
     metadata['token_logo_url'] = 'image.site'
     metadata['operator'] = ctx.caller
+    total_minted.set(0)
 
 
 @export
@@ -36,11 +37,14 @@ def get_timestamp():
 @export
 def stake(amount: float):
     assert amount > 0, 'Stake amount must be positive!'
+    # needs approval here but not sure how to do
+    # dai_contract.approve(to=ctx.this, amount=amount)
     dai_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
 
     amount_minted = amount / get_price()
-    total_minted.set(total_minted.get() + amount_minted)
+    total = total_minted.get() + amount_minted
+    total_minted.set(total)
 
     balances[ctx.caller] += amount_minted
 

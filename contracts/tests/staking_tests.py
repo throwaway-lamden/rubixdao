@@ -80,6 +80,9 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.stake(amount=1000001)
 
+    #def test_stake_normal(self):
+    #    self.staking.stake(amount=1000000, signer='default_owner')
+
     def test_get_price(self):
         current_rate = self.staking.rate['rate']
         time.sleep(4)
