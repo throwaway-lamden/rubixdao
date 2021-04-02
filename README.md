@@ -4,7 +4,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/tests?label=Tests&style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/CodeQL?label=CodeQL&style=flat-square)
 
-This repo contains the backend code for the Lamden MKR clone and some associated tests. 
+This repo contains the backend code for the Lamden MKR clone and some associated tests.
 
 ## Progress
 
@@ -30,7 +30,7 @@ You can see the current build status in the Actions tab of this repo.
 Extract the smart contract code by appending the following to the smart contract you want to get, and then call it normally (`python3 {file}.py`)
 
 ```python
-function = "name_of_function"
+function = 'name_of_function'
 client = ContractingClient()
 print(client.closure_to_code_string(function)[0]) #Prints only the code, and not the name of the function
 ```
@@ -63,14 +63,14 @@ kwargs = dict() #Add kwargs to dict
 
 #Builds transaction
 transaction.build_transaction(wallet=new_wallet,
-contract="{contract}", 
-function=f"{function}", 
-kwargs=kwargs, 
+contract='{contract}',
+function=f'{function}',
+kwargs=kwargs,
 nonce=nonce, #Starts at zero, increments with every transaction
-processor="89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497", #Masternode address
-stamps=stamp_limit) #Max amount of stamps you're willing to spend. As of 2021/02, the TAU/stamp ratio on mainnet is 1:36 
+processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497', #Masternode address
+stamps=stamp_limit) #Max amount of stamps you're willing to spend. As of 2021/02, the TAU/stamp ratio on mainnet is 1:36
 
-requests.post("https://testnet-master-1.lamden.io/", data = tx) #Submits transaction
+requests.post('https://testnet-master-1.lamden.io/', data = tx) #Submits transaction
 ```
 
 ## Modules
@@ -85,7 +85,7 @@ This is the main SC. It handles creating CDPs and closing CDPs as well as auctio
 
 ### stake
 
-This is the equivalent to the DSR. It has an adjustable interest rate. Payouts are made through the vault contract. The staked token conforms to LST-001 and LST-002. 
+This is the equivalent to the DSR. It has an adjustable interest rate. Payouts are made through the vault contract. The staked token conforms to LST-001 and LST-002.
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/stake.py)
 
@@ -93,7 +93,7 @@ This is the equivalent to the DSR. It has an adjustable interest rate. Payouts a
 
 ### dai
 
-This is the DAI equivalent. It conforms to LST-001 and LST-002. 
+This is the DAI equivalent. It conforms to LST-001 and LST-002.
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/dai.py)
 
@@ -101,7 +101,7 @@ This is the DAI equivalent. It conforms to LST-001 and LST-002.
 
 ### oracle
 
-This is the base oracle contract. 
+This is the base oracle contract.
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/oracle.py)
 
@@ -125,7 +125,7 @@ The default values are as follows:
 ```
 
 ### placeholder
-Takes `contract: str, currency_amount: float=0, token_amount: float=0` 
+Takes `contract: str, currency_amount: float=0, token_amount: float=0`
 
 ## TODO
 

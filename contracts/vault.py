@@ -1,4 +1,4 @@
-dai_contract = importlib.import_module("dai_contract")
+dai_contract = importlib.import_module('dai_contract')
 
 vaults = Hash(default_value=0)
 cdp = Hash(default_value=0)
@@ -61,7 +61,7 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
     collateral.transfer_from(amount=amount_of_collateral,
                              to=ctx.this, main_account=ctx.caller)
 
-    dai_contract.mint(amount=amount_of_dai)  # currently not authorised to mint
+    dai_contract.mint(amount=amount_of_dai)
     dai_contract.transfer(amount=amount_of_dai, to=ctx.caller)
 
     vaults[vault_type, 'issued'] += amount_of_dai
