@@ -63,4 +63,5 @@
     - [ ] Testing guide
     - [ ] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
     - [ ] Function documentation
+    - [x] Progress
     - [x] Todo
