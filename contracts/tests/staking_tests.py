@@ -1,4 +1,5 @@
 import datetime
+import time
 import unittest
 
 from contracting.client import ContractingClient
@@ -79,6 +80,11 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.stake(amount=1000001)
 
+    def test_get_price(self):
+        current_rate = self.staking.rate['rate']
+        time.sleep(4)
+        with self.assertRaisesRegex(AssertionError, '!='):
+            self.assertEqual(current_rate, self.staking.get_price())
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
