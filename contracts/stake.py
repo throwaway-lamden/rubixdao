@@ -68,14 +68,14 @@ def withdraw_stake(amount: float):
 
 
 @export
-def change_rate(new_rate: float):
+def change_rate(new_rate: float): # takes yearly interest
     assert_owner()
-    assert new_rate >= 1, 'Cannot have negative staking!'
+    assert new_rate >= 0, 'Cannot have negative staking!'
 
     current_price = get_price()
 
     rate['start_time'] = get_timestamp()
-    rate['rate'] = new_rate
+    rate['rate'] = 1 + new_rate / 31540000  # interest per second
     rate['start_price'] = current_price
 
 
@@ -128,7 +128,7 @@ def transfer_from(amount: float, to: str, main_account: str):
 
 @export
 def get_price():
-    return rate['start_price'] * rate ** (get_timestamp() - rate['start_time'])
+    return rate['start_price'] * rate['rate'] ** (get_timestamp() - rate['start_time'])
 
 
 @export

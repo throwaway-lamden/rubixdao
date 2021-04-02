@@ -18,14 +18,14 @@ class StakingTests(unittest.TestCase):
             oracle = file.read()
         with open('stake.py') as file:
             staking = file.read()
-            
+
         self.client.submit(dai, name='dai_contract', constructor_args={
                            'owner': 'default_owner'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
         self.client.submit(staking, name='staking')
-        
+
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
@@ -56,6 +56,21 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'operator'):
             self.staking.change_owner(new_owner='me')
 
+    def test_change_rate_unauthorised(self):
+        with self.assertRaisesRegex(AssertionError, 'operator'):
+            self.staking.change_rate(new_rate=0.1, signer='wallet2')
+
+    def test_change_rate_negative(self):
+        with self.assertRaisesRegex(AssertionError, 'negative'):
+            self.staking.change_rate(new_rate=-0.1)
+
+    def test_change_rate_normal(self):
+        current_price = self.staking.get_price()
+        self.staking.change_rate(new_rate=0.1)
+
+        self.assertAlmostEqual(1 + 0.1 / 31540000, self.staking.rate['rate'])
+        self.assertAlmostEqual(self.staking.rate['start_price'], current_price)
+
     def test_stake_negative(self):
         with self.assertRaisesRegex(AssertionError, 'positive'):
             self.staking.stake(amount=-1)
@@ -63,6 +78,7 @@ class StakingTests(unittest.TestCase):
     def test_stake_insufficient(self):
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.stake(amount=1000001)
+
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
