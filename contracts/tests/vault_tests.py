@@ -1,4 +1,5 @@
 import datetime
+import random
 import unittest
 
 from contracting.client import ContractingClient
@@ -251,6 +252,34 @@ class VaultTests(unittest.TestCase):
     def close_vault_twice_fails(self):
         pass
 
+    def open_and_close_vault_1000_times_works(self):
+        id_list = range(1000)
+        
+        for x in range(1000):
+            self.currency.approve(to='stu', amount=151)
+            self.currency.approve(to='vault_contract', amount=151, signer='stu')
+        
+            self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=151, signer='stu')
+            
+            self.assertEqual(self.vault.vaults[0, 'issued'], x * 100)
+            self.assertEqual(self.vault.vaults[0, 'total'], x * 100)
+            
+            self.assertEqual(self.dai.balances['stu'], x * 100)
+            self.assertEqual(self.dai.total_supply, x * 100)
+            
+        for x in range(1000):
+            id = random.choice(id_list)
+            id_list.remove(id)
+            
+            self.vault.close_vault(cdp_number=id, signer='stu')
+            
+            self.assertEqual(self.vault.vaults[0, 'issued'], 1000 * 100 - x * 100)
+            self.assertEqual(self.vault.vaults[0, 'total'], 1000 * 100 - x * 100)
+            
+            self.assertEqual(self.dai.balances['stu'], 1000 * 100 - x * 100)
+            self.assertEqual(self.dai.total_supply, 1000 * 100 - x * 100)
+            
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.vault.get_timestamp()) < 120
