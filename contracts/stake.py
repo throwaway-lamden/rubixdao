@@ -39,8 +39,6 @@ def get_timestamp():
 @export
 def stake(amount: float):
     assert amount > 0, 'Stake amount must be positive!'
-
-    dai_contract.approve(to=ctx.this, amount=amount, sender=ctx.caller)
     dai_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
 
@@ -67,7 +65,7 @@ def withdraw_stake(amount: float):
 
     total_minted.set(supply - amount)
 
-    dai_contract.mint(amount=return_amount - transfer_away_amount)
+    dai_contract.mint_rewards(amount=return_amount - transfer_away_amount)
     dai_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount

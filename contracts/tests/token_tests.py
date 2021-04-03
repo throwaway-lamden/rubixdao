@@ -44,25 +44,25 @@ class TokenTests(unittest.TestCase):
 
     def test_accounts_negative(self):
         try:
-            self.dai.approve(amount=-1, to='account1', signer='me', sender='me')
+            self.dai.approve(amount=-1, to='account1', signer='me')
             raise
         except AssertionError as message:
             assert 'non-positive' in str(message)
 
     def test_accounts_excess(self):
         try:
-            self.dai.approve(amount=1000001, to='account1', signer='me', sender='me')
+            self.dai.approve(amount=1000001, to='account1', signer='me')
             raise
         except AssertionError as message:
             assert 'exceeds' in str(message)
 
     def test_accounts_normal(self):
-        self.dai.approve(amount=42, to='account1', signer='me', sender='me')
+        self.dai.approve(amount=42, to='account1', signer='me')
         self.assertAlmostEqual(self.dai.allowance(
             owner='me', spender='account1', signer='me'), 42)
 
     def test_transfer_from_negative(self):
-        self.dai.approve(amount=42, to='account1', signer='me', sender='me')
+        self.dai.approve(amount=42, to='account1', signer='me')
         try:
             self.dai.transfer_from(amount=-1, to='wallet2',
                                      main_account='me', signer='account1')
@@ -71,7 +71,7 @@ class TokenTests(unittest.TestCase):
             assert 'non-positive' in str(message)
 
     def test_transfer_from_excess(self):
-        self.dai.approve(amount=42, to='account1', signer='me', sender='me')
+        self.dai.approve(amount=42, to='account1', signer='me')
         try:
             self.dai.transfer_from(amount=1000001, to='wallet2',
                                      main_account='me', signer='account1')
@@ -80,7 +80,7 @@ class TokenTests(unittest.TestCase):
             assert 'enough' in str(message)
 
     def test_transfer_from_approved(self):
-        self.dai.approve(amount=42, to='account1', signer='me', sender='me')
+        self.dai.approve(amount=42, to='account1', signer='me')
         try:
             self.dai.transfer_from(amount=1000000, to='wallet2',
                                      main_account='me', signer='account1')
@@ -89,7 +89,7 @@ class TokenTests(unittest.TestCase):
             assert 'approved' in str(message)
 
     def test_transfer_from_normal(self):
-        self.dai.approve(amount=42, to='account1', signer='me', sender='me')
+        self.dai.approve(amount=42, to='account1', signer='me')
         self.dai.transfer_from(amount=42, to='wallet2',
                                  main_account='me', signer='account1')
         self.assertAlmostEqual(self.dai.allowance(

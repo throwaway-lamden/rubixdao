@@ -77,32 +77,38 @@ class StakingTests(unittest.TestCase):
             self.staking.stake(amount=-1)
 
     def test_stake_insufficient(self):
-        with self.assertRaisesRegex(AssertionError, 'exceeds'):
+        with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.stake(amount=1000001)
 
     def test_stake_normal(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
 
-    def test_stake_updates_balance(self):
+    def stake_updates_balance(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         self.assertAlmostEqual(self.staking.balances['default_owner'], 1000000)
 
-    def test_stake_sets_total_minted(self):
+    def stake_sets_total_minted(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         self.assertAlmostEqual(self.staking.total_minted.get(), 2000000)
 
     def test_withdraw_stake_negative(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         with self.assertRaisesRegex(AssertionError, 'positive'):
             self.staking.withdraw_stake(amount=-1, signer='default_owner')
 
     def test_withdraw_stake_insufficient(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.withdraw_stake(amount=1000001, signer='default_owner')
 
     def withdraw_stake_normal(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         self.staking.withdraw_stake(amount=1000000, signer='default_owner')
 
@@ -110,6 +116,12 @@ class StakingTests(unittest.TestCase):
         self.staking.stake(amount=1000000, signer='default_owner')
         self.staking.withdraw_stake(amount=1000000, signer='default_owner')
         self.assertAlmostEqual(self.dai.balance_of(account='default_owner'), 1000000)
+
+    def stake_records_balance(self):
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
+        self.staking.stake(amount=1000000, signer='default_owner')
+        self.assertAlmostEqual(self.staking.balances['default_owner'], 1000000)
+        self.assertEqual(self.staking.balances['wallet2'], 0)
 
     def test_get_price(self):
         current_rate = self.staking.rate['rate']
