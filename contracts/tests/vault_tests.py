@@ -1,5 +1,6 @@
 import datetime
 import random
+import time
 import unittest
 
 from contracting.client import ContractingClient
@@ -241,8 +242,14 @@ class VaultTests(unittest.TestCase):
         self.vault.close_vault(cdp_number=id)
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647)
 
-    def close_vault_funds_burned(self):
-        pass
+    def test_close_vault_funds_burned(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.assertAlmostEqual(self.dai.total_supply.get(), 100)
+        self.dai.approve(to='vault_contract', amount=100)
+        self.vault.close_vault(cdp_number=id)
+        self.assertAlmostEqual(self.dai.total_supply.get(), 0)
 
     def close_vault_fee_not_burned(self):
         pass
