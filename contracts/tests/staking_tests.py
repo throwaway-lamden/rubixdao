@@ -146,6 +146,37 @@ class StakingTests(unittest.TestCase):
             self.assertEqual(self.dai.balance_of(
                 account='testing_user'), 2000000)
 
+    def test_transfer_negative(self):
+        with self.assertRaisesRegex(AssertionError, 'non-positive'):
+            self.staking.transfer(amount=-1, to='wallet2', signer='testing_user')
+
+    def test_transfer_excess(self):
+        with self.assertRaisesRegex(AssertionError, 'enough'):
+            self.staking.transfer(amount=1000001, to='wallet2', signer='testing_user')
+
+    def test_transfer_normal(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.staking.transfer(amount=42, to='wallet2', signer='testing_user')
+        self.assertAlmostEqual(
+            self.staking.balance_of(account='testing_user'), 1000000 - 42)
+        self.assertAlmostEqual(self.staking.balance_of(account='wallet2'), 42)
+
+    def test_accounts_negative(self):
+        with self.assertRaisesRegex(AssertionError, 'non-positive'):
+            self.staking.approve(amount=-1, to='account1', signer='testing_user')
+
+    def test_accounts_excess(self):
+        with self.assertRaisesRegex(AssertionError, 'exceeds'):
+            self.staking.approve(amount=1000001, to='account1', signer='testing_user')
+
+    def test_accounts_normal(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.staking.approve(amount=42, to='account1', signer='testing_user')
+        self.assertAlmostEqual(self.staking.allowance(
+            owner='testing_user', spender='account1', signer='me'), 42)
+
     def test_get_price(self):
         current_rate = self.staking.get_price()
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
@@ -157,8 +188,6 @@ class StakingTests(unittest.TestCase):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.staking.get_timestamp()) < 60
 
-    def test_balance(self):
-        self.assertAlmostEqual(self.staking.balance_of(account='testing_user'), 0)
 
 if __name__ == '__main__':
     unittest.main()
