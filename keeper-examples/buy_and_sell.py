@@ -29,9 +29,9 @@ def withdraw(amount: float, is_tau: bool=False):
     assert_owner()
     
     if is_tau is True:
-        currency.transfer(amount=amount)
+        currency.transfer(amount=amount, to=owner.get()) # You can customize the 'to' as needed
     elif is_tau is False: # Can be replaced with else
-        dai_contract.transfer(amount=amount)
+        dai_contract.transfer(amount=amount, to=owner.get())
     
 @export
 def close_specific_vault(v_id: int):
@@ -86,8 +86,8 @@ def internal_amm(amount: float=100, is_buy: bool=True):
     
     return tokens_purchased - fee
     
-def assert_owner(): # TODO later
-    pass
+def assert_owner():
+    assert ctx.caller == owner.get(), 'Only operator can call!'
 
 #def internal_sell(amount: float): #REPLACED WITH internal_amm
 #    currency_reserve, token_reserve = amm_reserves["dai_contract"]
