@@ -38,7 +38,7 @@ def get_timestamp():
 def stake(amount: float):
     assert amount > 0, 'Stake amount must be positive!'
     # needs approval here but not sure how to do
-    # dai_contract.approve(to=ctx.this, amount=amount)
+    dai_contract.approve(to=ctx.this, amount=amount, sender=ctx.caller)
     dai_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
 

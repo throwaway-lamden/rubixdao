@@ -40,9 +40,8 @@ def allowance(owner: str, spender: str):
 
 
 @export
-def approve(amount: float, to: str):
+def approve(amount: float, to: str, sender: str):
     assert amount > 0, 'Cannot send non-positive balances!'
-    sender = ctx.caller 
     assert balances[sender] >= amount, 'Cannot approve balance that exceeds total balance!'
     balances[sender, to] += amount
     return balances[sender, to]

@@ -77,11 +77,11 @@ class StakingTests(unittest.TestCase):
             self.staking.stake(amount=-1)
 
     def test_stake_insufficient(self):
-        with self.assertRaisesRegex(AssertionError, 'enough'):
+        with self.assertRaisesRegex(AssertionError, 'exceeds'):
             self.staking.stake(amount=1000001)
 
-    #def test_stake_normal(self):
-    #    self.staking.stake(amount=1000000, signer='default_owner')
+    def test_stake_normal(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
 
     def test_get_price(self):
         current_rate = self.staking.rate['rate']
