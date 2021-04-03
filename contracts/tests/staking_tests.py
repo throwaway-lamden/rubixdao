@@ -32,7 +32,7 @@ class StakingTests(unittest.TestCase):
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
         self.staking = self.client.get_contract('staking')
-        self.dai.mint(amount=1000000, signer='default_owner')
+        self.dai.mint(amount=2000000, signer='default_owner')
 
     def tearDown(self):
         self.client.flush()
@@ -82,6 +82,34 @@ class StakingTests(unittest.TestCase):
 
     def test_stake_normal(self):
         self.staking.stake(amount=1000000, signer='default_owner')
+
+    def test_stake_updates_balance(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
+        self.assertAlmostEqual(self.staking.balances['default_owner'], 1000000)
+
+    def test_stake_sets_total_minted(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
+        self.staking.stake(amount=1000000, signer='default_owner')
+        self.assertAlmostEqual(self.staking.total_minted.get(), 2000000)
+
+    def test_withdraw_stake_negative(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
+        with self.assertRaisesRegex(AssertionError, 'positive'):
+            self.staking.withdraw_stake(amount=-1, signer='default_owner')
+
+    def test_withdraw_stake_insufficient(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
+        with self.assertRaisesRegex(AssertionError, 'enough'):
+            self.staking.withdraw_stake(amount=1000001, signer='default_owner')
+
+    def withdraw_stake_normal(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
+        self.staking.withdraw_stake(amount=1000000, signer='default_owner')
+
+    def withdraw_stake_rewards(self):
+        self.staking.stake(amount=1000000, signer='default_owner')
+        self.staking.withdraw_stake(amount=1000000, signer='default_owner')
+        self.assertAlmostEqual(self.dai.balance_of(account='default_owner'), 1000000)
 
     def test_get_price(self):
         current_rate = self.staking.rate['rate']

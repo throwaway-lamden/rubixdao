@@ -67,7 +67,7 @@ def withdraw_stake(amount: float):
 
     total_minted.set(supply - amount)
 
-    dai_contract.mint_rewards(amount=return_amount - transfer_away_amount)
+    dai_contract.mint(amount=return_amount - transfer_away_amount, sender=ctx.caller)
     dai_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount
