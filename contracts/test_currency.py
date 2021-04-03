@@ -5,7 +5,7 @@ balances = Hash(default_value=0)
 
 @construct
 def seed():
-    balances[ctx.caller] = 288_090_567
+    balances[ctx.caller] = 2147483647
 
 
 @export

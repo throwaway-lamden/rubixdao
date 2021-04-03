@@ -183,14 +183,10 @@ class VaultTests(unittest.TestCase):
         assert 0 not in self.vault.vaults['list']
 
     def test_close_vault_works(self):
-        self.dai.mint(amount=1000000, signer='vault_contract')
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
-
-        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 288_090_567 - 1500)
         self.vault.close_vault(cdp_number=id)
-        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 288_090_567)
 
     def test_close_vault_closes_vault(self):
         self.currency.approve(to='vault_contract', amount=1500)
@@ -216,10 +212,8 @@ class VaultTests(unittest.TestCase):
         self.assertEqual(self.vault.vaults[0, 'issued'], 0)
         self.assertEqual(self.vault.vaults[0, 'total'], 0)
 
-    def close_vault_takes_dai(self):
-        pass
-
-        # fix later
+    def test_close_vault_takes_dai(self):
+        self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
 
@@ -237,11 +231,14 @@ class VaultTests(unittest.TestCase):
     def close_vault_adjusts_based_on_reserves_and_stability_fee(self):
         pass
 
-    def close_vault_takes_dai(self):
-        pass
+    def test_close_vault_returns_collateral(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
 
-    def close_vault_returns_collateral(self):
-        pass
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500)
+        self.vault.close_vault(cdp_number=id)
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647)
 
     def close_vault_funds_burned(self):
         pass
@@ -255,7 +252,7 @@ class VaultTests(unittest.TestCase):
     def close_vault_twice_fails(self):
         pass
 
-    def open_and_close_vault_1000_times_works(self):
+    def open_and_close_vault_1000_times_works(self): # current assertionerror not enough coins
         id_list = range(1000)
 
         for x in range(1000):
