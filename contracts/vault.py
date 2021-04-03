@@ -2,10 +2,11 @@ dai_contract = importlib.import_module('dai_contract')
 
 vaults = Hash(default_value=0)
 cdp = Hash(default_value=0)
-stability_pool = Hash()
+stability_pool = Hash(default_value=0)
 vault_type = 0  # dummy for testing purposes
 vaults['oracle'] = 'oracle'  # dummy for testing purposes
-stability_rate = 1.1 # dummy for testing purposes
+stability_rate = 1.1  # dummy for testing purposes
+
 
 @construct
 def seed():
@@ -19,9 +20,12 @@ def seed():
     add_vault(collateral_type='currency',
               collateral_amount=1.5, max_minted=100000, weight=10)
 
+
 @export
 def get_timestamp():
-    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + datetime.timedelta(seconds=28800) # have to manually patch timezone since imports aren't on blockchain, this gives the utc timestamp for someone whose current locale is est
+    # have to manually patch timezone since imports aren't on blockchain, this gives the utc timestamp for someone whose current locale is est
+    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + \
+        datetime.timedelta(seconds=28800)
     return td.seconds
 
 
@@ -77,14 +81,17 @@ def close_vault(cdp_number: int):
 
     collateral = importlib.import_module(vaults[vault_type, 'collateral_type'])
 
-    stability_ratio = vaults[vault_type, 'issued'] / vaults[vault_type, 'total']
+    stability_ratio = vaults[vault_type, 'issued'] / \
+        vaults[vault_type, 'total']
     redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
     fee = redemption_cost * \
         (stability_rate * (get_timestamp() - cdp[cdp_number, 'time']))
 
     # needs approval here but not sure how to do
+    amount = redemption_cost + fee
+    dai_contract.approve(to=ctx.this, amount=amount, sender=ctx.caller)
     dai_contract.transfer_from(
-        amount=redemption_cost + fee, to=ctx.this, main_account=ctx.caller)
+        amount=amount, to=ctx.this, main_account=ctx.caller)
     dai_contract.burn(amount=redemption_cost)
 
     stability_pool[cdp[cdp_number, 'collateral_type']] += fee
@@ -208,7 +215,7 @@ def settle_force_close(cdp_number: int):
     assert cdp[cdp_number, 'auction', 'open'] is True, 'Auction is not open!'
 
     assert get_timestamp() - cdp[cdp_number, 'auction', 'time'] > vaults[vault_type,
-            'minimum_auction_time'], 'Auction is still open!'
+                                                                         'minimum_auction_time'], 'Auction is still open!'
 
     collateral = importlib.import_module(vaults[vault_type, 'collateral_type'])
 

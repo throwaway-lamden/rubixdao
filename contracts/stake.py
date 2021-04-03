@@ -30,14 +30,16 @@ def seed():
 
 @export
 def get_timestamp():
-    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + datetime.timedelta(seconds=28800) # have to manually patch timezone since imports aren't on blockchain, this gives the utc timestamp for someone whose current locale is est
+    # have to manually patch timezone since imports aren't on blockchain, this gives the utc timestamp for someone whose current locale is est
+    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + \
+        datetime.timedelta(seconds=28800)
     return td.seconds
 
 
 @export
 def stake(amount: float):
     assert amount > 0, 'Stake amount must be positive!'
-    # needs approval here but not sure how to do
+
     dai_contract.approve(to=ctx.this, amount=amount, sender=ctx.caller)
     dai_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
@@ -72,7 +74,7 @@ def withdraw_stake(amount: float):
 
 
 @export
-def change_rate(new_rate: float): # takes yearly interest
+def change_rate(new_rate: float):  # takes yearly interest
     assert_owner()
     assert new_rate >= 0, 'Cannot have negative staking!'
 
