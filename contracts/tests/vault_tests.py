@@ -252,7 +252,7 @@ class VaultTests(unittest.TestCase):
     def close_vault_twice_fails(self):
         pass
 
-    def open_and_close_vault_1000_times_works(self): # current assertionerror not enough coins
+    def test_open_and_close_vault_1000_times_works(self): # current assertionerror not enough coins
         id_list = range(1000)
 
         for x in range(1000):
