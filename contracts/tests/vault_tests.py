@@ -57,7 +57,8 @@ class VaultTests(unittest.TestCase):
     def test_create_vault_insufficient_allowance(self):
         try:
             self.vault.create_vault(
-                vault_type=0, amount_of_dai=1000001,  amount_of_collateral=1000001)
+                vault_type=0, amount_of_dai=1000001,
+                amount_of_collateral=1000001)
             raise
         except AssertionError as message:
             assert 'allowance' in str(message)
@@ -75,15 +76,17 @@ class VaultTests(unittest.TestCase):
     def test_create_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500)  # Might fail, not sure why commented
+        # Might fail, not sure why commented
+        self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
 
     def test_create_vault_takes_collateral(self):
         self.currency.transfer(to='stu', amount=1500)
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
 
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500, signer='stu')  # Might fail, not sure why commented
+        self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500,
+            signer='stu')  # Might fail, not sure why commented
 
         self.assertEqual(self.currency.balances['stu'], 0)
 
@@ -91,8 +94,9 @@ class VaultTests(unittest.TestCase):
         self.currency.transfer(to='stu', amount=1500)
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
 
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                amount_of_collateral=1500, signer='stu')  # Might fail, not sure why commented
+        self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500,
+            signer='stu')  # Might fail, not sure why commented
 
         self.assertEqual(self.dai.balances['stu'], 100)
 
@@ -237,10 +241,14 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
 
-        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500)
+        self.assertAlmostEqual(
+            self.currency.balance_of(account='sys'),
+            2147483647 - 1500)
         self.dai.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
-        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647)
+        self.assertAlmostEqual(
+            self.currency.balance_of(account='sys'),
+            2147483647)
 
     def test_close_vault_funds_burned(self):
         self.currency.approve(to='vault_contract', amount=1500)
@@ -270,15 +278,17 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.close_vault(cdp_number=id)
 
-    def open_and_close_vault_1000_times_works(self): # current assertionerror not enough coins
+    # current assertionerror not enough coins
+    def open_and_close_vault_1000_times_works(self):
         id_list = range(1000)
 
         for x in range(1000):
             self.currency.approve(to='stu', amount=151)
-            self.currency.approve(to='vault_contract', amount=151, signer='stu')
+            self.currency.approve(to='vault_contract',
+                                  amount=151, signer='stu')
 
             self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                     amount_of_collateral=151, signer='stu')
+                                    amount_of_collateral=151, signer='stu')
 
             self.assertEqual(self.vault.vaults[0, 'issued'], x * 100)
             self.assertEqual(self.vault.vaults[0, 'total'], x * 100)
@@ -292,8 +302,12 @@ class VaultTests(unittest.TestCase):
 
             self.vault.close_vault(cdp_number=id, signer='stu')
 
-            self.assertEqual(self.vault.vaults[0, 'issued'], 1000 * 100 - x * 100)
-            self.assertEqual(self.vault.vaults[0, 'total'], 1000 * 100 - x * 100)
+            self.assertEqual(
+                self.vault.vaults[0, 'issued'],
+                1000 * 100 - x * 100)
+            self.assertEqual(
+                self.vault.vaults[0, 'total'],
+                1000 * 100 - x * 100)
 
             self.assertEqual(self.dai.balances['stu'], 1000 * 100 - x * 100)
             self.assertEqual(self.dai.total_supply, 1000 * 100 - x * 100)

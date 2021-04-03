@@ -3,6 +3,7 @@ import time
 import unittest
 
 from contracting.client import ContractingClient
+from contracting.stdlib.bridge.time import Datetime
 
 
 class StakingTests(unittest.TestCase):
@@ -21,7 +22,7 @@ class StakingTests(unittest.TestCase):
             staking = file.read()
 
         self.client.submit(dai, name='dai_contract', constructor_args={
-                           'owner': 'default_owner'})
+                           'owner': 'staking'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
@@ -32,7 +33,8 @@ class StakingTests(unittest.TestCase):
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
         self.staking = self.client.get_contract('staking')
-        self.dai.mint(amount=2000000, signer='default_owner')
+        self.dai.mint(amount=2000000, signer='staking')
+        self.dai.transfer(amount=2000000, to='testing_user', signer='staking')
 
     def tearDown(self):
         self.client.flush()
@@ -81,58 +83,79 @@ class StakingTests(unittest.TestCase):
             self.staking.stake(amount=1000001)
 
     def test_stake_normal(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+
+    def test_stake_takes_money(self):
+        self.assertAlmostEqual(self.dai.balance_of(
+            account='testing_user'), 2000000)
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.assertAlmostEqual(self.dai.balance_of(
+            account='testing_user'), 1000000)
 
     def test_stake_updates_balance(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
-        self.assertAlmostEqual(self.staking.balances['default_owner'], 1000000)
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.assertAlmostEqual(self.staking.balances['testing_user'], 1000000)
 
     def test_stake_sets_total_minted(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
         self.assertAlmostEqual(self.staking.total_minted.get(), 2000000)
 
     def test_withdraw_stake_negative(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'positive'):
-            self.staking.withdraw_stake(amount=-1, signer='default_owner')
+            self.staking.withdraw_stake(amount=-1, signer='testing_user')
 
     def test_withdraw_stake_insufficient(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'enough'):
-            self.staking.withdraw_stake(amount=1000001, signer='default_owner')
+            self.staking.withdraw_stake(amount=1000001, signer='testing_user')
 
-    def withdraw_stake_normal(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
-        self.staking.withdraw_stake(amount=1000000, signer='default_owner')
+    def test_stake_records_balance(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.assertAlmostEqual(self.staking.balances['testing_user'], 1000000)
+        self.assertEqual(self.staking.balances['wallet2'], None)
 
-    def withdraw_stake_rewards(self):
-        self.staking.stake(amount=1000000, signer='default_owner')
-        self.staking.withdraw_stake(amount=1000000, signer='default_owner')
-        self.assertAlmostEqual(self.dai.balance_of(account='default_owner'), 1000000)
+    def test_withdraw_stake_normal(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.staking.withdraw_stake(amount=1000000, signer='testing_user')
 
-    def stake_records_balance(self):
-        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
-        self.staking.stake(amount=1000000, signer='default_owner')
-        self.assertAlmostEqual(self.staking.balances['default_owner'], 1000000)
-        self.assertEqual(self.staking.balances['wallet2'], 0)
+    def test_withdraw_stake_returns_money(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.staking.withdraw_stake(amount=1000000, signer='testing_user')
+        self.assertAlmostEqual(self.dai.balance_of(
+            account='testing_user'), 2000000)
+
+    def test_withdraw_stake_returns_rewards(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.staking.withdraw_stake(
+            amount=1000000, signer='testing_user', environment=env)
+        with self.assertRaisesRegex(AssertionError, '!='):
+            self.assertEqual(self.dai.balance_of(
+                account='testing_user'), 2000000)
 
     def test_get_price(self):
-        current_rate = self.staking.rate['rate']
-        time.sleep(4)
+        current_rate = self.staking.get_price()
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         with self.assertRaisesRegex(AssertionError, '!='):
-            self.assertEqual(current_rate, self.staking.get_price())
+            self.assertEqual(current_rate, self.staking.get_price(
+                environment=env))
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.staking.get_timestamp()) < 120
+                   self.staking.get_timestamp()) < 60
 
 
 if __name__ == '__main__':

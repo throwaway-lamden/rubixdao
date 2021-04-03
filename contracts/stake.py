@@ -17,7 +17,7 @@ def seed():
     operator.set(ctx.caller)
 
     rate['start_time'] = get_timestamp()
-    yearly_rate = 0.05  # yearly interest
+    yearly_rate = 0.05  # yearly interest as a decimal
     rate['rate'] = 1 + yearly_rate / 31540000  # interest per second
     rate['start_price'] = 1
 
@@ -64,8 +64,8 @@ def withdraw_stake(amount: float):
     transfer_away_amount = amount * current_average
 
     total_minted.set(supply - amount)
-
-    dai_contract.mint_rewards(amount=return_amount - transfer_away_amount)
+    if return_amount - transfer_away_amount > 0:
+        dai_contract.mint(amount=return_amount - transfer_away_amount)
     dai_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount
@@ -132,7 +132,8 @@ def transfer_from(amount: float, to: str, main_account: str):
 
 @export
 def get_price():
-    return rate['start_price'] * rate['rate'] ** (get_timestamp() - rate['start_time'])
+    return rate['start_price'] * rate['rate'] ** (
+        get_timestamp() - rate['start_time'])
 
 
 @export

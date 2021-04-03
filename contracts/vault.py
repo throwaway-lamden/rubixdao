@@ -30,7 +30,8 @@ def get_timestamp():
 
 
 @export
-def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float):
+def create_vault(vault_type: int, amount_of_dai: float,
+                 amount_of_collateral: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
     collateral = importlib.import_module(
         vaults[vault_type, 'collateral_type'])  # TODO: Add interface enforcement
@@ -129,7 +130,8 @@ def fast_force_close_vault(cdp_number: int):
     price = oracle.get_price(vault_type)
 
     # TODO: Make this not a one liner
-    assert cdp[cdp_number, 'collateral_amount'] * price / cdp[cdp_number, 'dai'] < vaults['minimum_collaterization'][vault_type], 'Vault above minimum collateralization!'
+    assert cdp[cdp_number, 'collateral_amount'] * price / cdp[cdp_number,
+                                                              'dai'] < vaults['minimum_collaterization'][vault_type], 'Vault above minimum collateralization!'
 
     if collateral_percent >= 1.03:
         dai_contract.transfer_from(
@@ -196,7 +198,8 @@ def bid_on_force_close(cdp_number: int, amount: float):
 
     if cdp[cdp_number, 'auction', ctx.caller, 'bid'] is not None:
         dai_contract.transfer_from(
-            amount=amount - cdp[cdp_number, 'auction', ctx.caller, 'bid'], to=ctx.this, main_account=ctx.caller)
+            amount=amount - cdp[cdp_number, 'auction', ctx.caller, 'bid'],
+            to=ctx.this, main_account=ctx.caller)
 
     else:
         dai_contract.transfer_from(
@@ -236,7 +239,8 @@ def settle_force_close(cdp_number: int):
     vaults[vault_type, 'issued'] -= cdp[number, 'dai']
     vaults[vault_type, 'total'] -= cdp[cdp_number, 'auction', 'top_bid']
 
-    return cdp[cdp_number, 'auction', 'highest_bidder'], cdp[cdp_number, 'auction', 'top_bid']
+    return cdp[cdp_number, 'auction', 'highest_bidder'], cdp[cdp_number,
+                                                             'auction', 'top_bid']
 
 
 @export
@@ -322,7 +326,8 @@ def sync_burn(vault_type: int, amount: float):
 
 
 @export
-def add_vault(collateral_type: str, collateral_amount: float, max_minted: float, weight: float):
+def add_vault(collateral_type: str, collateral_amount: float,
+              max_minted: float, weight: float):
     assert vaults['OWNER'] == ctx.signer, 'Not the owner!'
 
     vault_number = vaults['current_number']
@@ -362,6 +367,7 @@ def change_any_state(key: Any, new_value: Any):
     vaults[key] = new_value
 
     return new_value
+
 
 @export
 def get_collateralization_percent(cdp_number: int):
