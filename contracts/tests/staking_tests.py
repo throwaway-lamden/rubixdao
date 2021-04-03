@@ -157,6 +157,8 @@ class StakingTests(unittest.TestCase):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.staking.get_timestamp()) < 60
 
+    def test_balance(self):
+        self.assertAlmostEqual(self.staking.balance_of(account='testing_user'), 0)
 
 if __name__ == '__main__':
     unittest.main()
