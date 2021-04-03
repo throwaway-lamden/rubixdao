@@ -77,7 +77,7 @@ def create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: fl
 @export
 def close_vault(cdp_number: int):
     assert cdp[cdp_number, 'owner'] == ctx.caller, 'Not the owner!'
-    assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
+    assert cdp[cdp_number, 'open'] == True, 'Vault has already been closed!'
 
     collateral = importlib.import_module(vaults[vault_type, 'collateral_type'])
 
@@ -89,7 +89,6 @@ def close_vault(cdp_number: int):
 
     # needs approval here but not sure how to do
     amount = redemption_cost + fee
-    dai_contract.approve(to=ctx.this, amount=amount, sender=ctx.caller)
     dai_contract.transfer_from(
         amount=amount, to=ctx.this, main_account=ctx.caller)
     dai_contract.burn(amount=redemption_cost)
@@ -367,4 +366,4 @@ def change_any_state(key: Any, new_value: Any):
 @export
 def get_collateralization_percent(cdp_number: int):
     # TODO: Change this from a one-liner to proper function
-    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(vault_type) / cdp[cdp_number, 'dai'] < vaults['minimum_collaterization'][cdp[cdp_number, 'collateral_type']] 
+    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(vault_type) / cdp[cdp_number, 'dai'] < vaults['minimum_collaterization'][cdp[cdp_number, 'collateral_type']]

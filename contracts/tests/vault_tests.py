@@ -33,7 +33,6 @@ class VaultTests(unittest.TestCase):
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
-        # self.dai.change_owner(new_owner='vault_contract')
 
     def tearDown(self):
         self.client.flush()
@@ -186,6 +185,7 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
+        self.dai.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
     def test_close_vault_closes_vault(self):
@@ -193,7 +193,7 @@ class VaultTests(unittest.TestCase):
 
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
-
+        self.dai.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
         self.assertEqual(self.vault.cdp[id, 'open'], False)
@@ -206,7 +206,7 @@ class VaultTests(unittest.TestCase):
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
         self.assertEqual(self.vault.vaults[0, 'total'], 100)
-
+        self.dai.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 0)
@@ -218,7 +218,7 @@ class VaultTests(unittest.TestCase):
                                      amount_of_collateral=1500)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
-
+        self.dai.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
     def close_vault_takes_dai_and_stability_fee(self):
@@ -237,6 +237,7 @@ class VaultTests(unittest.TestCase):
                                      amount_of_collateral=1500)
 
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500)
+        self.dai.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647)
 
@@ -246,11 +247,21 @@ class VaultTests(unittest.TestCase):
     def close_vault_fee_not_burned(self):
         pass
 
-    def close_vault_unauthorised(self):
-        pass
+    def test_close_vault_unauthorised(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        with self.assertRaisesRegex(AssertionError, 'owner'):
+            self.vault.close_vault(cdp_number=id, signer='wallet2')
 
-    def close_vault_twice_fails(self):
-        pass
+    def test_close_vault_twice_fails(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.approve(to='vault_contract', amount=100)
+        self.vault.close_vault(cdp_number=id)
+        with self.assertRaisesRegex(AssertionError, 'closed'):
+            self.vault.close_vault(cdp_number=id)
 
     def open_and_close_vault_1000_times_works(self): # current assertionerror not enough coins
         id_list = range(1000)
