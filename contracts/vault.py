@@ -115,21 +115,22 @@ def fast_force_close_vault(cdp_number: int):
     oracle = importlib.import_module(vaults['oracle'])
 
     stability_ratio = vaults['issued'] / vaults['total']
-    redemption_cost_without_fee = cdp[number,
-                                      'amount_of_dai'] * stability_ratio
+    redemption_cost_without_fee = cdp[cdp_number,
+                                      'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost * \
-        (stability_rate * (get_timestamp() - cdp[number, time]))
+        (stability_rate * (get_timestamp() - cdp[cdp_number, time]))
     redemption_cost += fee
 
-    amount_of_collateral = cdp[number, 'collateral_amount']
-    collateral_type = cdp[number, 'collateral_type']
+    amount_of_collateral = cdp[cdp_number, 'collateral_amount']
+    collateral_type = cdp[cdp_number, 'collateral_type']
     collateral_percent = (amount_of_collateral * price) / \
         (redemption_cost + fee)
 
     price = oracle.get_price(vault_type)
 
-    assert cdp[number, 'collateral_amount'] < vaults['minimum_collaterization'][vault_type], 'Vault above minimum collateralization!'
+    # TODO: Make this not a one liner
+    assert cdp[cdp_number, 'collateral_amount'] * price / cdp[cdp_number, 'dai'] < vaults['minimum_collaterization'][vault_type], 'Vault above minimum collateralization!'
 
     if collateral_percent >= 1.03:
         dai_contract.transfer_from(
@@ -142,7 +143,7 @@ def fast_force_close_vault(cdp_number: int):
         collateral.transfer(amount=collateral_amount -
                             (amount * 1.1), to=cdp[number, 'owner'])
 
-        vaults[vault_type, 'issued'] -= cdp[number, 'dai']
+        vaults[vault_type, 'issued'] -= cdp[cdp_number, 'dai']
         vaults[vault_type, 'total'] -= redemption_cost
 
     else:
@@ -362,3 +363,8 @@ def change_any_state(key: Any, new_value: Any):
     vaults[key] = new_value
 
     return new_value
+
+@export
+def get_collateralization_percent(cdp_number: int):
+    # TODO: Change this from a one-liner to proper function
+    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(vault_type) / cdp[cdp_number, 'dai'] < vaults['minimum_collaterization'][cdp[cdp_number, 'collateral_type']] 
