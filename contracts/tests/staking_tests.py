@@ -84,14 +84,15 @@ class StakingTests(unittest.TestCase):
         self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
 
-    def stake_updates_balance(self):
+    def test_stake_updates_balance(self):
         self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         self.assertAlmostEqual(self.staking.balances['default_owner'], 1000000)
 
-    def stake_sets_total_minted(self):
+    def test_stake_sets_total_minted(self):
         self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
+        self.dai.approve(to='staking', amount=1000000, signer='default_owner')
         self.staking.stake(amount=1000000, signer='default_owner')
         self.assertAlmostEqual(self.staking.total_minted.get(), 2000000)
 
