@@ -49,13 +49,13 @@
       - [x] Oracle
       - [ ] Vaults
       - [ ] Auction
-      - [ ] Staking
+      - [x] Staking
     - [ ] Edge case tests
       - [x] DAI token
       - [x] Oracle
       - [ ] Vaults
       - [ ] Auction
-      - [ ] Staking
+      - [x] Staking
 
 - [ ] Documentation
     - [ ] Overview
