@@ -62,7 +62,7 @@ input() #Waits until next user input (to give time to send TAU)
 kwargs = dict() #Add kwargs to dict
 
 #Builds transaction
-transaction.build_transaction(wallet=new_wallet,
+tx = transaction.build_transaction(wallet=new_wallet,
 contract='{contract}',
 function=f'{function}',
 kwargs=kwargs,
