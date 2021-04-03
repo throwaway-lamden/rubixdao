@@ -11,7 +11,7 @@ amm_reserves = ForeignHash(foreign_contract='amm', foreign_name='reserves')
 @construct
 def seed():
     owner.set(ctx.caller)
-    vault_list = list()
+    vault_list.set([])
     
 @export
 def main(): # Amount compatibility can be added
