@@ -192,7 +192,7 @@ class VaultTests(unittest.TestCase):
         self.vault.close_vault(cdp_number=id)
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), 288_090_567)
 
-    def close_vault_closes_vault(self):
+    def test_close_vault_closes_vault(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
@@ -200,9 +200,9 @@ class VaultTests(unittest.TestCase):
 
         self.vault.close_vault(cdp_number=id)
 
-        self.assertEqual(self.vault.vaults[id, 'open'], False)
+        self.assertEqual(self.vault.cdp[id, 'open'], False)
 
-    def close_vault_updates_reserves(self):
+    def test_close_vault_updates_reserves(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
