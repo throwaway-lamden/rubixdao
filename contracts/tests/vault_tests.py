@@ -39,39 +39,26 @@ class VaultTests(unittest.TestCase):
         self.client.flush()
 
     def test_create_vault_unavailable(self):
-        try:
+        with self.assertRaisesRegex(AssertionError, 'available'):
             self.vault.create_vault(
                 vault_type=-1, amount_of_dai=100, amount_of_collateral=100)
-            raise
-        except AssertionError as message:
-            assert 'available' in str(message)
 
     def test_create_vault_negative(self):
-        try:
+        with self.assertRaisesRegex(AssertionError, 'positive'):
             self.vault.create_vault(vault_type=0, amount_of_dai=-
                                     1,  amount_of_collateral=100)
-            raise
-        except AssertionError as message:
-            assert 'positive' in str(message)
 
     def test_create_vault_insufficient_allowance(self):
-        try:
+        with self.assertRaisesRegex(AssertionError, 'allowance'):
             self.vault.create_vault(
                 vault_type=0, amount_of_dai=1000001,
                 amount_of_collateral=1000001)
-            raise
-        except AssertionError as message:
-            assert 'allowance' in str(message)
 
     def test_create_vault_insufficient_collateral(self):
         self.currency.approve(to='vault_contract', amount=100)
-
-        try:
+        with self.assertRaisesRegex(AssertionError, 'collateral'):
             self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                     amount_of_collateral=100)
-            raise
-        except AssertionError as message:
-            assert 'collateral' in str(message)
 
     def test_create_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
@@ -110,12 +97,9 @@ class VaultTests(unittest.TestCase):
         self.assertEqual(self.vault.vaults[0, 'total'], 100)
 
     def test_any_state_unauthorised(self):
-        try:
+        with self.assertRaisesRegex(AssertionError, 'owner'):
             self.vault.change_any_state(
                 key='testing', new_value='testing', signer='me')
-            raise
-        except AssertionError as message:
-            assert 'owner' in str(message)
 
     def test_any_state_normal(self):
         self.vault.change_any_state(key='testing', new_value='testing')
@@ -124,12 +108,9 @@ class VaultTests(unittest.TestCase):
         assert self.vault.vaults['testing'] == 'again'
 
     def test_state_unauthorised(self):
-        try:
+        with self.assertRaisesRegex(AssertionError, 'owner'):
             self.vault.change_state(
                 key='testing2', new_value='testing2', signer='me')
-            raise
-        except AssertionError as message:
-            assert 'owner' in str(message)
 
     def test_change_owner_works(self):
         self.vault.change_state(key='OWNER', new_value='stu')
@@ -138,7 +119,7 @@ class VaultTests(unittest.TestCase):
         self.vault.change_state(key='OWNER', new_value='jeff', signer='stu')
         self.assertEqual(self.vault.vaults['OWNER'], 'jeff')
 
-        self.vault.change_state(key='FOO', new_value=1,
+        self.vault.change_state(key='FOO', new_value='1',
                                 convert_to_decimal=True, signer='jeff')
         self.assertEqual(self.vault.vaults['FOO'], 1)
 
@@ -149,13 +130,13 @@ class VaultTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self.vault.change_state(key='OWNER', new_value='stu')
 
-    def test_state_invalid_type(self):
-        try:
-            # int is invalid value
-            self.vault.change_state(key='testing2', new_value=5)
-            raise NotImplementedError  # we shouldn't get to here
-        except Exception as message:
-            assert 'NotImplementedError' not in str(message)
+    def test_state_invalid_type_key(self):
+        with self.assertRaisesRegex(AssertionError, 'key'):
+            self.vault.change_state(key=42, new_value='value')
+
+    def test_state_invalid_type_value(self):
+        with self.assertRaisesRegex(AssertionError, 'value'):
+            self.vault.change_state(key='value', new_value=42)
 
     def test_state_decimal(self):
         self.vault.change_state(
