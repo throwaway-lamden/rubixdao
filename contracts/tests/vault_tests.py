@@ -260,11 +260,12 @@ class VaultTests(unittest.TestCase):
             self.vault.close_vault(cdp_number=id)
 
     # current assertionerror not enough coins
-    def open_and_close_vault_1000_times_works(self):
-        id_list = range(1000)
+    def test_open_and_close_vault_1000_times_works(self):
+        id_list = [i for i in range(1000)]
 
-        for x in range(1000):
+        for x in range(1, 1001):
             self.currency.approve(to='stu', amount=151)
+            self.currency.transfer(to='stu', amount=151)
             self.currency.approve(to='vault_contract',
                                   amount=151, signer='stu')
 
@@ -275,12 +276,12 @@ class VaultTests(unittest.TestCase):
             self.assertEqual(self.vault.vaults[0, 'total'], x * 100)
 
             self.assertEqual(self.dai.balances['stu'], x * 100)
-            self.assertEqual(self.dai.total_supply, x * 100)
+            self.assertEqual(self.dai.total_supply.get(), x * 100)
 
-        for x in range(1000):
+        for x in range(1, 1001):
             id = random.choice(id_list)
             id_list.remove(id)
-
+            self.dai.approve(to='vault_contract', amount=100, signer='stu')
             self.vault.close_vault(cdp_number=id, signer='stu')
 
             self.assertEqual(
@@ -291,7 +292,7 @@ class VaultTests(unittest.TestCase):
                 1000 * 100 - x * 100)
 
             self.assertEqual(self.dai.balances['stu'], 1000 * 100 - x * 100)
-            self.assertEqual(self.dai.total_supply, 1000 * 100 - x * 100)
+            self.assertEqual(self.dai.total_supply.get(), 1000 * 100 - x * 100)
 
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -

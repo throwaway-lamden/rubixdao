@@ -12,8 +12,7 @@ stability_rate = 1.1  # dummy for testing purposes
 def seed():
     vaults['OWNER'] = ctx.caller
 
-    current_value = 0
-    cdp[current_value] = -1
+    cdp['current_value'] = 0
 
     vaults['list'] = []
     vaults['current_number'] = 0
@@ -50,9 +49,8 @@ def create_vault(vault_type: int, amount_of_dai: float,
         amount_of_dai >= vaults[vault_type,
                                 'minimum_collaterization'], 'Not enough collateral!'
 
-    current_value = 0
-    cdp_number = cdp[current_value]
-    cdp[current_value] += 1
+    cdp_number = cdp['current_value']
+    cdp['current_value'] += 1
 
     cdp[cdp_number, 'owner'] = ctx.caller
     cdp[cdp_number, 'open'] = True
