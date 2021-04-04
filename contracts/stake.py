@@ -75,7 +75,8 @@ def withdraw_stake(amount: float):
 def change_rate(new_rate: float):  # takes yearly interest
     assert_owner()
     assert new_rate >= 0, 'Cannot have negative staking!'
-
+    assert rate['rate'] != 1 + new_rate / 31540000, 'New rate must be different'
+    
     current_price = get_price()
 
     rate['start_time'] = get_timestamp()

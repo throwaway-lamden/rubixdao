@@ -67,6 +67,10 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'negative'):
             self.staking.change_rate(new_rate=-0.1)
 
+    def test_change_rate_same(self):
+        with self.assertRaisesRegex(AssertionError, 'different'):
+            self.staking.change_rate(new_rate=0.05)
+
     def test_change_rate_normal(self):
         current_price = self.staking.get_price()
         self.staking.change_rate(new_rate=0.1)
