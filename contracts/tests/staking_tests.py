@@ -22,7 +22,7 @@ class StakingTests(unittest.TestCase):
             staking = file.read()
 
         self.client.submit(dai, name='dai_contract', constructor_args={
-                           'owner': 'staking'})
+                           'owner': 'vault_contract'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
@@ -33,8 +33,8 @@ class StakingTests(unittest.TestCase):
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
         self.staking = self.client.get_contract('staking')
-        self.dai.mint(amount=2000000, signer='staking')
-        self.dai.transfer(amount=2000000, to='testing_user', signer='staking')
+        self.dai.mint(amount=2000000, signer='vault_contract')
+        self.dai.transfer(amount=2000000, to='testing_user', signer='vault_contract')
 
     def tearDown(self):
         self.client.flush()

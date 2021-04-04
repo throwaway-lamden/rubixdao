@@ -285,10 +285,10 @@ def export_rewards(vault_type: int, amount: float):
 
 
 @export
-def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
+def mint_rewards(vault_type: int, amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
     # TODO: Change DSR to something else in future
-    assert vaults[vault_type, 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
-
+    # assert vaults[vault_type, 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
+    # TODO: Revert this testing patch
     dai_contract.mint(amount=amount)
     dai_contract.transfer(to=ctx.caller, amount=amount)
 
@@ -300,8 +300,7 @@ def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
 
     # To make the contract more robust, and to prevent floating point errors
     for vault_type in vaults['list']:
-        funds_transferred = (
-            vaults[vault_type, 'weight'] / total_weight) * total_funds
+        funds_transferred = decimal(vaults[vault_type, 'weight'] / total_weight) * total_funds
         vaults[vault_type, 'total'] += funds_transferred
 
         total_funds -= funds_transferred
