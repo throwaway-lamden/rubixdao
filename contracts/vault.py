@@ -88,7 +88,6 @@ def close_vault(cdp_number: int):
     fee = redemption_cost * \
         (stability_rate * (get_timestamp() - cdp[cdp_number, 'time']))
 
-    # needs approval here but not sure how to do
     amount = redemption_cost + fee
     dai_contract.transfer_from(
         amount=amount, to=ctx.this, main_account=ctx.caller)
@@ -357,7 +356,7 @@ def change_state(key: str, new_value: str, convert_to_decimal: bool = False):
     if convert_to_decimal:
         new_value = decimal(new_value)
     vaults[key] = new_value
-    
+
     return new_value
 
 
