@@ -85,7 +85,7 @@ print_color("Setting stability rate to 3.2% per year", color.BOLD)
 
 kwargs = dict() # Reset dict
 kwargs['key'] = f'stability_rate'
-kwargs['new_value'] = dict(_fixed_ = '1.0000000015469297')
+kwargs['new_value'] = dict(__fixed__ = '1.0000000015469297')
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_any_state', kwargs, nonce)
 
