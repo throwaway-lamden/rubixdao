@@ -51,7 +51,7 @@ contract_list = ['dai', 'oracle', 'vault', 'stake']
 prefix = f'demo{random.randint(100000, 999999)}' # To prevent issues with sending the SCs
 
 for x in contract_list:
-    print_color(f"Submitting {x} to blockchain as {prefix + '_' + x}", color.BOLD)
+    print_color(f"Submitting {x} to blockchain as con_{prefix + '_' + x}", color.BOLD)
     
     with open(f'contracts/{x}.py') as f:
         kwargs = dict()
@@ -85,6 +85,16 @@ kwargs['new_price'] = 1
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwargs, nonce)
 
 time.sleep(2)
+
+print_color("Approving dTAU for spending", color.BOLD)
+
+for x in contract_list:
+    kwargs = dict()
+    kwargs['amount'] = 1000
+    kwargs['to'] = f'con_{prefix}_{x}'
+
+    nonce, result = submit_transaction(new_wallet, f'currency', 'approve', kwargs, nonce)
+    nonce, result = submit_transaction(new_wallet, f'con_{prefix}_dai', 'approve', kwargs, nonce)
 
 # Prep work finished, actual demo begins here
 print_color("Setup complete, main demo beginning", color.GREEN)
