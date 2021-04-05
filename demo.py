@@ -28,6 +28,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
     return_data = requests.post('https://testnet-master-1.lamden.io/', data = tx).content
     return_data = return_data.decode("UTF-8")
     return_data = ast.literal_eval(return_data)
+    
     try:
         print(return_data['hash'])
     except KeyError:
@@ -62,7 +63,7 @@ for x in contract_list:
         kwargs['name'] = f'con_{prefix}_{x}'
         
         if x == "dai":
-            kwargs['constructor_args'] = dict(owner = str(new_wallet.verifying_key))
+            kwargs['constructor_args'] = dict(owner = f'con_{prefix}_vault')
             
         nonce, result = submit_transaction(new_wallet, 'submission', 'submit_contract', kwargs, nonce)
 
