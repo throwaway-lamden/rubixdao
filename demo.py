@@ -32,7 +32,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
     try:
         print(return_data['hash'])
     except KeyError:
-        print_color(f'Transaction failed, debug data: {str(return_data['error'])}')
+        print_color(f"Transaction failed, debug data: {str(return_data['error'])}")
     
     return nonce + 1, return_data
             
