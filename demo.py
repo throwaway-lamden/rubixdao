@@ -48,7 +48,7 @@ contract_list = ['dai', 'oracle', 'vault', 'stake']
 prefix = f'demo{random.randint(100000, 999999)}' # To prevent issues with sending the SCs
 
 for x in contract_list:
-    print_color(f"Submitting {x} to blockchain as {prefix + "_" + x}", color.BOLD)
+    print_color(f"Submitting {x} to blockchain as {prefix + '_' + x}", color.BOLD)
     
     with open(f'contracts/{x}.py') as f:
         kwargs = dict()
@@ -56,7 +56,7 @@ for x in contract_list:
         kwargs['name'] = f'con_{prefix}_{x}'
         
         if x == "dai":
-            kwargs['constructor_args'] = dict('owner' = str(new_wallet.verifying_key))
+            kwargs['constructor_args'] = dict(owner = str(new_wallet.verifying_key))
             
         nonce = submit_transaction(new_wallet, 'submission', 'submit_contract', kwargs, nonce)
 
