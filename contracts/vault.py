@@ -11,11 +11,10 @@ stability_rate = 1.1  # dummy for testing purposes
 @construct
 def seed():
     vaults['OWNER'] = ctx.caller
-
     cdp['current_value'] = 0
-
     vaults['list'] = []
     vaults['current_number'] = 0
+
     add_vault(collateral_type='currency',
               collateral_amount=1.5, max_minted=100000, weight=10)
 
@@ -368,5 +367,10 @@ def change_any_state(key: Any, new_value: Any):
 
 @export
 def get_collateralization_percent(cdp_number: int):
+    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     # TODO: Change this from a one-liner to proper function
-    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(vault_type) / cdp[cdp_number, 'dai'] < vaults['minimum_collaterization'][cdp[cdp_number, 'collateral_type']]
+    oracle = importlib.import_module(vaults['oracle'])
+
+    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(vault_type) / cdp[cdp_number, 'dai']
+    # code to check if minimum is met would be
+    # assert cdp[cdp_number, 'collateral_amount'] >= vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collaterization']

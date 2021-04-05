@@ -314,7 +314,11 @@ class VaultTests(unittest.TestCase):
         pass # and the edge case tests
 
     def test_get_collateralization_percent_nonexistent(self):
-        pass
-        
+        with self.assertRaisesRegex(AssertionError, 'cdp'):
+            self.vault.get_collateralization_percent(cdp_number=1)
+
     def test_get_collateralization_percent_normal(self):
-        pass
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.assertAlmostEqual(self.vault.get_collateralization_percent(cdp_number=id), 15)
