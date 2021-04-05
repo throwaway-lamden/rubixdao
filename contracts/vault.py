@@ -82,7 +82,7 @@ def close_vault(cdp_number: int):
     stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'issued'] / \
         vaults[cdp[cdp_number, 'vault_type'], 'total']
     redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
-    fee = redemption_cost * \
+    fee = redemption_cost - redemption_cost * \
         (vaults['stability_rate'] ** (get_timestamp() - cdp[cdp_number, 'time']))
 
     amount = redemption_cost + fee
@@ -114,7 +114,7 @@ def fast_force_close_vault(cdp_number: int):
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
-    fee = redemption_cost * \
+    fee = redemption_cost - redemption_cost * \
         (vaults['stability_rate'] ** (get_timestamp() - cdp[cdp_number, time]))
     redemption_cost += fee
 
