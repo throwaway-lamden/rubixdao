@@ -33,8 +33,14 @@ print("Lamden MKR Demo v1")
 print("Colors may be broken on Windows machines")
 
 new_wallet = wallet.Wallet(seed=None)
-print(new_wallet.verifying_key)
-input("Please press ENTER when you've sent dTAU to the demo address")
+
+try:
+    requests.get(f"https://faucet.lamden.io/.netlify/functions/send?account={new_wallet.verifying_key}")
+    
+except Exception as e:
+    print_color(f'Automatic funding failed with {repr(e)}', color.RED)
+    print(new_wallet.verifying_key)
+    input("Please press ENTER when you've sent dTAU to the demo address")
 
 nonce = 0
 contract_list = ['dai', 'oracle', 'vault', 'stake']
