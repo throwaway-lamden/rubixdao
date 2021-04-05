@@ -36,6 +36,7 @@ new_wallet = wallet.Wallet(seed=None)
 
 try:
     requests.get(f"https://faucet.lamden.io/.netlify/functions/send?account={new_wallet.verifying_key}")
+    print_color("100 dTAU funded from faucet", color.GREEN)
     
 except Exception as e:
     print_color(f'Automatic funding failed with {repr(e)}', color.RED)
@@ -44,7 +45,7 @@ except Exception as e:
 
 nonce = 0
 contract_list = ['dai', 'oracle', 'vault', 'stake']
-prefix = f'demo{random.randint(100000, 999999)}_' # To prevent issues with sending the SCs
+prefix = f'demo{random.randint(100000, 999999)}' # To prevent issues with sending the SCs
 
 for x in contract_list:
     print_color(f"Submitting {x} to blockchain as {prefix + x}", color.BOLD)
