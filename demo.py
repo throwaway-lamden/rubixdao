@@ -70,6 +70,7 @@ for x in contract_list:
     time.sleep(2)
     
 print_color("Finished submitting contracts", color.GREEN)
+
 print_color("Setting oracle contract to correct contract", color.BOLD)
 
 kwargs = dict() # Reset dict
@@ -77,6 +78,16 @@ kwargs['key'] = f'oracle'
 kwargs['new_value'] = f'con_{prefix}_oracle'
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_state', kwargs, nonce)
+
+time.sleep(2)
+
+print_color("Setting stability rate to 3.2% per year", color.BOLD)
+
+kwargs = dict() # Reset dict
+kwargs['key'] = f'stability_rate'
+kwargs['new_value'] = 1.0000000015469297
+
+nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_any_state', kwargs, nonce)
 
 time.sleep(2)
 
