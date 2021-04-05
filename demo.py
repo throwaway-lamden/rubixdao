@@ -1,5 +1,5 @@
 from lamden.crypto import wallet, transaction
-import requests, random
+import requests, random, time
 
 class color:
    PURPLE = '\033[95m'
