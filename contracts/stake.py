@@ -54,7 +54,7 @@ def stake(amount: float):
 @export
 def withdraw_stake(amount: float):
     assert amount >= 0, 'Stake amount must be positive!'
-    assert balances[ctx.caller] >= amount, 'Not enough coins to send!'
+    assert balances[ctx.caller] >= amount, 'Not enough coins to withdraw!'
 
     current_price = get_price()
     return_amount = current_price * amount
@@ -72,11 +72,11 @@ def withdraw_stake(amount: float):
 
 
 @export
-def change_rate(new_rate: float):  # takes yearly interest
+def change_rate(new_rate: float): # takes yearly interest as decimal
     assert_owner()
     assert new_rate >= 0, 'Cannot have negative staking!'
     assert rate['rate'] != 1 + new_rate / 31540000, 'New rate must be different'
-    
+
     current_price = get_price()
 
     rate['start_time'] = get_timestamp()

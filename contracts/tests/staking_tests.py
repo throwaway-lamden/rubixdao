@@ -174,6 +174,12 @@ class StakingTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'exceeds'):
             self.staking.approve(amount=1000001, to='account1', signer='testing_user')
 
+    def test_accounts_updates_internal_balance(self):
+        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.staking.stake(amount=1000000, signer='testing_user')
+        self.staking.approve(amount=42, to='account1', signer='testing_user')
+        self.assertAlmostEqual(self.staking.balances['testing_user', 'account1'], 42)
+
     def test_accounts_normal(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
