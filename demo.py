@@ -23,11 +23,11 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
             kwargs=kwargs,
             nonce=nonce, # Starts at zero, increments with every transaction
             processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497', # Masternode address
-            stamps=3000)
+            stamps=1000)
             
-    requests.post('https://testnet-master-1.lamden.io/', data = tx)
+    return_data = requests.post('https://testnet-master-1.lamden.io/', data = tx).content.json()
     
-    return nonce + 1
+    return nonce + 1, return_data
             
 print("Lamden MKR Demo v1")
 print("Colors may be broken on Windows machines")
@@ -58,7 +58,8 @@ for x in contract_list:
         if x == "dai":
             kwargs['constructor_args'] = dict(owner = str(new_wallet.verifying_key))
             
-        nonce = submit_transaction(new_wallet, 'submission', 'submit_contract', kwargs, nonce)
+        nonce, result = submit_transaction(new_wallet, 'submission', 'submit_contract', kwargs, nonce)
+        print(result)
 
     time.sleep(2)
     
@@ -69,7 +70,7 @@ kwargs = dict() # Reset dict
 kwargs['key'] = f'oracle'
 kwargs['new_state'] = f'con_{prefix}_oracle'
 
-nonce = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_state', kwargs, nonce)
+nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_state', kwargs, nonce)
 
 time.sleep(2)
 
@@ -79,7 +80,7 @@ kwargs = dict()
 kwargs['number'] = 0
 kwargs['new_price'] = 1
 
-nonce = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwargs, nonce)
+nonce, result = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwargs, nonce)
 
 time.sleep(2)
 
@@ -93,7 +94,7 @@ kwargs['vault_type'] = 0
 kwargs['amount_of_dai'] = 1
 kwargs['amount_of_collateral'] = 2
 
-nonce = submit_transaction(new_wallet, f'con_{prefix}_vault', 'open_vault', kwargs, nonce)
+nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
 
 print_color("Creating 100 DAI vault with 200 dTAU as collateral", color.BOLD)
 
@@ -102,4 +103,4 @@ kwargs['vault_type'] = 0
 kwargs['amount_of_dai'] = 100
 kwargs['amount_of_collateral'] = 200
 
-nonce = submit_transaction(new_wallet, f'con_{prefix}_vault', 'open_vault', kwargs, nonce)
+nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
