@@ -50,6 +50,10 @@ class TokenTests(unittest.TestCase):
             assert 'non-positive' in str(message)
 
     def test_accounts_excess(self):
+        pass
+    
+        # This is not needed, the check for excess is located in transfer_from (infinite approvals are possible in LST-001 spec)
+        
         try:
             self.dai.approve(amount=1000001, to='account1', signer='me')
             raise
