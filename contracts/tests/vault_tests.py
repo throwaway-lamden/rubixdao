@@ -153,6 +153,12 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'available'):
             self.vault.sync_burn(vault_type=-1, amount=1)
 
+    def test_sync_pool_positive(self):
+        pass
+
+    def test_sync_pool_negative(self):
+        pass
+
     def test_remove_vault_unauthorised(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(vault_type=0, amount_of_dai=100,
@@ -259,6 +265,9 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.close_vault(cdp_number=id)
 
+    def test_fast_force_close_vault(self):
+        pass # the tests for the auction are in the auction tests file, but the fast force close function will also be tested here
+
     # current assertionerror not enough coins
     def test_open_and_close_vault_1000_times_works(self):
         id_list = [i for i in range(1000)]
@@ -297,3 +306,15 @@ class VaultTests(unittest.TestCase):
     def test_timestamp(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.vault.get_timestamp()) < 120
+
+    def test_mint_rewards(self):
+        pass # and the edge case tests
+
+    def test_export_rewards(self):
+        pass # and the edge case tests
+
+    def test_get_collateralization_percent_nonexistent(self):
+        pass
+        
+    def test_get_collateralization_percent_normal(self):
+        pass
