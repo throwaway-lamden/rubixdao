@@ -28,7 +28,10 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
     return_data = requests.post('https://testnet-master-1.lamden.io/', data = tx).content
     return_data = return_data.decode("UTF-8")
     return_data = ast.literal_eval(return_data)
-    print(return_data['hash'])
+    try:
+        print(return_data['hash'])
+    except KeyError:
+        print(return_data)
     
     return nonce + 1, return_data
             
@@ -51,7 +54,7 @@ contract_list = ['dai', 'oracle', 'vault', 'stake']
 prefix = f'demo{random.randint(100000, 999999)}' # To prevent issues with sending the SCs
 
 for x in contract_list:
-    print_color(f"Submitting {x} to blockchain as con_{prefix + '_' + x}", color.BOLD)
+    print_color(f"Submitting {x} contract to testnet as con_{prefix + '_' + x}", color.BOLD)
     
     with open(f'contracts/{x}.py') as f:
         kwargs = dict()
@@ -95,6 +98,8 @@ for x in contract_list:
 
     nonce, result = submit_transaction(new_wallet, f'currency', 'approve', kwargs, nonce)
     nonce, result = submit_transaction(new_wallet, f'con_{prefix}_dai', 'approve', kwargs, nonce)
+    
+    time.sleep(2)
 
 # Prep work finished, actual demo begins here
 print_color("Setup complete, main demo beginning", color.GREEN)
