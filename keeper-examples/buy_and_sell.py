@@ -15,10 +15,10 @@ def seed():
     
 @export
 def main(): # Amount compatibility can be added
-    if amm_reserves["dai_contract"][0] / amm_reserves["dai_contract"][1] > 1:
+    if amm_reserves['dai_contract'][0] / amm_reserves['dai_contract'][1] > 1:
         open_vault()
         
-    elif amm_reserves["dai_contract"][0] / amm_reserves["dai_contract"][1] < 1:
+    elif amm_reserves['dai_contract'][0] / amm_reserves['dai_contract'][1] < 1:
         close_vault()
     
     else:
@@ -57,7 +57,7 @@ def open_vault():
     
     vault_list.set(vault_list.get() + [v_id]) # Append new vault id to list # TODO: Make consistent with close_specific_vault
     
-    return amm.sell(contract="dai_contract", amount=100)
+    return amm.sell(contract='dai_contract', amount=100)
 
 def close_vault():
     assert internal_amm(amount=100 / oracle.get_price(0), is_buy=True) > 100, # Asserts price after slippage allows for a profit
@@ -66,12 +66,12 @@ def close_vault():
     v_id = v_list.pop(0)
     vault_list.set(v_list)
     
-    amm.buy(contract="dai_contract", amount=(100 / oracle.get_price(0)) * 1.02)
+    amm.buy(contract='dai_contract', amount=(100 / oracle.get_price(0)) * 1.02)
     
     return vault_contract.close_vault(cdp_number=v_id)
     
 def internal_amm(amount: float=100, is_buy: bool=True):
-    currency_reserve, token_reserve = amm_reserves["dai_contract"]
+    currency_reserve, token_reserve = amm_reserves['dai_contract']
     
     if is_buy is not True:
         currency_reserve, token_reserve = token_reserve, currency_reserve
@@ -90,7 +90,7 @@ def assert_owner():
     assert ctx.caller == owner.get(), 'Only operator can call!'
 
 #def internal_sell(amount: float): #REPLACED WITH internal_amm
-#    currency_reserve, token_reserve = amm_reserves["dai_contract"]
+#    currency_reserve, token_reserve = amm_reserves['dai_contract']
 #    
 #    k = currency_reserve * token_reserve
 #    new_token_reserve = token_reserve + token_amount
