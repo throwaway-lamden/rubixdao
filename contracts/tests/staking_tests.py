@@ -58,6 +58,7 @@ class StakingTests(unittest.TestCase):
         self.staking.change_owner(new_owner='wallet2')
         with self.assertRaisesRegex(AssertionError, 'operator'):
             self.staking.change_owner(new_owner='me')
+        self.staking.change_owner(new_owner='me', signer='wallet2')
 
     def test_change_rate_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'operator'):
@@ -208,7 +209,7 @@ class StakingTests(unittest.TestCase):
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'approved'):
-            self.staking.transfer_from(amount=1000001, to='wallet2',
+            self.staking.transfer_from(amount=1000000, to='wallet2',
                                    main_account='testing_user', signer='account1')
 
     def test_transfer_from_normal_sends(self):
