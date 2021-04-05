@@ -23,7 +23,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
             kwargs=kwargs,
             nonce=nonce, # Starts at zero, increments with every transaction
             processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497', # Masternode address
-            stamps=300)
+            stamps=3000)
             
     requests.post('https://testnet-master-1.lamden.io/', data = tx)
     
