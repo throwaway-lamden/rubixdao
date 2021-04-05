@@ -62,7 +62,6 @@ for x in contract_list:
             kwargs['constructor_args'] = dict(owner = str(new_wallet.verifying_key))
             
         nonce, result = submit_transaction(new_wallet, 'submission', 'submit_contract', kwargs, nonce)
-        print(result)
 
     time.sleep(2)
     
@@ -71,7 +70,7 @@ print_color("Setting oracle contract to correct contract", color.BOLD)
 
 kwargs = dict() # Reset dict
 kwargs['key'] = f'oracle'
-kwargs['new_state'] = f'con_{prefix}_oracle'
+kwargs['new_value'] = f'con_{prefix}_oracle'
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_state', kwargs, nonce)
 
@@ -107,3 +106,17 @@ kwargs['amount_of_dai'] = 100
 kwargs['amount_of_collateral'] = 200
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
+
+input("Please press ENTER when you want to close the vault")
+
+print_color("Closing vault", color.BOLD)
+
+kwargs = dict()
+kwargs['cdp_number'] = 1
+
+nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'close_vault', kwargs, nonce)
+
+time.sleep(2)
+
+close_price = requests.get(f'https://testnet-master-1.lamden.io/tx?hash={result['hash']}').json()['result']
+print_color(f"Vault closed for {close_price} DAI (additional DAI is from stability fee)", color.CYAN)
