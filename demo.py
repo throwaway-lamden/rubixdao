@@ -43,7 +43,7 @@ prefix = f'demo{random.randint(100000, 999999)}_' # To prevent issues with sendi
 for x in contract_list:
     print_color(f"Submitting {x} to blockchain as {prefix + x}", color.BOLD)
     
-    with open(f'contracts/{x}') as f:
+    with open(f'contracts/{x}.py') as f:
         kwargs = dict()
         kwargs['code'] = f.read().replace("importlib.import_module('vault_contract')", f"importlib.import_module('con_{prefix}_vault')").replace("importlib.import_module('dai_contract')", f"importlib.import_module('con_{prefix}_dai')") # Make a lot shorter
         kwargs['name'] = f'con_{prefix}_{x}'
