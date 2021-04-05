@@ -36,7 +36,7 @@ new_wallet = wallet.Wallet(seed=None)
 
 try:
     requests.get(f"https://faucet.lamden.io/.netlify/functions/send?account={new_wallet.verifying_key}")
-    print_color("100 dTAU funded from faucet", color.GREEN)
+    print_color("500 dTAU funded from faucet", color.GREEN)
     
 except Exception as e:
     print_color(f'Automatic funding failed with {repr(e)}', color.RED)
@@ -48,13 +48,16 @@ contract_list = ['dai', 'oracle', 'vault', 'stake']
 prefix = f'demo{random.randint(100000, 999999)}' # To prevent issues with sending the SCs
 
 for x in contract_list:
-    print_color(f"Submitting {x} to blockchain as {prefix + x}", color.BOLD)
+    print_color(f"Submitting {x} to blockchain as {prefix + "_" + x}", color.BOLD)
     
     with open(f'contracts/{x}.py') as f:
         kwargs = dict()
         kwargs['code'] = f.read().replace("importlib.import_module('vault_contract')", f"importlib.import_module('con_{prefix}_vault')").replace("importlib.import_module('dai_contract')", f"importlib.import_module('con_{prefix}_dai')") # Make a lot shorter
         kwargs['name'] = f'con_{prefix}_{x}'
         
+        if x == "dai":
+            kwargs['constructor_args'] = dict('owner' = str(new_wallet.verifying_key))
+            
         nonce = submit_transaction(new_wallet, 'submission', 'submit_contract', kwargs, nonce)
 
     time.sleep(2)
@@ -79,3 +82,20 @@ nonce = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwar
 time.sleep(2)
 
 # Prep work finished, actual demo begins here
+print_color("Setup complete, main demo beginning", color.GREEN)
+
+print_color("Creating vault buffer to offset stability fee", color.BOLD)
+
+kwargs['vault_type'] = 0
+kwargs['amount_of_dai'] = 1
+kwargs['amount_of_collateral'] = 2
+
+nonce = submit_transaction(new_wallet, f'con_{prefix}_vault', 'open_vault', kwargs, nonce)
+
+print_color("Creating 100 DAI vault with 200 dTAU as collateral", color.BOLD)
+
+kwargs['vault_type'] = 0
+kwargs['amount_of_dai'] = 100
+kwargs['amount_of_collateral'] = 200
+
+nonce = submit_transaction(new_wallet, f'con_{prefix}_vault', 'open_vault', kwargs, nonce)
