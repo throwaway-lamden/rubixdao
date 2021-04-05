@@ -118,5 +118,5 @@ nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'close_vau
 
 time.sleep(2)
 
-close_price = requests.get(f'https://testnet-master-1.lamden.io/tx?hash={result['hash']}').json()['result']
+close_price = requests.get(f"https://testnet-master-1.lamden.io/tx?hash={result['hash']}").json()['result']
 print_color(f"Vault closed for {close_price} DAI (additional DAI is from stability fee)", color.CYAN)
