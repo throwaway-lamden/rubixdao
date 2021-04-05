@@ -3,10 +3,6 @@ dai_contract = importlib.import_module('dai_contract')
 vaults = Hash(default_value=0)
 cdp = Hash(default_value=0)
 stability_pool = Hash(default_value=0)
-vault_type = 0  # dummy for testing purposes
-vaults['oracle'] = 'oracle'  # dummy for testing purposes
-stability_rate = 1.1  # dummy for testing purposes
-
 
 @construct
 def seed():
@@ -14,6 +10,9 @@ def seed():
     cdp['current_value'] = 0
     vaults['list'] = []
     vaults['current_number'] = 0
+    
+    vaults['oracle'] = 'oracle'  # dummy for testing purposes
+    vaults['stability_rate'] = 1.1  # dummy for testing purposes
 
     add_vault(collateral_type='currency',
               collateral_amount=1.5, max_minted=100000, weight=10, creator=ctx.caller)
@@ -83,7 +82,7 @@ def close_vault(cdp_number: int):
         vaults[vault_type, 'total']
     redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
     fee = redemption_cost * \
-        (stability_rate * (get_timestamp() - cdp[cdp_number, 'time']))
+        (vaults['stability_rate'] * (get_timestamp() - cdp[cdp_number, 'time']))
 
     amount = redemption_cost + fee
     dai_contract.transfer_from(
@@ -115,7 +114,7 @@ def fast_force_close_vault(cdp_number: int):
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost * \
-        (stability_rate * (get_timestamp() - cdp[cdp_number, time]))
+        (vaults['stability_rate'] * (get_timestamp() - cdp[cdp_number, time]))
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
