@@ -1,5 +1,5 @@
 from lamden.crypto import wallet, transaction
-import requests, random, time
+import requests, random, time, ast
 
 class color:
    PURPLE = '\033[95m'
@@ -25,7 +25,10 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
             processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497', # Masternode address
             stamps=1000)
             
-    return_data = requests.post('https://testnet-master-1.lamden.io/', data = tx).content.json()
+    return_data = requests.post('https://testnet-master-1.lamden.io/', data = tx).content
+    return_data = return_data.decode("UTF-8")
+    return_data = ast.literal_eval(return_data)
+    print(return_data['hash'])
     
     return nonce + 1, return_data
             
