@@ -73,7 +73,7 @@ print_color("Setting TAU price to 1 USD", color.BOLD)
 kwargs['number'] = 0
 kwargs['new_price'] = 1
 
-tx, nonce = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwargs, nonce)
+nonce = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwargs, nonce)
 
 time.sleep(2)
 
