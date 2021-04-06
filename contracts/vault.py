@@ -1,6 +1,7 @@
 dai_contract = importlib.import_module('dai_contract')
 
 vaults = Hash(default_value=0)
+stability_rate = Hash(default_value=1)
 cdp = Hash(default_value=0)
 stability_pool = Hash(default_value=0)
 
@@ -8,15 +9,17 @@ stability_pool = Hash(default_value=0)
 def seed():
     vaults['OWNER'] = ctx.caller
     cdp['current_value'] = 0
-    vaults['list'] = []
-    vaults['current_number'] = 0
+    vaults['list'] = [1]
+    vaults['current_number'] = 1
 
     vaults['oracle'] = 'oracle'  # dummy for testing purposes
-    vaults['stability_rate'] = 1.1  # dummy for testing purposes
 
-    add_vault(collateral_type='currency',
-              collateral_amount=1.5, max_minted=100000, weight=10)
-
+    vaults[0, 'collateral_type'] = 'currency'
+    vaults[0, 'minimum_collaterization'] = 1.5
+    vaults[0, 'cap'] = 100000
+    vaults[0, 'weight'] = 10
+    
+    stability_rate[0] = 1.1 # dummy for testing purposes
 
 @export
 def get_timestamp():
@@ -86,7 +89,7 @@ def close_vault(cdp_number: int):
         vaults[cdp[cdp_number, 'vault_type'], 'total']
     redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
     fee = redemption_cost * \
-        (vaults['stability_rate'] ** (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost
+        (stability_rate['cdp[cdp_number, 'vault_type']'] ** (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost
 
     amount = redemption_cost + fee
     dai_contract.transfer_from(
@@ -119,7 +122,7 @@ def fast_force_close_vault(cdp_number: int):
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost - redemption_cost * \
-        (vaults['stability_rate'] ** (get_timestamp() - cdp[cdp_number, time]))
+        (stability_rate['cdp[cdp_number, 'vault_type']'] ** (get_timestamp() - cdp[cdp_number, time]))
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
@@ -326,7 +329,7 @@ def sync_burn(vault_type: int, amount: float):
 
 @export
 def add_vault(collateral_type: str, collateral_amount: float,
-              max_minted: float, weight: float):
+              max_minted: float, s_rate: float, weight: float):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
     vault_number = vaults['current_number']
@@ -337,6 +340,8 @@ def add_vault(collateral_type: str, collateral_amount: float,
     vaults[vault_number, 'minimum_collaterization'] = collateral_amount
     vaults[vault_number, 'cap'] = max_minted
     vaults[vault_number, 'weight'] = weight
+    
+    stability_rate[vault_number] = s_rate
 
     return vault_number
 
@@ -368,6 +373,13 @@ def change_any_state(key: Any, new_value: Any):
 
     return new_value
 
+@export
+def change_stability_rate(key: int, new_value: float): # don't add type checks
+    assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
+
+    stability_rate[key] = new_value
+
+    return new_value
 
 @export
 def get_collateralization_percent(cdp_number: int):
