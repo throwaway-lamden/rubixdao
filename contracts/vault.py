@@ -15,7 +15,7 @@ def seed():
     vaults['stability_rate'] = 1.1  # dummy for testing purposes
 
     add_vault(collateral_type='currency',
-              collateral_amount=1.5, max_minted=100000, weight=10, creator=ctx.caller)
+              collateral_amount=1.5, max_minted=100000, weight=10)
 
 
 @export
@@ -323,8 +323,8 @@ def sync_burn(vault_type: int, amount: float):
 
 @export
 def add_vault(collateral_type: str, collateral_amount: float,
-              max_minted: float, weight: float, creator: str):
-    assert vaults['OWNER'] == creator, 'Not the owner!'
+              max_minted: float, weight: float):
+    assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
     vault_number = vaults['current_number']
     vaults['list'].append(vault_number)
