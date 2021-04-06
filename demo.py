@@ -146,7 +146,7 @@ nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'close_vau
 time.sleep(2)
 
 # close_price = requests.get(f"https://testnet-master-1.lamden.io/tx?hash={result['hash']}").json()['result'] fails because it returns a decimal object instead of a human readable number
-close_price = float(ast.literal_eval(requests.get(f"https://testnet-master-1.lamden.io/contracts/currency/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 100
+close_price = float(ast.literal_eval(requests.get(f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 100
 print_color(f"Vault closed for 100 DAI and an {close_price} DAI stability fee", color.CYAN)
 
 # TODO: Make function to decode bytes dict
