@@ -69,14 +69,17 @@ class StakingTests(unittest.TestCase):
             self.staking.change_rate(new_rate=-0.1)
 
     def test_change_rate_same(self):
-        with self.assertRaisesRegex(AssertionError, 'different'):
-            self.staking.change_rate(new_rate=0.05)
+        pass
+    
+        # no longer needed, only operator can change rate so there isn't a high chance of things being messed up
+        # with self.assertRaisesRegex(AssertionError, 'different'):
+        #     self.staking.change_rate(new_rate=0.05)
 
     def test_change_rate_normal(self):
         current_price = self.staking.get_price()
         self.staking.change_rate(new_rate=0.1)
 
-        self.assertAlmostEqual(1 + 0.1 / 31540000, self.staking.rate['rate'])
+        self.assertAlmostEqual(0.1, self.staking.rate['rate'])
         self.assertAlmostEqual(self.staking.rate['start_price'], current_price)
 
     def test_stake_negative(self):
