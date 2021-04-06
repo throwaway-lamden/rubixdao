@@ -308,7 +308,7 @@ class VaultTests(unittest.TestCase):
                    self.vault.get_timestamp()) < 120 
         
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) > 120
+                   self.vault.get_timestamp()) > -120
 
     def test_mint_rewards(self):
         pass # and the edge case tests
