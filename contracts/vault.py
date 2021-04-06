@@ -9,7 +9,7 @@ stability_pool = Hash(default_value=0)
 def seed():
     vaults['OWNER'] = ctx.caller
     cdp['current_value'] = 0
-    vaults['list'] = [1]
+    vaults['list'] = [0]
     vaults['current_number'] = 1
 
     vaults['oracle'] = 'oracle'  # dummy for testing purposes
