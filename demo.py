@@ -146,5 +146,5 @@ nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'close_vau
 time.sleep(2)
 
 # close_price = requests.get(f"https://testnet-master-1.lamden.io/tx?hash={result['hash']}").json()['result'] fails because it returns a decimal object instead of a human readable number
-close_price = 200.0 - float(requests.get(f"https://testnet-master-1.lamden.io/currency/balances?key={new_wallet.verifying_key}".json()['value']['__fixed__']))
+close_price = 200.0 - float(requests.get(f"https://testnet-master-1.lamden.io/contracts/currency/balances?key={new_wallet.verifying_key}".json()['value']['__fixed__']))
 print_color(f"Vault closed for {close_price} DAI (additional DAI is from stability fee)", color.CYAN)
