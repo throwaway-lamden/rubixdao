@@ -135,3 +135,5 @@ Make tense consistent in progress section
 A test TODO section/file
 
 Demo script
+
+Record video of demo script and add to readme
