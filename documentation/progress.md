@@ -60,8 +60,27 @@
 - [ ] Documentation
     - [ ] Overview
     - [ ] Usage guide
+    - [ ] Demo guide
     - [ ] Testing guide
     - [ ] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
     - [ ] Function documentation
     - [x] Progress
     - [x] Todo
+
+- [ ] Demo
+   - [ ] Overview
+   - [x] Fund dTAU from faucet
+   - [x] Setup
+   - [x] Create vaults
+   - [x] Close vaults
+   - [ ] Stake DAI
+   - [ ] Open auction (due to undercollateralization) 
+   - [ ] Force close auction
+   - [x] Post hashes of TXs
+   - [ ] Make GIF
+   - [ ] Ensure OS compatibility
+      - [x] Linux
+      - [ ] MacOS (colors are broken)
+         - [ ] Turn off colors when detecting this OS
+      - [ ] Windows (colors are broken)
+         - [ ] Turn off colors when detecting this OS
