@@ -95,7 +95,7 @@ print_color("Setting TAU price to 1 USD", color.BOLD)
 
 kwargs = dict()
 kwargs['number'] = 0
-kwargs['new_price'] = 1
+kwargs['new_price'] = dict(__fixed__ = '1.0')
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_oracle', 'set_price', kwargs, nonce)
 
@@ -120,8 +120,8 @@ print_color("Creating vault buffer to offset stability fee", color.BOLD)
 
 kwargs = dict()
 kwargs['vault_type'] = 0
-kwargs['amount_of_dai'] = 1
-kwargs['amount_of_collateral'] = 2
+kwargs['amount_of_dai'] = dict(__fixed__ = '1.0')
+kwargs['amount_of_collateral'] = dict(__fixed__ = '2.0')
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
 
@@ -129,8 +129,8 @@ print_color("Creating 100 DAI vault with 200 dTAU as collateral", color.BOLD)
 
 kwargs = dict()
 kwargs['vault_type'] = 0
-kwargs['amount_of_dai'] = 100
-kwargs['amount_of_collateral'] = 200
+kwargs['amount_of_dai'] = dict(__fixed__ = '100.0')
+kwargs['amount_of_collateral'] = dict(__fixed__ = '200.0')
 
 nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
 
