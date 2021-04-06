@@ -114,20 +114,6 @@ This is the base oracle contract.
 
 Placeholder
 
-### seed
-
-**Cannot be called**
-
-Sets the constants to their default value. As of now, you cannot pass arguments, and you have to manually modify the code.
-
-The default values are as follows:
-```python
-
-```
-
-### placeholder
-Takes `contract: str, currency_amount: float=0, token_amount: float=0`
-
 ## TODO
 
 Make tense consistent in progress section
