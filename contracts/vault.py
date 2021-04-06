@@ -101,7 +101,7 @@ def close_vault(cdp_number: int):
 
     cdp[cdp_number, 'open'] = False
 
-    # return excess collateral amount
+    # Return collateral
     collateral.transfer(
         amount=cdp[cdp_number, 'collateral_amount'], to=ctx.caller)
 
