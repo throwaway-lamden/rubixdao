@@ -38,11 +38,14 @@ def create_vault(vault_type: int, amount_of_dai: float,
     price = oracle.get_price(vault_type)
 
     assert amount_of_dai > 0, 'Amount of DAI must be positive!'
-    assert vaults[vault_type, 'total'] <= vaults[vault_type,
+    assert vaults[vault_type, 'total'] + amount_of_dai <= vaults[vault_type,
                                                  'cap'], 'The allowance is not sufficent!'
+    
     # extra check for the first created vault
-    assert amount_of_dai <= vaults[vault_type,
-                                   'cap'], 'The allowance is not sufficent!'
+    # assert amount_of_dai <= vaults[vault_type,
+    #                                'cap'], 'The allowance is not sufficent!'
+    # likely not needed
+    
     assert (amount_of_collateral * price) / \
         amount_of_dai >= vaults[vault_type,
                                 'minimum_collaterization'], 'Not enough collateral!'
