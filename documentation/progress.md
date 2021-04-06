@@ -76,6 +76,8 @@
    - [ ] Stake DAI
    - [ ] Open auction (due to undercollateralization) 
    - [ ] Force close auction
+   - [ ] Create new vault type
+   - [ ] Create vault with new vault type
    - [x] Post hashes of TXs
    - [ ] Make GIF
    - [ ] Ensure OS compatibility
