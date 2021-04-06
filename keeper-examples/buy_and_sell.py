@@ -53,7 +53,7 @@ def close_all_vaults():
 def open_vault():
     assert internal_amm(amount=100, is_buy=False) > 100 / price, # Asserts price after slippage allows for a profit
     
-    v_id = vault_contract.create_vault(vault_type=0, amount_of_dai=100, amount_of_collateral=200)
+    v_id = vault_contract.create_vault(vault_type=0, amount_of_dai=100, amount_of_collateral=200 / oracle.get_price(0))
     
     vault_list.set(vault_list.get() + [v_id]) # Append new vault id to list # TODO: Make consistent with close_specific_vault
     
@@ -69,7 +69,18 @@ def close_vault():
     amm.buy(contract='dai_contract', amount=(100 / oracle.get_price(0)) * 1.02)
     
     return vault_contract.close_vault(cdp_number=v_id)
-    
+  
+def check_collateral():
+    low_collateral = list()
+    v_list = vault_list.get()
+    for x in v_list():
+        if vault_contract.get_collateralization_percent(x) < 1.6:
+            low_collateral.append(x)
+            
+    for x in low_collateral:
+        v_list.remove(x)
+        vault_contract.close_vault(cdp_number=x)
+        
 def internal_amm(amount: float=100, is_buy: bool=True):
     currency_reserve, token_reserve = amm_reserves['dai_contract']
     

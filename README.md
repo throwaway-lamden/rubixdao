@@ -9,7 +9,7 @@ This repository contains the backend code for the Lamden MKR clone and some asso
 
 ## Progress
 
-You can see the current progress of the project in [progress.md](https://github.com/throwaway-lamden/lamden-mkr/blob/main/progress.md).
+You can see the current progress of the project in [progress.md](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/progress.md).
 
 ## Testing
 
@@ -69,7 +69,7 @@ function=f'{function}',
 kwargs=kwargs,
 nonce=nonce, # Starts at zero, increments with every transaction
 processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497', # Masternode address
-stamps=stamp_limit) # Max amount of stamps you're willing to spend. As of 2021/02, the TAU/stamp ratio on mainnet is 1:36
+stamps=stamp_limit) # Max amount of stamps you're willing to spend. As of 2021/02, the TAU/stamp ratio on mainnet is 1:65
 
 requests.post('https://testnet-master-1.lamden.io/', data = tx) # Submits transaction
 ```
@@ -114,22 +114,12 @@ This is the base oracle contract.
 
 Placeholder
 
-### seed
-
-**Cannot be called**
-
-Sets the constants to their default value. As of now, you cannot pass arguments, and you have to manually modify the code.
-
-The default values are as follows:
-```python
-
-```
-
-### placeholder
-Takes `contract: str, currency_amount: float=0, token_amount: float=0`
-
 ## TODO
 
 Make tense consistent in progress section
 
 A test TODO section/file
+
+Demo script
+
+Record video of demo script and add to readme

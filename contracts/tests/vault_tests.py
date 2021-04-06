@@ -303,9 +303,12 @@ class VaultTests(unittest.TestCase):
             self.assertEqual(self.dai.balances['stu'], 1000 * 100 - x * 100)
             self.assertEqual(self.dai.total_supply.get(), 1000 * 100 - x * 100)
 
-    def test_timestamp(self):
+    def test_timestamp_is_correct(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) < 120
+                   self.vault.get_timestamp()) < 120 
+        
+        assert abs(datetime.datetime.utcnow().timestamp() -
+                   self.vault.get_timestamp()) > 120
 
     def test_mint_rewards(self):
         pass # and the edge case tests
