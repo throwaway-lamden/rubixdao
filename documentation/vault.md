@@ -14,6 +14,8 @@ vaults['OWNER'] = ctx.caller
 cdp['current_value'] = 0    
 vaults['oracle'] = 'oracle'  # the contract will pull all price data from 'oracle'. Please change this prior to deployment
 vaults['stability_rate'] = 1.1 # dummy for testing
+
+# TODO: Update this to the new method
 add_vault(collateral_type='currency', # TAU
               collateral_amount=1.5, # you need $1.5 of TAU for every $1 of DAI minted
               max_minted=100000, # only 100000 DAI can ever be minted
@@ -58,7 +60,9 @@ Returns the vault id.
 ### close_vault
 Takes `cdp_number: int`
 
-Closes a vault. Transfers original DAI and additional fee from caller to contract and returns original collateral to caller.
+Closes a vault. Transfers original DAI and additional fee from caller to contract and returns original collateral to caller. 
+
+If the amount of currently circulating DAI is greater than the amount of DAI in the open vaults (this can happen if a lot of vaults are liquidated at prices below 1x), the redemption cost is multiplied by (circulating DAI / DAI issued by currently open vaults).
 
 #### Checks: 
 
@@ -109,18 +113,56 @@ Returns `True`.
 ### settle_force_close
 Takes `cdp_number: int`
 
-Description.
+Closes the auction specified. Sends 90% of the collateral to the top bidder and 10% to the stability pool of the specific vault. Sets `cdp[cdp_number, 'auction', 'open']` to `False`.
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- Asserts the time elapsed from the start of the auction is longer than the minimum auction time for the vault type
+- Asserts the vault exists and the auction is open
 
-Returns .
+Returns a tuple with the top bidder address and the top bid.
 
 ### claim_unwon_bid
 Takes `cdp_number: int`
 
+Returns the DAI bid of the specified auction to the caller. 
+
+#### Checks: 
+
+- Asserts the auction is over
+
+Returns `True`.
+
+### sync_stability_pool
+Takes `vault_type: int`
+
+Tries to equalize circulating DAI with DAI issued by currently open vaults. 
+
+If the stability pool contains more DAI than the difference between circulating DAI and issued DAI, the difference is equalized and subtracted from the stability pool. 
+Otherwise, the entire stability pool is transferred to the issued DAI pool to equalize the ratio as much as possible.
+
+#### Checks: 
+
+- N/A
+
+Returns (circulating DAI / DAI issued by currently open vaults).
+
+### export_rewards
+Takes `vault_type: int, amount: float`
+
+Transfers out a specified amount of the stability pool to the caller. Intended use is to pay out rewards to lMKR holders, but anything can be done with this.
+
+#### Checks: 
+
+- Asserts the caller is the address specified in `vaults[vault_type, 'DSR', 'owner']`
+- Asserts there is sufficent DAI in the stability pool
+
+Returns `True`.
+
+
+### mint_rewards
+Takes `vault_type: int, amount: float`
+
 Description.
 
 #### Checks: 
@@ -130,8 +172,59 @@ Description.
 
 Returns .
 
-### sync_stability_pool
+
+### sync_burn
+Takes `vault_type: int, amount: float`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
+
+
+### add_vault
+Takes `collateral_type: str, collateral_amount: float, auction_time: float, max_minted: float, s_rate: float, weight: float)`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
+
+
+### remove_vault
 Takes `vault_type: int`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
+
+### change_state
+Takes `key: str, new_value: str, convert_to_decimal: bool = False`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
+
+### get_collateralization_percent
+Takes `cdp_number: int`
 
 Description.
 
