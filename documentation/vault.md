@@ -163,74 +163,106 @@ Returns `True`.
 ### mint_rewards
 Takes `vault_type: int, amount: float`
 
-Description.
+Calls `dai.py` to mint DAI. Sends the DAI to the caller, and updates total circulating DAI for every vault based on the `weight` variable. Intended use is to pay rewards to stakers.
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- Asserts the caller is the address specified in `vaults[vault_type, 'DSR', 'owner']
 
-Returns .
+Returns `True`.
 
 
 ### sync_burn
 Takes `vault_type: int, amount: float`
 
-Description.
+Removes the burn amount from the total circulating DAI supply of a vault. This is intended to be used similarly to the MKR auction concept, where DAI is bought and burned to reduce the cost of closing vaults.
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- N/A
 
-Returns .
+Returns the new total circulating supply.
 
 
 ### add_vault
 Takes `collateral_type: str, collateral_amount: float, auction_time: float, max_minted: float, s_rate: float, weight: float)`
 
-Description.
+Adds a vault with the following properties. Increments the current vault number and adds the vault to a list of allowed vaults.
+
+```python
+vaults['current_number'] += 1
+
+vaults[vault_number, 'collateral_type'] = collateral_type
+vaults[vault_number, 'minimum_collaterization'] = collateral_amount
+vaults[vault_number, 'minimum_auction_time'] = collateral_amount
+vaults[vault_number, 'cap'] = max_minted
+vaults[vault_number, 'weight'] = weight
+
+stability_rate[vault_number] = s_rate
+```
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- Asserts the caller is the address specified in `vaults['OWNER']`
 
-Returns .
+Returns the `vault_number` of the newly created vault type.
 
 
 ### remove_vault
 Takes `vault_type: int`
 
-Description.
+Removes the specified vault from `vaults['list']`. This prevents new openings of the specified vault, but does not restrict actions of currently open vaults.
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- Asserts the caller is the address specified in `vaults['OWNER']` 
 
-Returns .
+Returns `None`.
 
 ### change_state
 Takes `key: str, new_value: str, convert_to_decimal: bool = False`
 
-Description.
+Changes `vault[key]` to `new_value`.
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- Asserts the caller is the address specified in `vaults['OWNER']`  
+- Asserts `key` and `new_value` are both strings
 
-Returns .
+Returns `new_value`.
+
+
+### change_any_state
+Takes `key: Any, new_value: Any`
+
+Changes `vault[key]` to `new_value`.
+
+#### Checks: 
+
+- Asserts the caller is the address specified in `vaults['OWNER']`  
+
+Returns `new_value`.
+
+
+### change_stability_rate
+Takes `key: int, new_value: float`
+
+Changes `stability_rate[key]` to `new_value`.
+
+#### Checks: 
+
+- Asserts the caller is the address specified in `vaults['OWNER']`  
+
+Returns `new_value`.
+
 
 ### get_collateralization_percent
 Takes `cdp_number: int`
 
-Description.
+This is a getter and does not impact state in any way. It returns the collateralization percent of the requested vault.
 
 #### Checks: 
 
-- Asserts 
-- Asserts 
+- N/A 
 
-Returns .
+Returns collateralization percent.
