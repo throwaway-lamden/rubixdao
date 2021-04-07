@@ -17,7 +17,7 @@ def seed():
     operator.set(ctx.caller)
 
     rate['start_time'] = get_timestamp()
-    rate['rate'] = 1.0000000015469297 # interest per second
+    rate['rate'] = 1.0000000015469297  # interest per second
     rate['start_price'] = 1
 
     metadata['token_name'] = 'Staked DAI'
@@ -64,14 +64,16 @@ def withdraw_stake(amount: float):
 
     total_minted.set(supply - amount)
     if return_amount - transfer_away_amount > 0:
-        vault_contract.mint_rewards(vault_type=0, amount=return_amount - transfer_away_amount) # todo: double check in future
+        # todo: double check in future
+        vault_contract.mint_rewards(
+            vault_type=0, amount=return_amount - transfer_away_amount)
     dai_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount
 
 
 @export
-def change_rate(new_rate: float): # takes yearly interest as decimal
+def change_rate(new_rate: float):  # takes yearly interest as decimal
     assert_owner()
     assert new_rate >= 0, 'Cannot have negative staking!'
 

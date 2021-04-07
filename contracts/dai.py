@@ -43,7 +43,7 @@ def allowance(owner: str, spender: str):
 def approve(amount: float, to: str):
     assert amount > 0, 'Cannot send non-positive balances!'
     sender = ctx.caller
-    
+
     balances[sender, to] += amount
     return balances[sender, to]
 

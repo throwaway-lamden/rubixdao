@@ -62,8 +62,6 @@ class VaultTests(unittest.TestCase):
 
     def test_create_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
-
-        # Might fail, not sure why commented
         self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
 
@@ -173,7 +171,7 @@ class VaultTests(unittest.TestCase):
         self.vault.remove_vault(vault_type=0)
         assert 0 not in self.vault.vaults['list']
 
-    def test_close_vault_works(self):
+    def test_close_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
@@ -305,8 +303,8 @@ class VaultTests(unittest.TestCase):
 
     def test_timestamp_is_correct(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) < 120 
-        
+                   self.vault.get_timestamp()) < 120
+
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.vault.get_timestamp()) > -120
 

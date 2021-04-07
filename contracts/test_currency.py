@@ -44,7 +44,7 @@ def transfer_from(amount: float, to: str, main_account: str):
     assert amount > 0, 'Cannot send non-positive balances!'
 
     sender = ctx.caller
-    
+
     assert balances[main_account] >= amount, 'Not enough coins to send!'
     assert balances[main_account, sender] >= amount, 'Not enough coins approved to send! You have {} and are trying to spend {}'\
         .format(balances[main_account, sender], amount)

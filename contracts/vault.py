@@ -5,6 +5,7 @@ stability_rate = Hash(default_value=1)
 cdp = Hash(default_value=0)
 stability_pool = Hash(default_value=0)
 
+
 @construct
 def seed():
     vaults['OWNER'] = ctx.caller
@@ -18,8 +19,9 @@ def seed():
     vaults[0, 'minimum_collaterization'] = 1.5
     vaults[0, 'cap'] = 100000
     vaults[0, 'weight'] = 10
-    
-    stability_rate[0] = 1.1 # dummy for testing purposes
+
+    stability_rate[0] = 1.1  # dummy for testing purposes
+
 
 @export
 def get_timestamp():
@@ -42,13 +44,13 @@ def create_vault(vault_type: int, amount_of_dai: float,
 
     assert amount_of_dai > 0, 'Amount of DAI must be positive!'
     assert vaults[vault_type, 'total'] + amount_of_dai <= vaults[vault_type,
-                                                 'cap'], 'The allowance is not sufficent!'
-    
+                                                                 'cap'], 'The allowance is not sufficent!'
+
     # extra check for the first created vault
     # assert amount_of_dai <= vaults[vault_type,
     #                                'cap'], 'The allowance is not sufficent!'
     # likely not needed
-    
+
     assert (amount_of_collateral * price) / \
         amount_of_dai >= vaults[vault_type,
                                 'minimum_collaterization'], 'Not enough collateral!'
@@ -83,13 +85,15 @@ def close_vault(cdp_number: int):
     assert cdp[cdp_number, 'owner'] == ctx.caller, 'Not the owner!'
     assert cdp[cdp_number, 'open'] == True, 'Vault has already been closed!'
 
-    collateral = importlib.import_module(vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
+    collateral = importlib.import_module(
+        vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
 
     stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'issued'] / \
         vaults[cdp[cdp_number, 'vault_type'], 'total']
     redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
     fee = redemption_cost * \
-        (stability_rate[cdp[cdp_number, 'vault_type']] ** (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost
+        (stability_rate[cdp[cdp_number, 'vault_type']] **
+         (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost
 
     amount = redemption_cost + fee
     dai_contract.transfer_from(
@@ -110,11 +114,13 @@ def close_vault(cdp_number: int):
 
     return amount
 
+
 @export
 def fast_force_close_vault(cdp_number: int):
     assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
 
-    collateral = importlib.import_module(vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
+    collateral = importlib.import_module(
+        vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
 
     stability_ratio = vaults['issued'] / vaults['total']
@@ -122,7 +128,8 @@ def fast_force_close_vault(cdp_number: int):
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost - redemption_cost * \
-        (stability_rate[cdp[cdp_number, 'vault_type']] ** (get_timestamp() - cdp[cdp_number, time]))
+        (stability_rate[cdp[cdp_number, 'vault_type']]
+         ** (get_timestamp() - cdp[cdp_number, time]))
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
@@ -147,7 +154,8 @@ def fast_force_close_vault(cdp_number: int):
         collateral.transfer(amount=collateral_amount -
                             (amount * 1.1), to=cdp[number, 'owner'])
 
-        vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
+        vaults[cdp[cdp_number, 'vault_type'],
+               'issued'] -= cdp[cdp_number, 'dai']
         vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost
 
     else:
@@ -159,7 +167,8 @@ def fast_force_close_vault(cdp_number: int):
             amount=redemption_cost + fee, to=ctx.this, main_account=ctx.caller)
         dai_contract.burn(amount=redemption_cost)
 
-        amount = (1 / price) * (redemption_cost_without_fee) * 1.03 # TODO: Double check math
+        amount = (1 / price) * (redemption_cost_without_fee) * \
+            1.03  # TODO: Double check math
 
         # TODO: Add an assert later
         collateral.transfer(amount=amount, to=ctx.caller)
@@ -175,9 +184,9 @@ def fast_force_close_vault(cdp_number: int):
 
 @export
 def open_force_close_auction(cdp_number: int):
-    assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
     assert cdp[cdp_number, 'auction',
-               'open'] is False, 'Auction is already taking place!'  # May not work
+               'open'] == False, 'Auction is already taking place!'
+    assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
 
     # This contract may only be bid on, and not closed
     cdp[cdp_number, 'open'] = False
@@ -223,7 +232,8 @@ def settle_force_close(cdp_number: int):
     assert get_timestamp() - cdp[cdp_number, 'auction', 'time'] > vaults[cdp[cdp_number, 'vault_type'],
                                                                          'minimum_auction_time'], 'Auction is still open!'
 
-    collateral = importlib.import_module(vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
+    collateral = importlib.import_module(
+        vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
 
     cdp[cdp_number, 'auction', 'settled'] = True
     cdp[cdp_number, 'open'] = False
@@ -240,7 +250,8 @@ def settle_force_close(cdp_number: int):
     stability_pool[cdp[number, 'collateral_type']] += fee
 
     vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[number, 'dai']
-    vaults[cdp[cdp_number, 'vault_type'], 'total'] -= cdp[cdp_number, 'auction', 'top_bid']
+    vaults[cdp[cdp_number, 'vault_type'],
+           'total'] -= cdp[cdp_number, 'auction', 'top_bid']
 
     return cdp[cdp_number, 'auction', 'highest_bidder'], cdp[cdp_number,
                                                              'auction', 'top_bid']
@@ -306,7 +317,8 @@ def mint_rewards(vault_type: int, amount: float):  # TODO: MAKE SURE MATH CHECKS
 
     # To make the contract more robust, and to prevent floating point errors
     for vault_type in vaults['list']:
-        funds_transferred = decimal(vaults[vault_type, 'weight'] / total_weight) * total_funds
+        funds_transferred = decimal(
+            vaults[vault_type, 'weight'] / total_weight) * total_funds
         vaults[vault_type, 'total'] += funds_transferred
 
         total_funds -= funds_transferred
@@ -340,7 +352,7 @@ def add_vault(collateral_type: str, collateral_amount: float,
     vaults[vault_number, 'minimum_collaterization'] = collateral_amount
     vaults[vault_number, 'cap'] = max_minted
     vaults[vault_number, 'weight'] = weight
-    
+
     stability_rate[vault_number] = s_rate
 
     return vault_number
@@ -373,13 +385,15 @@ def change_any_state(key: Any, new_value: Any):
 
     return new_value
 
+
 @export
-def change_stability_rate(key: int, new_value: float): # don't add type checks
+def change_stability_rate(key: int, new_value: float):  # don't add type checks
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
     stability_rate[key] = new_value
 
     return new_value
+
 
 @export
 def get_collateralization_percent(cdp_number: int):
