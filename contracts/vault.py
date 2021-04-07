@@ -342,7 +342,7 @@ def sync_burn(vault_type: int, amount: float):
 
 
 @export
-def add_vault(collateral_type: str, collateral_amount: float, auction_time: float \
+def add_vault(collateral_type: str, collateral_amount: float, auction_time: float,
               max_minted: float, s_rate: float, weight: float):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
