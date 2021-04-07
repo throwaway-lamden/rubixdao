@@ -17,6 +17,7 @@ def seed():
 
     vaults[0, 'collateral_type'] = 'currency'
     vaults[0, 'minimum_collaterization'] = 1.5
+    vaults[0, 'minimum_collaterization'] = 259200
     vaults[0, 'cap'] = 100000
     vaults[0, 'weight'] = 10
 
@@ -341,7 +342,7 @@ def sync_burn(vault_type: int, amount: float):
 
 
 @export
-def add_vault(collateral_type: str, collateral_amount: float,
+def add_vault(collateral_type: str, collateral_amount: float, auction_time: float
               max_minted: float, s_rate: float, weight: float):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
@@ -351,6 +352,7 @@ def add_vault(collateral_type: str, collateral_amount: float,
 
     vaults[vault_number, 'collateral_type'] = collateral_type
     vaults[vault_number, 'minimum_collaterization'] = collateral_amount
+    vaults[vault_number, 'minimum_auction_time'] = collateral_amount
     vaults[vault_number, 'cap'] = max_minted
     vaults[vault_number, 'weight'] = weight
 
