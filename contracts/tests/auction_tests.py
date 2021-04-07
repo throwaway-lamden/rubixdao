@@ -83,18 +83,17 @@ class AuctionTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
             self.vault.bid_on_force_close(cdp_number=0, amount=1)
 
-    def test_bid_on_force_close_closed(self):
+    def test_bid_on_force_close_still_open(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
-        self.vault.close_vault(cdp_number=id)
-        with self.assertRaisesRegex(AssertionError, 'closed'):
+        with self.assertRaisesRegex(AssertionError, 'open'):
             self.vault.bid_on_force_close(cdp_number=id, amount=1)
 
     def test_bid_on_force_close_no_auction(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
+        id = self.vault.ecreate_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
         with self.assertRaisesRegex(AssertionError, 'open'):
             self.vault.bid_on_force_close(cdp_number=id, amount=1)
