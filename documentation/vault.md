@@ -2,7 +2,7 @@
 
 ## vault.py functions
 
-### seed()
+### seed
 
 **Cannot be called**
 
@@ -20,13 +20,14 @@ add_vault(collateral_type='currency', # TAU
               weight=10) # used to determine how much staking rewards inflate the pools relative to other vaults
 ```
 
-### get_timestamp()
+### get_timestamp
 
 **Cannot be called**
 
 Returns current UTC timestamp.
 
-### create_vault(vault_type: int, amount_of_dai: float, amount_of_collateral: float)
+### create_vault
+Takes `vault_type: int, amount_of_dai: float, amount_of_collateral: float`
 
 Creates a vault. Issues DAI and transfers collateral from caller to contract if the following checks pass. 
 
@@ -54,7 +55,8 @@ Sets the following information for the newly opened vault:
 
 Returns the vault id.
 
-### close_vault(cdp_number: int)
+### close_vault
+Takes `cdp_number: int`
 
 Closes a vault. Transfers original DAI and additional fee from caller to contract and returns original collateral to caller.
 
@@ -65,7 +67,8 @@ Closes a vault. Transfers original DAI and additional fee from caller to contrac
 
 Returns the amount of DAI transferred to the contract.
 
-### fast_force_close_vault(cdp_number: int)
+### fast_force_close_vault
+Takes `cdp_number: int`
 
 Closes an undercollateralized vault instantly with a small reward (3.3%) issued to the closer and a 10% penalty added to the stability pool. 
 
@@ -79,3 +82,62 @@ If the value of the collateral is less than 113.3% of the DAI borrowed, the liqu
 - Asserts the vault is not closed
 
 Returns the amount of collateral paid out.
+
+### open_force_close_auction
+Takes `cdp_number: int`
+
+Opens an auction for an undercollateralized vault. Sets `cdp[cdp_number, 'open']` to `False` and `cdp[cdp_number, 'auction', 'open']` to `True`. Gets the auction start time with `get_timestamp()` and stores it under `cdp[cdp_number, 'auction', 'time']`.
+
+#### Checks: 
+
+- Asserts the vault exists and is open
+
+Returns `True`.
+
+### bid_on_force_close
+Takes `cdp_number: int, amount: float`
+
+Bids on the specified vault with `amount` DAI. If the caller has previously bid, the amount transferred is `amount` minus previous bid. Otherwise, the amount transferred is just the specified `amount`.
+
+#### Checks: 
+
+- Asserts that `amount` is the highest bid
+- Asserts the vault exists and the auction is open
+
+Returns `True`.
+
+### settle_force_close
+Takes `cdp_number: int`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
+
+### claim_unwon_bid
+Takes `cdp_number: int`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
+
+### sync_stability_pool
+Takes `vault_type: int`
+
+Description.
+
+#### Checks: 
+
+- Asserts 
+- Asserts 
+
+Returns .
