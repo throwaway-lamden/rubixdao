@@ -15,11 +15,13 @@ cdp['current_value'] = 0
 vaults['oracle'] = 'oracle'  # the contract will pull all price data from 'oracle'. Please change this prior to deployment
 vaults['stability_rate'] = 1.1 # dummy for testing
 
-# TODO: Update this to the new method
-add_vault(collateral_type='currency', # TAU
-              collateral_amount=1.5, # you need $1.5 of TAU for every $1 of DAI minted
-              max_minted=100000, # only 100000 DAI can ever be minted
-              weight=10) # used to determine how much staking rewards inflate the pools relative to other vaults
+vaults[0, 'collateral_type'] = 'currency'
+vaults[0, 'minimum_collaterization'] = 1.5
+vaults[0, 'minimum_auction_time'] = 259200
+vaults[0, 'cap'] = 100000
+vaults[0, 'weight'] = 10
+
+stability_rate[0] = 1.1  # dummy for testing purposes
 ```
 
 ### get_timestamp
@@ -38,14 +40,14 @@ Updates total issued DAI for that vault type.
 Sets the following information for the newly opened vault:
 
 ```python
-    cdp[cdp_number, 'owner'] = ctx.caller
-    cdp[cdp_number, 'open'] = True
+cdp[cdp_number, 'owner'] = ctx.caller
+cdp[cdp_number, 'open'] = True
 
-    cdp[cdp_number, 'collateral_type'] = vaults[vault_type, 'collateral_type']
-    cdp[cdp_number, 'vault_type'] = vault_type
-    cdp[cdp_number, 'dai'] = amount_of_dai
-    cdp[cdp_number, 'collateral_amount'] = amount_of_collateral
-    cdp[cdp_number, 'time'] = get_timestamp()
+cdp[cdp_number, 'collateral_type'] = vaults[vault_type, 'collateral_type']
+cdp[cdp_number, 'vault_type'] = vault_type
+cdp[cdp_number, 'dai'] = amount_of_dai
+cdp[cdp_number, 'collateral_amount'] = amount_of_collateral
+cdp[cdp_number, 'time'] = get_timestamp()
 ```
 
 #### Checks: 
