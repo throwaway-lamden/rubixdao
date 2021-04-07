@@ -187,7 +187,7 @@ def fast_force_close_vault(cdp_number: int):
 def open_force_close_auction(cdp_number: int):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction',
-               'open'] == False, 'Auction is already taking place!'
+               'open'] is False, 'Auction is already taking place!'
     assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
 
     # This contract may only be bid on, and not closed
@@ -196,7 +196,7 @@ def open_force_close_auction(cdp_number: int):
 
     cdp[cdp_number, 'auction', 'highest_bidder'] = ctx.caller
     cdp[cdp_number, 'auction', 'top_bid'] = 0.0
-    # TODO: make sure this works
+
     cdp[cdp_number, 'auction', 'time'] = get_timestamp()
 
     return True
