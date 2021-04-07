@@ -169,7 +169,7 @@ Calls `dai.py` to mint DAI. Sends the DAI to the caller, and updates total circu
 
 #### Checks: 
 
-- Asserts the caller is the address specified in `vaults[vault_type, 'DSR', 'owner']
+- Asserts the caller is the address specified in `vaults[vault_type, 'DSR', 'owner']`
 
 Returns `True`.
 
