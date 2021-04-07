@@ -35,7 +35,7 @@ class AuctionTests(unittest.TestCase):
     def tearDown(self):
         self.client.flush()
 
-    def test_auction_vault_closed(self):
+    def test_force_close_auction_vault_closed(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
@@ -44,13 +44,40 @@ class AuctionTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.open_force_close_auction(cdp_number=id)
 
-    def test_auction_vault_in_auction(self):
+    def test_force_close_auction_vault_in_auction(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
         self.vault.open_force_close_auction(cdp_number=id)
         with self.assertRaisesRegex(AssertionError, 'already'):
             self.vault.open_force_close_auction(cdp_number=id)
+
+    def test_force_close_auction_vault_nonexistent(self):
+        with self.assertRaisesRegex(AssertionError, 'cdp'):
+            self.vault.open_force_close_auction(cdp_number=0)
+
+    def test_force_close_auction_vault_frozen(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=id)
+        assert self.vault.cdp[id, 'open'] == False
+        assert self.vault.cdp[id, 'auction', 'open'] == True
+
+    def test_force_close_auction_vault_top_bid(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=id)
+        assert self.vault.cdp[id, 'auction', 'highest_bidder'] == 'sys'
+        self.assertAlmostEqual(self.vault.cdp[id, 'auction', 'top_bid'], 0)
+        assert self.vault.cdp[id, 'auction', 'time'] == self.vault.get_timestamp()
+
+    def test_force_close_auction_vault_normal(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=id)
 
 if __name__ == '__main__':
     unittest.main()

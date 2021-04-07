@@ -184,6 +184,7 @@ def fast_force_close_vault(cdp_number: int):
 
 @export
 def open_force_close_auction(cdp_number: int):
+    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction',
                'open'] == False, 'Auction is already taking place!'
     assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
