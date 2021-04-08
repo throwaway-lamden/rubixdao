@@ -52,7 +52,7 @@ def stake(amount: float):
 
 @export
 def withdraw_stake(amount: float):
-    assert amount >= 0, 'Stake amount must be positive!'
+    assert amount > 0, 'Stake amount must be positive!'
     assert balances[ctx.caller] >= amount, 'Not enough coins to withdraw!'
 
     current_price = get_price()
