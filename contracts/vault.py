@@ -307,6 +307,7 @@ def export_rewards(vault_type: int, amount: float):
 def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
     # TODO: Change DSR to something else in future
     assert vaults['mint', 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
+    assert amount > 0, 'Cannot mint negative amount!'
 
     dai_contract.mint(amount=amount)
     dai_contract.transfer(to=ctx.caller, amount=amount)
