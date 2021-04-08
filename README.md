@@ -118,7 +118,17 @@ This is the base oracle contract.
 
 *The primary documentation should always be the [Official Lamden Documentation](https://docs.lamden.io). This section only serves as a TL;DR.*
 
-Placeholder
+Masternode refers to the masternode address you are using.
+
+GET state with `{masternode}/contract/{hash}?key={key}`.
+
+GET latest block number with `{masternode}/contract/{hash}?key={key}`.
+
+GET a block with `{masternode}/blocks?num={block_number}`
+
+GET the results of a tx with `{masternode}/tx?hash={hash}`
+
+POST a tx to `{masternode}/`.
 
 ## TODO
 
