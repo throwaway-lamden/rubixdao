@@ -191,7 +191,10 @@ kwargs['amount_of_collateral'] = dict(__fixed__='200.0')
 nonce, result = submit_transaction(
     new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
 
-input("Please press ENTER when you want to close the vault")
+try:
+    input("Please press ENTER when you want to close the vault")
+except EOFError:
+    print_color("Error with input. If this is run in GitHub Actions, ignore.", color.RED)
 
 print_color("Closing vault", color.BOLD)
 kwargs = dict()
