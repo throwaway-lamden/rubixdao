@@ -44,9 +44,9 @@ To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamde
 
 ## Demo
 
-*The demo is untested and a WIP. Due to some recent SC updates, it might not work out-of-the-box. It currently uses ANSI colors, which are not enabled in Windows or MacOS.*
+*The demo is untested and a WIP. It may not always be up-to-date.*
 
-To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`.
+To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`. If you are running the script on Windows, `colorama` is recommended.
 
 ## Usage
 
