@@ -122,17 +122,22 @@ This is the base oracle contract.
 
 *The primary documentation should always be the [Official Lamden Documentation](https://docs.lamden.io). This section only serves as a TL;DR.*
 
-Masternode refers to the masternode address you are using.
+|         | Masternode                         | Block Explorer            |
+|---------|------------------------------------|---------------------------|
+| Testnet | https://testnet-master-1.lamden.io | https://testnet.lamden.io |
+| Mainnet | https://masternode-01.lamden.io    | https://mainnet.lamden.io |
 
-GET state with `{masternode}/contract/{hash}?key={key}`.
+`{masternode}` refers to the masternode address you are using:
 
-GET latest block number with `{masternode}/contract/{hash}?key={key}`.
+`GET` state with `{masternode}/contract/{hash}?key={key}`.
 
-GET a block with `{masternode}/blocks?num={block_number}`
+`GET` latest block number with `{masternode}/contract/{hash}?key={key}`.
 
-GET the results of a tx with `{masternode}/tx?hash={hash}`
+`GET` a block with `{masternode}/blocks?num={block_number}`
 
-POST a tx to `{masternode}/`.
+`GET` the results of a tx with `{masternode}/tx?hash={hash}`
+
+`POST` a tx to `{masternode}/`.
 
 ## TODO
 
