@@ -6,9 +6,8 @@
 
 **Cannot be called**
 
-Sets the constants to their default value. As of now, you cannot pass arguments, and you have to manually modify the code.
+Sets the owner to the caller as follows.
 
-The default values are as follows:
 ```python
 operator.set(ctx.caller)
 ```
