@@ -30,7 +30,7 @@ jobs:
     - name: Test with pytest
       run: |
         cd $GITHUB_WORKSPACE/contracts/
-        python3 -m pytest tests/* --force-flaky -v -n 4
+        python3 -m pytest tests/* --force-flaky -v -n 2
     # - name: Upload to codecov
     #  uses: codecov/codecov-action@v1
     #  with:
