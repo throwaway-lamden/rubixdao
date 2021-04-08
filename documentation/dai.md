@@ -60,5 +60,6 @@ Subtracts `amount` from `total_supply`.
 #### Checks: 
 
 - Asserts that `amount` is positive 
+- Asserts that the balance of the caller is greater than `amount`
 
 Returns `None`.
