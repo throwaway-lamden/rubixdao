@@ -8,10 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-        - runs-on: windows-latest
-          compiler: gcc
+        os: [ubuntu-latest, macos-latest]
         
     steps:
     - uses: actions/checkout@v2
