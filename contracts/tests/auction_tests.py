@@ -150,12 +150,45 @@ class AuctionTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'still'):
             self.vault.settle_force_close(cdp_number=self.id)
 
-    def test_settle_force_close_auction_normal(self):  # todo: split into smaller tests
+    def test_settle_force_close_auction_normal(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
+
+    def test_settle_force_close_auction_state(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        highest_bidder, top_bid = self.vault.settle_force_close(
+            cdp_number=self.id, environment=env)
+        assert self.vault.cdp[self.id, 'auction', 'settled'] == True
+        assert self.vault.cdp[self.id, 'open'] == False
+        assert self.vault.cdp[self.id, 'auction', 'open'] == False
+        assert self.vault.cdp[self.id, 'auction', self.vault.cdp[self.id,
+                                                                 'auction', 'highest_bidder'], 'bid'] == 0
+        assert highest_bidder == 'sys'
+        assert top_bid == 1
+
+    def test_settle_force_close_auction_burns_dai(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        original = self.dai.total_supply.get()
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.assertAlmostEqual(self.dai.total_supply.get(), original - 0.9)
+
+    def test_settle_force_close_auction_returns_collateral(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        original = self.currency.balance_of(account='sys')
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), original + 1500)
 
 
 if __name__ == '__main__':
