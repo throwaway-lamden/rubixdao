@@ -49,6 +49,8 @@ To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamde
 
 To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`. If you are running the script on Windows, `colorama` is recommended.
 
+You can also see the demo in the [Github Actions demo.yml](https://github.com/throwaway-lamden/lamden-mkr/actions/workflows/demo.yml) tab.
+
 ## Usage
 
 Calling these contracts from other smart contracts is simple.
