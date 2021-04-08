@@ -9,7 +9,7 @@ metadata = Hash()
 total_minted = Variable()
 operator = Variable()
 
-# 31540000 seconds per year
+# 31536000 seconds per year
 
 
 @construct
@@ -66,7 +66,7 @@ def withdraw_stake(amount: float):
     if return_amount - transfer_away_amount > 0:
         # todo: double check in future
         vault_contract.mint_rewards(amount=return_amount - transfer_away_amount)
-        
+
     dai_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount
