@@ -1,6 +1,7 @@
 import unittest
 
 from contracting.client import ContractingClient
+from contracting.stdlib.bridge.time import Datetime
 
 
 class AuctionTests(unittest.TestCase):
@@ -148,6 +149,13 @@ class AuctionTests(unittest.TestCase):
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         with self.assertRaisesRegex(AssertionError, 'still'):
             self.vault.settle_force_close(cdp_number=self.id)
+
+    def test_settle_force_close_auction_normal(self):  # todo: split into smaller tests
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
 
 
 if __name__ == '__main__':
