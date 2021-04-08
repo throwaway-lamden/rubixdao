@@ -23,7 +23,7 @@ class TokenTests(unittest.TestCase):
             self.dai.transfer(amount=-1, to='wallet2', signer='me')
             raise
         except AssertionError as message:
-            assert 'non-positive' in str(message)
+            assert 'negative' in str(message)
 
     def test_transfer_excess(self):
         try:
@@ -47,7 +47,7 @@ class TokenTests(unittest.TestCase):
             self.dai.approve(amount=-1, to='account1', signer='me')
             raise
         except AssertionError as message:
-            assert 'non-positive' in str(message)
+            assert 'negative' in str(message)
 
     def test_accounts_normal(self):
         self.dai.approve(amount=42, to='account1', signer='me')
@@ -61,7 +61,7 @@ class TokenTests(unittest.TestCase):
                                    main_account='me', signer='account1')
             raise
         except AssertionError as message:
-            assert 'non-positive' in str(message)
+            assert 'negative' in str(message)
 
     def test_transfer_from_excess(self):
         self.dai.approve(amount=42, to='account1', signer='me')
@@ -96,7 +96,7 @@ class TokenTests(unittest.TestCase):
             self.dai.burn(amount=-1, signer='me')
             raise
         except AssertionError as message:
-            assert 'non-positive' in str(message)
+            assert 'negative' in str(message)
 
     def test_burn_excess(self):
         try:
@@ -115,7 +115,7 @@ class TokenTests(unittest.TestCase):
             self.dai.mint(amount=-1, signer='me')
             raise
         except AssertionError as message:
-            assert 'non-positive' in str(message)
+            assert 'negative' in str(message)
 
     def test_mint_unauthorised(self):
         try:

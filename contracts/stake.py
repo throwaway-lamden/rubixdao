@@ -86,7 +86,7 @@ def change_rate(new_rate: float):  # takes yearly interest as decimal
 
 @export
 def transfer(amount: float, to: str):
-    assert amount > 0, 'Cannot send non-positive balances!'
+    assert amount > 0, 'Cannot send negative balances!'
 
     sender = ctx.caller
 
@@ -108,7 +108,7 @@ def allowance(owner: str, spender: str):
 
 @export
 def approve(amount: float, to: str):
-    assert amount > 0, 'Cannot send non-positive balances!'
+    assert amount > 0, 'Cannot send negative balances!'
     sender = ctx.caller
     assert balances[sender] >= amount, 'Cannot approve balance that exceeds total balance!'
     balances[sender, to] += amount
@@ -117,7 +117,7 @@ def approve(amount: float, to: str):
 
 @export
 def transfer_from(amount: float, to: str, main_account: str):
-    assert amount > 0, 'Cannot send non-positive balances!'
+    assert amount > 0, 'Cannot send negative balances!'
 
     sender = ctx.caller
 

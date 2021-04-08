@@ -151,7 +151,7 @@ class StakingTests(unittest.TestCase):
                 account='testing_user'), 2000000)
 
     def test_transfer_negative(self):
-        with self.assertRaisesRegex(AssertionError, 'non-positive'):
+        with self.assertRaisesRegex(AssertionError, 'negative'):
             self.staking.transfer(amount=-1, to='wallet2', signer='testing_user')
 
     def test_transfer_excess(self):
@@ -167,7 +167,7 @@ class StakingTests(unittest.TestCase):
         self.assertAlmostEqual(self.staking.balance_of(account='wallet2'), 42)
 
     def test_accounts_negative(self):
-        with self.assertRaisesRegex(AssertionError, 'non-positive'):
+        with self.assertRaisesRegex(AssertionError, 'negative'):
             self.staking.approve(amount=-1, to='account1', signer='testing_user')
 
     def test_accounts_excess(self):
@@ -191,7 +191,7 @@ class StakingTests(unittest.TestCase):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
-        with self.assertRaisesRegex(AssertionError, 'non-positive'):
+        with self.assertRaisesRegex(AssertionError, 'negative'):
             self.staking.transfer_from(amount=-1, to='wallet2',
                                    main_account='testing_user', signer='account1')
 
