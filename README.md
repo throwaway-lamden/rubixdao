@@ -82,7 +82,7 @@ This is the main SC. It handles creating CDPs and closing CDPs as well as auctio
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/vault.py)
 
-[Documentation]()
+[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/vault.md)
 
 ### stake
 
@@ -90,7 +90,7 @@ This is the equivalent to the DSR. It has an adjustable interest rate. Payouts a
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/stake.py)
 
-[Documentation]()
+[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/stake.md)
 
 ### dai
 
@@ -98,7 +98,7 @@ This is the DAI equivalent. It conforms to LST-001 and LST-002.
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/dai.py)
 
-[Documentation]()
+[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/dai.md)
 
 ### oracle
 
@@ -106,7 +106,7 @@ This is the base oracle contract.
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/oracle.py)
 
-[Documentation]()
+[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/oracle.md)
 
 ## API Guide
 
@@ -120,6 +120,6 @@ Make tense consistent in progress section
 
 A test TODO section/file
 
-Demo script
+Demo script w/ optional colorama for non-ANSI compatible OSes
 
-Record video of demo script and add to readme
+Record gif of demo script (possibly with asciinemia) and add to readme
