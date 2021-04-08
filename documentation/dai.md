@@ -55,7 +55,7 @@ Takes `amount: float`
 
 Transfers the amount specified from the caller and burns it.
 
-Subtracts `amount` to `total_supply`. 
+Subtracts `amount` from `total_supply`. 
 
 #### Checks: 
 
