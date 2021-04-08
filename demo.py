@@ -3,6 +3,7 @@ import requests
 import random
 import time
 import ast
+import sys
 
 
 class color:
@@ -21,7 +22,12 @@ class color:
 def print_color(text, color_type):
     print(color_type + text + color.END)
 
-
+def print_color_alternate(text, color_type):
+    print(color_type + text)
+    
+def print_color_none(text, color_type):
+    print(text)
+    
 def submit_transaction(wallet, contract, function, kwargs, nonce):
     tx = transaction.build_transaction(wallet=wallet,
                                        contract=contract,
@@ -48,6 +54,37 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
 
 print("Lamden MKR Demo v1")
 print("Colors may be broken on Windows machines")
+
+plat = sys.platform
+supported_platform = plat != 'Pocket PC' and (plat != 'win32' or
+                                                  'ANSICON' in os.environ)
+                                                  
+if supported_platform != True:
+    print("Color is not natively supported on this platform, trying colorama")
+
+    try:
+        from colorama import init, Fore, Style
+        
+        class color_alternate:
+            PURPLE = '\033[95m'
+            CYAN = Fore.CYAN
+            DARKCYAN = '\033[36m'
+            BLUE = '\033[94m'
+            GREEN = Fore.GREEN
+            YELLOW = '\033[93m'
+            RED = Fore.RED
+            BOLD = Style.BRIGHT
+            UNDERLINE = '\033[4m'
+        
+        color = color_alternate
+        print_color = print_color_alternate
+
+        init(autoreset=True)
+        
+    except ImportError:
+        print("Unable to import colorama, defaulting to no colors")
+        print_color = print_color_none
+        
 
 new_wallet = wallet.Wallet(seed=None)
 
