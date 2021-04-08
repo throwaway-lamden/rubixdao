@@ -37,7 +37,7 @@ class StakingTests(unittest.TestCase):
         self.dai.transfer(amount=2000000, to='testing_user', signer='vault_contract')
         
         self.oracle.set_price(number=0, new_price=1.0) # Probably not needed
-        self.vault.change_any_state(key=['mint', 'DSR', 'owner'], new_value='staking')
+        self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='staking')
 
     def tearDown(self):
         self.client.flush()
