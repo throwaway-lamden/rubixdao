@@ -42,6 +42,12 @@ You can now deploy this code via the wallet or by following the instructions in 
 
 To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamden` or the browser wallet is required.
 
+## Demo
+
+*The demo is untested and a WIP. Due to some recent SC updates, it might not work out-of-the-box. It currently uses ANSI colors, which are not enabled in Windows or MacOS.*
+
+To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`.
+
 ## Usage
 
 Calling these contracts from other smart contracts is simple.
