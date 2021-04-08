@@ -126,6 +126,15 @@ class AuctionTests(unittest.TestCase):
         assert self.vault.cdp[self.id, 'auction', 'wallet2', 'bid'] == 2
         assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 1
 
+    def test_settle_force_close_nonexistent(self):
+        with self.assertRaisesRegex(AssertionError, 'cdp'):
+            self.vault.settle_force_close(cdp_number=1)
+
+    def test_settle_force_close_no_auction(self):
+        self.dai.approve(to='vault_contract', amount=100)
+        self.vault.close_vault(cdp_number=self.id)
+        with self.assertRaisesRegex(AssertionError, 'not'):
+            self.vault.settle_force_close(cdp_number=self.id)
 
 if __name__ == '__main__':
     unittest.main()

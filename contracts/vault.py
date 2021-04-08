@@ -228,7 +228,7 @@ def bid_on_force_close(cdp_number: int, amount: float):
 
 @export
 def settle_force_close(cdp_number: int):
-    assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
+    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction', 'open'] is True, 'Auction is not open!'
 
     assert get_timestamp() - cdp[cdp_number, 'auction', 'time'] > vaults[cdp[cdp_number, 'vault_type'],
