@@ -9,9 +9,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-
+        include:
+        - runs-on: windows-latest
+          compiler: gcc
+        
     steps:
     - uses: actions/checkout@v2
+    - name: Set up MinGW
+      uses: egor-tensin/setup-mingw@v2
+      with:
+        platform: x64
     - name: Set up Python 3.6
       uses: actions/setup-python@v2
       with:
