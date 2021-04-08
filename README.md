@@ -3,7 +3,6 @@
 ![Python Version](https://img.shields.io/badge/Python-3.6-blue?style=flat-square)
 ![Dependencies](https://img.shields.io/badge/Dependencies-contracting%2C%20requests-blue?style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/tests?label=Tests&style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/demo?label=Demo&style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/CodeQL?label=CodeQL&style=flat-square)
 
 This repository contains the backend code for the Lamden MKR clone and some associated tests.
@@ -44,6 +43,8 @@ You can now deploy this code via the wallet or by following the instructions in 
 To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamden` or the browser wallet is required.
 
 ## Demo
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/demo?label=Demo&style=flat-square)
 
 *The demo is untested and a WIP. It may not always be up-to-date.*
 
