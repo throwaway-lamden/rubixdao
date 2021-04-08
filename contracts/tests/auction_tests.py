@@ -108,8 +108,24 @@ class AuctionTests(unittest.TestCase):
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
         assert self.dai.balance_of(account='sys') == 98
 
-    def test_multiple_user_bids(self):
-        pass
+    def test_multiple_user_bids(self):  # recommend not breaking up because setup is long
+        self.dai.transfer(to='wallet2', amount=50)
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
+        assert self.vault.cdp[self.id, 'auction', 'top_bid'] == 1
+        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 1
+        with self.assertRaisesRegex(AssertionError, 'higher'):
+            self.dai.approve(to='vault_contract', amount=1, signer='wallet2')
+            self.vault.bid_on_force_close(cdp_number=self.id, amount=1, signer='wallet2')
+        self.dai.approve(to='vault_contract', amount=2, signer='wallet2')
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=2, signer='wallet2')
+        assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'wallet2'
+        assert self.vault.cdp[self.id, 'auction', 'top_bid'] == 2
+        assert self.vault.cdp[self.id, 'auction', 'wallet2', 'bid'] == 2
+        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 1
+
 
 if __name__ == '__main__':
     unittest.main()
