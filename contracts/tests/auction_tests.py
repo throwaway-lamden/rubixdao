@@ -190,6 +190,19 @@ class AuctionTests(unittest.TestCase):
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), original + 1500)
 
+    def test_settle_force_close_auction_updates_pool(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        with self.assertRaisesRegex(AttributeError, 'has'):
+            stability = self.vault.stability_pool[self.vault.cdp[self.id, 'collateral_type']]
+        issued = self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'issued']
+        total = self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'total']
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.assertAlmostEqual(self.vault.stability_pool[self.vault.cdp[self.id, 'collateral_type']], 0.1)
+        self.assertAlmostEqual(issued - 100, self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'issued'])
+        self.assertAlmostEqual(total - 0.9, self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'total'])
 
 if __name__ == '__main__':
     unittest.main()
