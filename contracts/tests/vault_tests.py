@@ -36,7 +36,7 @@ class VaultTests(unittest.TestCase):
         self.oracle = self.client.get_contract('oracle')
 
         self.oracle.set_price(number=0, new_price=1.0)
-        
+
     def tearDown(self):
         self.client.flush()
 
@@ -268,7 +268,6 @@ class VaultTests(unittest.TestCase):
     def test_fast_force_close_vault(self):
         pass # the tests for the auction are in the auction tests file, but the fast force close function will also be tested here
 
-    # current assertionerror not enough coins
     def test_open_and_close_vault_1000_times_works(self):
         id_list = [i for i in range(1000)]
 

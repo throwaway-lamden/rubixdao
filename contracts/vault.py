@@ -261,8 +261,9 @@ def settle_force_close(cdp_number: int):
 
 @export
 def claim_unwon_bid(cdp_number: int):
+    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction',
-               'settled'] is True, 'Auction is not over!'
+               'settled'] is True, 'Auction is still open or not opened!'
 
     dai_contract.transfer(
         to=ctx.caller, amount=cdp[cdp_number, 'auction', ctx.caller, 'bid'])
