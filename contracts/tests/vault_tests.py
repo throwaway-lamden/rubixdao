@@ -35,6 +35,8 @@ class VaultTests(unittest.TestCase):
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
 
+        self.oracle.set_price(number=0, new_price=1.0)
+        
     def tearDown(self):
         self.client.flush()
 
