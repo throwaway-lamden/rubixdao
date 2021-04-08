@@ -194,7 +194,7 @@ nonce, result = submit_transaction(
 try:
     input("Please press ENTER when you want to close the vault")
 except EOFError:
-    print_color("Error with input. If this is run in GitHub Actions, ignore.", color.RED)
+    print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
 
 print_color("Closing vault", color.BOLD)
 kwargs = dict()
