@@ -36,6 +36,7 @@ class AuctionTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.vaults[0, 'minimum_auction_time'] = 10
 
     def tearDown(self):
         self.client.flush()
@@ -108,6 +109,11 @@ class AuctionTests(unittest.TestCase):
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
         assert self.dai.balance_of(account='sys') == 98
 
+    def test_bid_on_force_close_normal(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+
     def test_multiple_user_bids(self):  # recommend not breaking up because setup is long
         self.dai.transfer(to='wallet2', amount=50)
         self.vault.open_force_close_auction(cdp_number=self.id)
@@ -135,6 +141,14 @@ class AuctionTests(unittest.TestCase):
         self.vault.close_vault(cdp_number=self.id)
         with self.assertRaisesRegex(AssertionError, 'not'):
             self.vault.settle_force_close(cdp_number=self.id)
+
+    def test_settle_force_close_auction_open(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        with self.assertRaisesRegex(AssertionError, 'still'):
+            self.vault.settle_force_close(cdp_number=self.id)
+
 
 if __name__ == '__main__':
     unittest.main()
