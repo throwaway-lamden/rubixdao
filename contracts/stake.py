@@ -65,8 +65,8 @@ def withdraw_stake(amount: float):
     total_minted.set(supply - amount)
     if return_amount - transfer_away_amount > 0:
         # todo: double check in future
-        vault_contract.mint_rewards(
-            vault_type=0, amount=return_amount - transfer_away_amount)
+        vault_contract.mint_rewards(amount=return_amount - transfer_away_amount)
+        
     dai_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount
