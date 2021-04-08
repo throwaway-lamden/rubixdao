@@ -244,16 +244,16 @@ def settle_force_close(cdp_number: int):
     cdp[cdp_number, 'auction', cdp[cdp_number,
                                    'auction', 'highest_bidder'], 'bid'] = 0
 
-    fee = cdp[cdp_number, 'dai'] * 0.1
+    fee = cdp[cdp_number, 'auction', 'top_bid'] * 0.1
     collateral.transfer_from(
-        amount=cdp[cdp_number, 'collateral_amount'] - fee, to=ctx.caller)
-    dai_contract.burn(amount=cdp[cdp_number, 'collateral_amount'] - fee)
+        amount=cdp[cdp_number, 'collateral_amount'], to=ctx.caller, main_account=ctx.this)
+    dai_contract.burn(amount=cdp[cdp_number, 'auction', 'top_bid'] - fee)
 
-    stability_pool[cdp[number, 'collateral_type']] += fee
+    stability_pool[cdp[cdp_number, 'collateral_type']] += fee
 
-    vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[number, 'dai']
+    vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
     vaults[cdp[cdp_number, 'vault_type'],
-           'total'] -= cdp[cdp_number, 'auction', 'top_bid']
+           'total'] -= cdp[cdp_number, 'auction', 'top_bid'] - fee # Fee is technically not burned
 
     return cdp[cdp_number, 'auction', 'highest_bidder'], cdp[cdp_number,
                                                              'auction', 'top_bid']
