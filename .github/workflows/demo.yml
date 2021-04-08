@@ -20,8 +20,7 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install --upgrade setuptools
-        python3 -m pip install -r $GITHUB_WORKSPACE/requirements.txt
-        python3 -m pip install colorama
+        python3 -m pip install colorama lamden requests
     - name: Run demo
       run: |
         cd $GITHUB_WORKSPACE/
