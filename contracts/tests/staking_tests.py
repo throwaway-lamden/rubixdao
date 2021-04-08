@@ -35,7 +35,7 @@ class StakingTests(unittest.TestCase):
         self.staking = self.client.get_contract('staking')
         self.dai.mint(amount=2000000, signer='vault_contract')
         self.dai.transfer(amount=2000000, to='testing_user', signer='vault_contract')
-        
+
         self.oracle.set_price(number=0, new_price=1.0) # Probably not needed
         self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='staking')
 
@@ -70,13 +70,6 @@ class StakingTests(unittest.TestCase):
     def test_change_rate_negative(self):
         with self.assertRaisesRegex(AssertionError, 'negative'):
             self.staking.change_rate(new_rate=-0.1)
-
-    def test_change_rate_same(self):
-        pass
-    
-        # no longer needed, only operator can change rate so there isn't a high chance of things being messed up
-        # with self.assertRaisesRegex(AssertionError, 'different'):
-        #     self.staking.change_rate(new_rate=0.05)
 
     def test_change_rate_normal(self):
         current_price = self.staking.get_price()

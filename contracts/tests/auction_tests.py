@@ -33,80 +33,82 @@ class AuctionTests(unittest.TestCase):
         self.oracle = self.client.get_contract('oracle')
 
         self.oracle.set_price(number=0, new_price=1.0)
-        
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+
     def tearDown(self):
         self.client.flush()
 
     def test_force_close_vault_nonexistent(self):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
-            self.vault.open_force_close_auction(cdp_number=0)
+            self.vault.open_force_close_auction(cdp_number=1)
 
     def test_force_close_vault_closed(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
-        self.vault.close_vault(cdp_number=id)
+        self.vault.close_vault(cdp_number=self.id)
         with self.assertRaisesRegex(AssertionError, 'closed'):
-            self.vault.open_force_close_auction(cdp_number=id)
+            self.vault.open_force_close_auction(cdp_number=self.id)
 
     def test_force_close_vault_in_auction(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.vault.open_force_close_auction(cdp_number=id)
+        self.vault.open_force_close_auction(cdp_number=self.id)
         with self.assertRaisesRegex(AssertionError, 'already'):
-            self.vault.open_force_close_auction(cdp_number=id)
+            self.vault.open_force_close_auction(cdp_number=self.id)
 
     def test_force_close_vault_frozen(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.vault.open_force_close_auction(cdp_number=id)
-        assert self.vault.cdp[id, 'open'] == False
-        assert self.vault.cdp[id, 'auction', 'open'] == True
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        assert self.vault.cdp[self.id, 'open'] == False
+        assert self.vault.cdp[self.id, 'auction', 'open'] == True
 
     def test_force_close_vault_top_bid(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.vault.open_force_close_auction(cdp_number=id)
-        assert self.vault.cdp[id, 'auction', 'highest_bidder'] == 'sys'
-        self.assertAlmostEqual(self.vault.cdp[id, 'auction', 'top_bid'], 0)
-        assert self.vault.cdp[id, 'auction', 'time'] == self.vault.get_timestamp()
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
+        self.assertAlmostEqual(self.vault.cdp[self.id, 'auction', 'top_bid'], 0)
+        assert self.vault.cdp[self.id, 'auction', 'time'] == self.vault.get_timestamp()
 
     def test_force_close_vault_normal(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.vault.open_force_close_auction(cdp_number=id)
+        self.vault.open_force_close_auction(cdp_number=self.id)
 
     def test_bid_on_force_close_nonexistent(self):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
-            self.vault.bid_on_force_close(cdp_number=0, amount=1)
+            self.vault.bid_on_force_close(cdp_number=1, amount=1)
 
     def test_bid_on_force_close_no_auction(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
         with self.assertRaisesRegex(AssertionError, 'Auction'):
-            self.vault.bid_on_force_close(cdp_number=id, amount=1)
+            self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
     def test_bid_on_force_close_higher_bid(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.vault.open_force_close_auction(cdp_number=id)
+        self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=2)
-        self.vault.bid_on_force_close(cdp_number=id, amount=2)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
         with self.assertRaisesRegex(AssertionError, 'higher'):
             self.dai.approve(to='vault_contract', amount=1)
-            self.vault.bid_on_force_close(cdp_number=id, amount=1)
+            self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
     def test_bid_on_force_close_takes_dai(self):
-        pass
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=2)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        assert self.dai.balance_of(account='sys') == 98
 
-    def test_bid_on_force_close_updates_bid(self):
+    def test_bid_on_force_close_sets_bid(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=2)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
+        assert self.vault.cdp[self.id, 'auction', 'top_bid'] == 2
+        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 2
+
+    def test_bid_on_force_close_raise_bid(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        assert self.dai.balance_of(account='sys') == 99
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        assert self.dai.balance_of(account='sys') == 98
+
+    def test_multiple_user_bids(self):
         pass
 
 if __name__ == '__main__':

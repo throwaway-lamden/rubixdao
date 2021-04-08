@@ -232,7 +232,7 @@ def settle_force_close(cdp_number: int):
     assert cdp[cdp_number, 'auction', 'open'] is True, 'Auction is not open!'
 
     assert get_timestamp() - cdp[cdp_number, 'auction', 'time'] > vaults[cdp[cdp_number, 'vault_type'],
-                                                                         'minimum_auction_time'], 'Auction is still open!'
+           'minimum_auction_time'], 'Auction is still open!'
 
     collateral = importlib.import_module(
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
