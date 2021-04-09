@@ -82,5 +82,5 @@
    - [ ] Make GIF
    - [ ] Ensure OS compatibility
       - [x] Linux
-      - [ ] MacOS (works with ANSI colours)
+      - [x] MacOS (works with ANSI colours)
       - [x] Contracting does not support pure Windows
