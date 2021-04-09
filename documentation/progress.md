@@ -48,13 +48,13 @@
       - [x] DAI token
       - [x] Oracle
       - [ ] Vaults
-      - [ ] Auction
+      - [x] Auction
       - [x] Staking
     - [ ] Edge case tests
       - [x] DAI token
       - [x] Oracle
       - [ ] Vaults
-      - [ ] Auction
+      - [x] Auction
       - [x] Staking
 
 - [ ] Documentation
@@ -74,7 +74,7 @@
    - [x] Create vaults
    - [x] Close vaults
    - [ ] Stake DAI
-   - [ ] Open auction (due to undercollateralization) 
+   - [ ] Open auction (due to undercollateralization)
    - [ ] Force close auction
    - [ ] Create new vault type
    - [ ] Create vault with new vault type
@@ -82,7 +82,5 @@
    - [ ] Make GIF
    - [ ] Ensure OS compatibility
       - [x] Linux
-      - [ ] MacOS (colors are broken)
-         - [ ] Turn off colors when detecting this OS
-      - [ ] Windows (colors are broken)
-         - [ ] Turn off colors when detecting this OS
+      - [ ] MacOS (works with ANSI colours)
+      - [x] Contracting does not support pure Windows

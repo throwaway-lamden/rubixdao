@@ -324,3 +324,6 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.assertAlmostEqual(self.vault.get_collateralization_percent(cdp_number=id), 15)
+
+    def test_stability_pool(self):
+        pass
