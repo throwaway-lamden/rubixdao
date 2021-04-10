@@ -67,6 +67,20 @@ class VaultTests(unittest.TestCase):
         self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
 
+    def test_create_vault_states(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+
+        assert self.vault.cdp['current_value'] == 1
+        assert self.vault.cdp[id, 'owner'] == 'sys'
+        assert self.vault.cdp[id, 'open'] == True
+        assert self.vault.cdp[id, 'collateral_type'] == self.vault.vaults[0, 'collateral_type']
+        assert self.vault.cdp[id, 'vault_type'] == 0
+        assert self.vault.cdp[id, 'dai'] == 100
+        assert self.vault.cdp[id, 'collateral_amount'] == 1500
+        assert self.vault.cdp[id, 'time'] == self.vault.get_timestamp()
+
     def test_create_vault_takes_collateral(self):
         self.currency.transfer(to='stu', amount=1500)
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
@@ -324,6 +338,3 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.assertAlmostEqual(self.vault.get_collateralization_percent(cdp_number=id), 15)
-
-    def test_stability_pool(self):
-        pass

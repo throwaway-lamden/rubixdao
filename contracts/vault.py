@@ -39,18 +39,12 @@ def create_vault(vault_type: int, amount_of_dai: float,
     collateral = importlib.import_module(
         vaults[vault_type, 'collateral_type'])  # TODO: Add interface enforcement
     oracle = importlib.import_module(vaults['oracle'])
-    # vault_name = vaults['list'][vault_type] #This should error out if out of range, should still do sanity checks though #Probably not needed
 
     price = oracle.get_price(vault_type)
 
     assert amount_of_dai > 0, 'Amount of DAI must be positive!'
     assert vaults[vault_type, 'total'] + amount_of_dai <= vaults[vault_type,
-                                                                 'cap'], 'The allowance is not sufficent!'
-
-    # extra check for the first created vault
-    # assert amount_of_dai <= vaults[vault_type,
-    #                                'cap'], 'The allowance is not sufficent!'
-    # likely not needed
+            'cap'], 'The allowance is not sufficent!'
 
     assert (amount_of_collateral * price) / \
         amount_of_dai >= vaults[vault_type,
