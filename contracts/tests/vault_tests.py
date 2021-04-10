@@ -338,3 +338,12 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.assertAlmostEqual(self.vault.get_collateralization_percent(cdp_number=id), 15)
+
+    def test_change_stability_rate_unauthorised(self):
+        with self.assertRaisesRegex(AssertionError, 'owner'):
+            self.vault.change_stability_rate(key=0, new_value=1.2, signer='wallet2')
+
+    def test_change_stability_rate_normal(self):
+        assert self.vault.stability_rate[0] == 1.1
+        self.vault.change_stability_rate(key=0, new_value=1.2)
+        assert self.vault.stability_rate[0] == 1.2
