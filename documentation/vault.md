@@ -33,9 +33,9 @@ Returns current UTC timestamp.
 ### create_vault
 Takes `vault_type: int, amount_of_dai: float, amount_of_collateral: float`
 
-Creates a vault. Issues DAI and transfers collateral from caller to contract if the following checks pass. 
+Creates a vault. Issues DAI and transfers collateral from caller to contract if the following checks pass.
 
-Updates total issued DAI for that vault type. 
+Updates total issued DAI for that vault type.
 
 Sets the following information for the newly opened vault:
 
@@ -50,7 +50,7 @@ cdp[cdp_number, 'collateral_amount'] = amount_of_collateral
 cdp[cdp_number, 'time'] = get_timestamp()
 ```
 
-#### Checks: 
+#### Checks:
 
 - Asserts that the vault type is in the list of approved vaults
 - Asserts that the amount of DAI is positive
@@ -62,11 +62,11 @@ Returns the vault id.
 ### close_vault
 Takes `cdp_number: int`
 
-Closes a vault. Transfers original DAI and additional fee from caller to contract and returns original collateral to caller. 
+Closes a vault. Transfers original DAI and additional fee from caller to contract and returns original collateral to caller.
 
 If the amount of currently circulating DAI is greater than the amount of DAI in the open vaults (this can happen if a lot of vaults are liquidated at prices below 1x), the redemption cost is multiplied by (circulating DAI / DAI issued by currently open vaults).
 
-#### Checks: 
+#### Checks:
 
 - Asserts the owner is the caller of the vault
 - Asserts the vault is not closed
@@ -76,13 +76,13 @@ Returns the amount of DAI transferred to the contract.
 ### fast_force_close_vault
 Takes `cdp_number: int`
 
-Closes an undercollateralized vault instantly with a small reward (3.3%) issued to the closer and a 10% penalty added to the stability pool. 
+Closes an undercollateralized vault instantly with a small reward (3.3%) issued to the closer and a 10% penalty added to the stability pool.
 
 If the value of the collateral is greater than 113.3% of the DAI borrowed, the liquidator returns 110% of the DAI and recieves 113.3% equivalent value in collateral. The remaining collateral is returned to the CDP owner. 9.09% of the returned DAI is added to the stability pool and the remaining returned DAI is burned normally. Total DAI and Issued DAI for the vault type are both updated with the burn amount.
 
 If the value of the collateral is less than 113.3% of the DAI borrowed, the liquidator recieves all the collateral and returns 97.1% of the equivalent value in DAI. 9.09% of the returned DAI is added to the stability pool and the remaining returned DAI is burned normally. Total DAI is updated with the original amount of DAI in the vault. Issued DAI is updated with the burned amount.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the vault does not have sufficent collateral
 - Asserts the vault is not closed
@@ -94,7 +94,7 @@ Takes `cdp_number: int`
 
 Opens an auction for an undercollateralized vault. Sets `cdp[cdp_number, 'open']` to `False` and `cdp[cdp_number, 'auction', 'open']` to `True`. Gets the auction start time with `get_timestamp()` and stores it under `cdp[cdp_number, 'auction', 'time']`.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the vault exists and is open
 
@@ -105,7 +105,7 @@ Takes `cdp_number: int, amount: float`
 
 Bids on the specified vault with `amount` DAI. If the caller has previously bid, the amount transferred is `amount` minus previous bid. Otherwise, the amount transferred is just the specified `amount`.
 
-#### Checks: 
+#### Checks:
 
 - Asserts that `amount` is the highest bid
 - Asserts the vault exists and the auction is open
@@ -117,7 +117,7 @@ Takes `cdp_number: int`
 
 Closes the auction specified. Sends 90% of the collateral to the top bidder and 10% to the stability pool of the specific vault. Sets `cdp[cdp_number, 'auction', 'open']` to `False`.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the time elapsed from the start of the auction is longer than the minimum auction time for the vault type
 - Asserts the vault exists and the auction is open
@@ -127,23 +127,24 @@ Returns a tuple with the top bidder address and the top bid.
 ### claim_unwon_bid
 Takes `cdp_number: int`
 
-Returns the DAI bid of the specified auction to the caller. 
+Returns the DAI bid of the specified auction to the caller.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the auction is over
+- Asserts the vault exists
 
 Returns `True`.
 
 ### sync_stability_pool
 Takes `vault_type: int`
 
-Tries to equalize circulating DAI with DAI issued by currently open vaults. 
+Tries to equalize circulating DAI with DAI issued by currently open vaults.
 
-If the stability pool contains more DAI than the difference between circulating DAI and issued DAI, the difference is equalized and subtracted from the stability pool. 
+If the stability pool contains more DAI than the difference between circulating DAI and issued DAI, the difference is equalized and subtracted from the stability pool.
 Otherwise, the entire stability pool is transferred to the issued DAI pool to equalize the ratio as much as possible.
 
-#### Checks: 
+#### Checks:
 
 - N/A
 
@@ -154,7 +155,7 @@ Takes `vault_type: int, amount: float`
 
 Transfers out a specified amount of the stability pool to the caller. Intended use is to pay out rewards to lMKR holders, but anything can be done with this.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address specified in `vaults[vault_type, 'DSR', 'owner']`
 - Asserts there is sufficent DAI in the stability pool
@@ -167,7 +168,7 @@ Takes `vault_type: int, amount: float`
 
 Calls `dai.py` to mint DAI. Sends the DAI to the caller, and updates total circulating DAI for every vault based on the `weight` variable. Intended use is to pay rewards to stakers.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address specified in `vaults[vault_type, 'DSR', 'owner']`
 
@@ -179,7 +180,7 @@ Takes `vault_type: int, amount: float`
 
 Removes the burn amount from the total circulating DAI supply of a vault. This is intended to be used similarly to the MKR auction concept, where DAI is bought and burned to reduce the cost of closing vaults.
 
-#### Checks: 
+#### Checks:
 
 - N/A
 
@@ -203,7 +204,7 @@ vaults[vault_number, 'weight'] = weight
 stability_rate[vault_number] = s_rate
 ```
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address specified in `vaults['OWNER']`
 
@@ -215,9 +216,9 @@ Takes `vault_type: int`
 
 Removes the specified vault from `vaults['list']`. This prevents new openings of the specified vault, but does not restrict actions of currently open vaults.
 
-#### Checks: 
+#### Checks:
 
-- Asserts the caller is the address specified in `vaults['OWNER']` 
+- Asserts the caller is the address specified in `vaults['OWNER']`
 
 Returns `None`.
 
@@ -226,7 +227,7 @@ Takes `key: str, new_value: str, convert_to_decimal: bool = False`
 
 Changes `vault[key]` to `new_value`.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address specified in `vaults['OWNER']`  
 - Asserts `key` and `new_value` are both strings
@@ -239,7 +240,7 @@ Takes `key: Any, new_value: Any`
 
 Changes `vault[key]` to `new_value`.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address specified in `vaults['OWNER']`  
 
@@ -251,7 +252,7 @@ Takes `key: int, new_value: float`
 
 Changes `stability_rate[key]` to `new_value`.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address specified in `vaults['OWNER']`  
 
@@ -263,8 +264,8 @@ Takes `cdp_number: int`
 
 This is a getter and does not impact state in any way. It returns the collateralization percent of the requested vault.
 
-#### Checks: 
+#### Checks:
 
-- N/A 
+- Asserts the vault exists
 
 Returns collateralization percent.

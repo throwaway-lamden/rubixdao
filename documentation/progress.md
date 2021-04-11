@@ -73,14 +73,15 @@
    - [x] Setup
    - [x] Create vaults
    - [x] Close vaults
-   - [ ] Stake DAI
-   - [ ] Open auction (due to undercollateralization)
+   - [x] Stake DAI
+   - [x] Open auction (due to undercollateralization)
    - [ ] Force close auction
    - [ ] Create new vault type
    - [ ] Create vault with new vault type
    - [x] Post hashes of TXs
    - [ ] Make GIF
-   - [ ] Ensure OS compatibility
+   - [x] Ensure OS compatibility
       - [x] Linux
       - [x] MacOS (works with ANSI colours)
-      - [x] Contracting does not support pure Windows
+      - [x] Contracting does not support Windows
+   - [ ] Return funds to faucet
