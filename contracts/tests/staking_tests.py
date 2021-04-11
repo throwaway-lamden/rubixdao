@@ -36,7 +36,7 @@ class StakingTests(unittest.TestCase):
         self.dai.mint(amount=2000000, signer='vault_contract')
         self.dai.transfer(amount=2000000, to='testing_user', signer='vault_contract')
 
-        self.oracle.set_price(number=0, new_price=1.0) # Probably not needed
+        self.oracle.set_price(number=0, new_price=1.0)  # Probably not needed
         self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='staking')
 
     def tearDown(self):
@@ -193,7 +193,7 @@ class StakingTests(unittest.TestCase):
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'negative'):
             self.staking.transfer_from(amount=-1, to='wallet2',
-                                   main_account='testing_user', signer='account1')
+                                       main_account='testing_user', signer='account1')
 
     def test_transfer_from_excess(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
@@ -201,7 +201,7 @@ class StakingTests(unittest.TestCase):
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.transfer_from(amount=1000001, to='wallet2',
-                                   main_account='testing_user', signer='account1')
+                                       main_account='testing_user', signer='account1')
 
     def test_transfer_from_approved(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
@@ -209,14 +209,14 @@ class StakingTests(unittest.TestCase):
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'approved'):
             self.staking.transfer_from(amount=1000000, to='wallet2',
-                                   main_account='testing_user', signer='account1')
+                                       main_account='testing_user', signer='account1')
 
     def test_transfer_from_normal_sends(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         self.staking.transfer_from(amount=42, to='wallet2',
-                               main_account='testing_user', signer='account1')
+                                   main_account='testing_user', signer='account1')
         self.assertAlmostEqual(self.staking.allowance(
             owner='testing_user', spender='account1', signer='me'), 0)
         self.assertAlmostEqual(
@@ -227,7 +227,7 @@ class StakingTests(unittest.TestCase):
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         self.staking.transfer_from(amount=42, to='wallet2',
-                               main_account='testing_user', signer='account1')
+                                   main_account='testing_user', signer='account1')
         self.assertAlmostEqual(self.staking.balance_of(account='wallet2'), 42)
 
     def test_get_price(self):
@@ -237,9 +237,9 @@ class StakingTests(unittest.TestCase):
             self.assertEqual(current_rate, self.staking.get_price(
                 environment=env))
 
-    def test_timestamp(self):
+    def test_timestamp_is_correct(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.staking.get_timestamp()) < 120
+                   self.vault.get_timestamp()) % 14400 < 120
 
 
 if __name__ == '__main__':

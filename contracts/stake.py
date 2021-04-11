@@ -29,9 +29,8 @@ def seed():
 
 @export
 def get_timestamp():
-    # have to manually patch timezone since imports aren't on blockchain, this gives the utc timestamp for someone whose current locale is est
-    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0) + \
-        datetime.timedelta(seconds=28800)
+    # https://developers.lamden.io/docs/smart-contracts/datetime-module/
+    td = now - datetime.datetime(1970, 1, 1, 0, 0, 0)
     return td.seconds
 
 
