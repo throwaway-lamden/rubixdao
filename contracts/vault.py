@@ -377,13 +377,15 @@ def change_state(key: str, new_value: str, convert_to_decimal: bool = False):
 
 
 @export
-def change_any_state(key: Any, new_value: Any):
+def change_any_state(key: Any, new_value: Any, convert_to_tuple: bool = False):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
+    if convert_to_tuple:
+        key = tuple(key)
+        
     vaults[key] = new_value
 
     return new_value
-
 
 @export
 def change_stability_rate(key: int, new_value: float):  # don't add type checks
