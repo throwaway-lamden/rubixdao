@@ -1,3 +1,6 @@
+# This demo is obselete
+assert False, 'This demo is obsolete!'
+
 from lamden.crypto import wallet, transaction
 from colorama import init, Fore, Style
 import requests
