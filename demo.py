@@ -110,7 +110,7 @@ new_wallet = wallet.Wallet(seed=None)
 try:
     requests.get(
         f"https://faucet.lamden.io/.netlify/functions/send?account={new_wallet.verifying_key}")
-    print_color("500 dTAU funded from faucet", color.GREEN)
+    print_color("100 dTAU funded from faucet", color.GREEN)
 
 except Exception as e:
     print_color(f'Automatic funding failed with {repr(e)}', color.RED)
@@ -329,3 +329,5 @@ if os.environ.get("GITHUB_ACTIONS") != "true":
 else:
     print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions',
                 Fore.YELLOW + color.BOLD)
+
+# todo: send back all the extra funds
