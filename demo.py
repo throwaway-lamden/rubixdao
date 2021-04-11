@@ -31,6 +31,7 @@ def print_color_none(text, color_type):
     print(text)
     
 def submit_transaction(wallet, contract, function, kwargs, nonce):
+    fail = False
     while True:
         tx = transaction.build_transaction(wallet=wallet,
                                        contract=contract,
@@ -46,8 +47,6 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
         return_data = return_data.decode("UTF-8")
         return_data = ast.literal_eval(return_data)
 
-        fail = False
-        
         try:
             print(return_data['hash'])
         except KeyError:
@@ -64,8 +63,6 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
             continue
 
         return nonce + 1, return_data
-
-fail = False
 
 print("Lamden MKR Demo v1")
 print("Colors may be broken on Windows machines")
@@ -86,7 +83,7 @@ if supported_platform != True:
             DARKCYAN = '\033[36m'
             BLUE = '\033[94m'
             GREEN = Fore.GREEN
-            YELLOW = '\033[93m'
+            YELLOW = Fore.YELLOW
             RED = Fore.RED
             BOLD = Style.BRIGHT
             UNDERLINE = '\033[4m'
@@ -312,3 +309,8 @@ try:
     input("Please press ENTER when you want to proceed")
 except EOFError:
     print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
+
+if os.environ.get("GITHUB_ACTIONS") != "true":
+    print_color(f'The private key used in this demo was {new_wallet.signing_key}', color.GREEN + color.BOLD)
+else:
+    print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions', Fore.YELLOW + color.BOLD)
