@@ -1,14 +1,15 @@
 # This demo is obselete
+import ast
+import time
+import random
+import requests
+from colorama import init, Fore, Style
+from lamden.crypto import wallet, transaction
 assert False, 'This demo is obsolete!'
 
-from lamden.crypto import wallet, transaction
-from colorama import init, Fore, Style
-import requests
-import random
-import time
-import ast
 
 init(autoreset=True)
+
 
 def submit_transaction(wallet, contract, function, kwargs, nonce):
     tx = transaction.build_transaction(wallet=wallet,
@@ -28,7 +29,8 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
     try:
         print(return_data['hash'])
     except KeyError:
-        print(Fore.RED + f"Transaction failed, debug data: {str(return_data['error'])}")
+        print(
+            Fore.RED + f"Transaction failed, debug data: {str(return_data['error'])}")
 
     return nonce + 1, return_data
 
@@ -86,11 +88,12 @@ time.sleep(2)
 
 print(Style.BRIGHT + "Setting stability rate to 3.2% per year")
 
-kwargs = dict() # Reset dict
+kwargs = dict()  # Reset dict
 kwargs['key'] = 0
-kwargs['new_value'] = dict(__fixed__ = '1.0000000015469297')
+kwargs['new_value'] = dict(__fixed__='1.0000000015469297')
 
-nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_stability_rate', kwargs, nonce)
+nonce, result = submit_transaction(
+    new_wallet, f'con_{prefix}_vault', 'change_stability_rate', kwargs, nonce)
 
 time.sleep(2)
 
@@ -156,5 +159,5 @@ time.sleep(2)
 close_price = abs(float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 1)
 print(Fore.CYAN +
-    f"Vault closed for 100 DAI and an additional {close_price} DAI stability fee")
+      f"Vault closed for 100 DAI and an additional {close_price} DAI stability fee")
 # TODO: Make function to decode bytes dict

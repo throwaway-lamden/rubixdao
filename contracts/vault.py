@@ -44,7 +44,7 @@ def create_vault(vault_type: int, amount_of_dai: float,
 
     assert amount_of_dai > 0, 'Amount of DAI must be positive!'
     assert vaults[vault_type, 'total'] + amount_of_dai <= vaults[vault_type,
-            'cap'], 'The allowance is not sufficent!'
+                                                                 'cap'], 'The allowance is not sufficent!'
 
     assert (amount_of_collateral * price) / \
         amount_of_dai >= vaults[vault_type,
@@ -200,7 +200,7 @@ def open_force_close_auction(cdp_number: int):
 def bid_on_force_close(cdp_number: int, amount: float):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction',
-                   'open'] is True, 'Auction is not open!'
+               'open'] is True, 'Auction is not open!'
     assert amount > cdp[cdp_number, 'auction',
                         'top_bid'], 'There is already a higher bid!'
 
@@ -226,7 +226,7 @@ def settle_force_close(cdp_number: int):
     assert cdp[cdp_number, 'auction', 'open'] is True, 'Auction is not open!'
 
     assert get_timestamp() - cdp[cdp_number, 'auction', 'time'] > vaults[cdp[cdp_number, 'vault_type'],
-           'minimum_auction_time'], 'Auction is still open!'
+                                                                         'minimum_auction_time'], 'Auction is still open!'
 
     collateral = importlib.import_module(
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
@@ -247,7 +247,7 @@ def settle_force_close(cdp_number: int):
 
     vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
     vaults[cdp[cdp_number, 'vault_type'],
-           'total'] -= cdp[cdp_number, 'auction', 'top_bid'] - fee # Fee is technically not burned
+           'total'] -= cdp[cdp_number, 'auction', 'top_bid'] - fee  # Fee is technically not burned
 
     return cdp[cdp_number, 'auction', 'highest_bidder'], cdp[cdp_number,
                                                              'auction', 'top_bid']
@@ -329,7 +329,8 @@ def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
 def sync_burn(vault_type: int, amount: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
 
-    dai_contract.transfer_from(to=ctx.this, amount=amount, main_account=ctx.caller)
+    dai_contract.transfer_from(
+        to=ctx.this, amount=amount, main_account=ctx.caller)
     dai_contract.burn(amount=amount)
 
     vaults[vault_type, 'total'] -= amount
@@ -382,10 +383,11 @@ def change_any_state(key: Any, new_value: Any, convert_to_tuple: bool = False):
 
     if convert_to_tuple:
         key = tuple(key)
-        
+
     vaults[key] = new_value
 
     return new_value
+
 
 @export
 def change_stability_rate(key: int, new_value: float):  # don't add type checks

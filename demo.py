@@ -5,8 +5,10 @@ import time
 import ast
 import sys
 
+
 class SubmissionError(Exception):
     pass
+
 
 class color:
     PURPLE = '\033[95m'
@@ -24,23 +26,26 @@ class color:
 def print_color(text, color_type):
     print(color_type + text + color.END)
 
+
 def print_color_alternate(text, color_type):
     print(color_type + text)
-    
+
+
 def print_color_none(text, color_type):
     print(text)
-    
+
+
 def submit_transaction(wallet, contract, function, kwargs, nonce):
     fail = False
     while True:
         tx = transaction.build_transaction(wallet=wallet,
-                                       contract=contract,
-                                       function=function,
-                                       kwargs=kwargs,
-                                       nonce=nonce,  # Starts at zero, increments with every transaction
-                                       # Masternode address
-                                       processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
-                                       stamps=1000)
+                                           contract=contract,
+                                           function=function,
+                                           kwargs=kwargs,
+                                           nonce=nonce,  # Starts at zero, increments with every transaction
+                                           # Masternode address
+                                           processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
+                                           stamps=1000)
 
         return_data = requests.post(
             'https://testnet-master-1.lamden.io/', data=tx).content
@@ -50,33 +55,35 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
         try:
             print(return_data['hash'])
         except KeyError:
-            if fail is True: # Raises error on second try (so it doesn't continuously retry)
+            # Raises error on second try (so it doesn't continuously retry)
+            if fail is True:
                 raise SubmissionError(str(return_data['error']))
-                
+
             print_color(
                 f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
             print_color(
                 f"Retrying...", color.RED)
-                
+
             fail = True
-            
+
             continue
 
         return nonce + 1, return_data
+
 
 print("Lamden MKR Demo v1")
 print("Colors may be broken on Windows machines")
 
 plat = sys.platform
 supported_platform = plat != 'Pocket PC' and (plat != 'win32' or
-                                                  'ANSICON' in os.environ)
-                                                  
+                                              'ANSICON' in os.environ)
+
 if supported_platform != True:
     print("Color is not natively supported on this platform, trying colorama")
 
     try:
         from colorama import init, Fore, Style
-        
+
         class color_alternate:
             PURPLE = '\033[95m'
             CYAN = Fore.CYAN
@@ -87,16 +94,16 @@ if supported_platform != True:
             RED = Fore.RED
             BOLD = Style.BRIGHT
             UNDERLINE = '\033[4m'
-        
+
         color = color_alternate
         print_color = print_color_alternate
 
         init(autoreset=True)
-        
+
     except ImportError:
         print("Unable to import colorama, defaulting to no colors")
         print_color = print_color_none
-        
+
 
 new_wallet = wallet.Wallet(seed=None)
 
@@ -148,11 +155,12 @@ time.sleep(2)
 
 print_color("Setting stability rate to 3.2% per year", color.BOLD)
 
-kwargs = dict() # Reset dict
+kwargs = dict()  # Reset dict
 kwargs['key'] = 0
-kwargs['new_value'] = dict(__fixed__ = '1.0000000015469297')
+kwargs['new_value'] = dict(__fixed__='1.0000000015469297')
 
-nonce, result = submit_transaction(new_wallet, f'con_{prefix}_vault', 'change_stability_rate', kwargs, nonce)
+nonce, result = submit_transaction(
+    new_wallet, f'con_{prefix}_vault', 'change_stability_rate', kwargs, nonce)
 
 time.sleep(2)
 
@@ -207,7 +215,8 @@ nonce, result = submit_transaction(
 try:
     input("Please press ENTER when you want to close the vault")
 except EOFError:
-    print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
+    print_color(
+        "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
 
 print_color("Closing vault", color.BOLD)
 kwargs = dict()
@@ -229,8 +238,9 @@ print_color(
 try:
     input("Please press ENTER when you want to proceed")
 except EOFError:
-    print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
-    
+    print_color(
+        "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
+
 print_color("Demo 2: Staking demo", color.GREEN)
 
 print_color("Setting staking contract to correct contract", color.BOLD)
@@ -254,7 +264,7 @@ kwargs['amount_of_collateral'] = dict(__fixed__='155.0')
 
 nonce, result = submit_transaction(
     new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
-    
+
 time.sleep(2)
 
 print_color("Staking 100 DAI at a rate of 2% per annum", color.BOLD)
@@ -270,37 +280,39 @@ time.sleep(2)
 try:
     input("Please press ENTER when you want to unstake")
 except EOFError:
-    print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
-    
+    print_color(
+        "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
+
 print_color("Unstaking 100 DAI", color.BOLD)
 
 s_amount = float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_stake/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 0.00000000000001 # Prevent floating point issue
-    
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_stake/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 0.00000000000001  # Prevent floating point issue
+
 old_amount = float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
-    
+
 kwargs = dict()
 kwargs['amount'] = dict(__fixed__=str(s_amount))
-    
+
 nonce, result = submit_transaction(
     new_wallet, f'con_{prefix}_stake', 'withdraw_stake', kwargs, nonce)
-    
+
 time.sleep(2)
 
 return_amount = float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - old_amount
-    
+
 print_color(
-    f"Stake closed for 100 DAI and an additional {return_amount - 100.0} DAI interest", color.CYAN) # TODO: Make operation consistent
-    
+    f"Stake closed for 100 DAI and an additional {return_amount - 100.0} DAI interest", color.CYAN)  # TODO: Make operation consistent
+
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
 print_color("Creating vault buffer to offset stability fee", color.BOLD)
 
 try:
     input("Please press ENTER when you want to proceed")
 except EOFError:
-    print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
+    print_color(
+        "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
 
 print_color("Demo 4: Undercollateralized auction force close demo", color.GREEN)
 print_color("Creating vault buffer to offset stability fee", color.BOLD)
@@ -308,9 +320,12 @@ print_color("Creating vault buffer to offset stability fee", color.BOLD)
 try:
     input("Please press ENTER when you want to proceed")
 except EOFError:
-    print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
+    print_color(
+        "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
 
 if os.environ.get("GITHUB_ACTIONS") != "true":
-    print_color(f'The private key used in this demo was {new_wallet.signing_key}', color.GREEN + color.BOLD)
+    print_color(
+        f'The private key used in this demo was {new_wallet.signing_key}', color.GREEN + color.BOLD)
 else:
-    print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions', Fore.YELLOW + color.BOLD)
+    print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions',
+                Fore.YELLOW + color.BOLD)
