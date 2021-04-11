@@ -46,7 +46,7 @@ To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamde
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/demo?label=Demo&style=flat-square)
 
-*The demo is untested and a WIP. It may not always be up-to-date.*
+*The demo is untested and a WIP. It may not always be up-to-date. The GitHub action is flaky because it uses the actual blockchain, so it may take several runs to succeed if the blockchain is under high load.*
 
 To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`. If you are running the script on Windows, `colorama` is recommended.
 
