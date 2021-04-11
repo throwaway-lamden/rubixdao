@@ -329,7 +329,7 @@ def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
 def sync_burn(vault_type: int, amount: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
 
-    dai_contract.transfer_from(to=ctx.this, amount=amount)
+    dai_contract.transfer_from(to=ctx.this, amount=amount, main_account=ctx.caller)
     dai_contract.burn(amount=amount)
 
     vaults[vault_type, 'total'] -= amount

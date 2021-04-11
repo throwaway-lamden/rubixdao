@@ -167,6 +167,17 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'available'):
             self.vault.sync_burn(vault_type=-1, amount=1)
 
+    def test_sync_burn_insufficient(self):
+        with self.assertRaisesRegex(AssertionError, 'enough'):
+            self.vault.sync_burn(vault_type=0, amount=1)
+
+    def test_sync_burn_normal(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.vault.create_vault(
+                    vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.sync_burn(vault_type=0, amount=1)
+
     def test_sync_pool_positive(self):
         pass
 
