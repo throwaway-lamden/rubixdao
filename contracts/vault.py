@@ -381,7 +381,7 @@ def change_any_state(key: Any, new_value: Any, convert_to_tuple: bool = False):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
     if convert_to_tuple:
-        new_value = tuple(new_value)
+        key = tuple(key)
         
     vaults[key] = new_value
 
