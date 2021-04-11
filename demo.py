@@ -284,7 +284,7 @@ return_amount = float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - old_amount
     
 print_color(
-    f"Stake closed for 100 DAI and an additional {return_amount - 100.0} DAI stability fee", color.CYAN) # TODO: Make operation consistent
+    f"Stake closed for 100 DAI and an additional {return_amount - 100.0} DAI interest", color.CYAN) # TODO: Make operation consistent
     
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
 print_color("Creating vault buffer to offset stability fee", color.BOLD)
