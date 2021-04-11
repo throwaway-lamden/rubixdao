@@ -31,7 +31,8 @@ def print_color_none(text, color_type):
     print(text)
     
 def submit_transaction(wallet, contract, function, kwargs, nonce):
-    tx = transaction.build_transaction(wallet=wallet,
+    while True:
+        tx = transaction.build_transaction(wallet=wallet,
                                        contract=contract,
                                        function=function,
                                        kwargs=kwargs,
@@ -40,19 +41,29 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                                        processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
                                        stamps=1000)
 
-    return_data = requests.post(
-        'https://testnet-master-1.lamden.io/', data=tx).content
-    return_data = return_data.decode("UTF-8")
-    return_data = ast.literal_eval(return_data)
+        return_data = requests.post(
+            'https://testnet-master-1.lamden.io/', data=tx).content
+        return_data = return_data.decode("UTF-8")
+        return_data = ast.literal_eval(return_data)
 
-    try:
-        print(return_data['hash'])
-    except KeyError:
-        print_color(
-            f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
-        fail = True
+        fail = False
+        
+        try:
+            print(return_data['hash'])
+        except KeyError:
+            if fail is True: # Raises error on second try (so it doesn't continuously retry)
+                raise SubmissionError(str(return_data['error']))
+                
+            print_color(
+                f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
+            print_color(
+                f"Retrying...", color.RED)
+                
+            fail = True
+            
+            continue
 
-    return nonce + 1, return_data
+        return nonce + 1, return_data
 
 fail = False
 
@@ -301,6 +312,3 @@ try:
     input("Please press ENTER when you want to proceed")
 except EOFError:
     print_color("\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
-    
-if fail is True:
-    raise SubmissionError()
