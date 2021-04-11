@@ -178,6 +178,18 @@ class VaultTests(unittest.TestCase):
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.sync_burn(vault_type=0, amount=1)
 
+    def test_sync_burn_changes_state(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.vault.create_vault(
+                    vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        total = self.dai.total_supply.get()
+        original = self.vault.vaults[0, 'total']
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.sync_burn(vault_type=0, amount=1)
+
+        self.assertAlmostEqual(total - 1, self.dai.total_supply.get())
+        self.assertAlmostEqual(original - 1, self.vault.vaults[0, 'total'])
+
     def test_sync_pool_positive(self):
         pass
 
