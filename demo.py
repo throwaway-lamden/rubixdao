@@ -1,9 +1,11 @@
-from lamden.crypto import wallet, transaction
-import requests
-import random
-import time
 import ast
+import os
+import random
 import sys
+import time
+
+import requests
+from lamden.crypto import transaction, wallet
 
 
 class SubmissionError(Exception):
@@ -82,7 +84,7 @@ if supported_platform != True:
     print("Color is not natively supported on this platform, trying colorama")
 
     try:
-        from colorama import init, Fore, Style
+        from colorama import Fore, Style, init
 
         class color_alternate:
             PURPLE = '\033[95m'
