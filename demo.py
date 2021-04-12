@@ -330,6 +330,6 @@ if os.environ.get("GITHUB_ACTIONS") != "true":
         f'The private key used in this demo was {new_wallet.signing_key}', color.GREEN + color.BOLD)
 else:
     print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions',
-                Fore.YELLOW + color.BOLD)
+                color.YELLOW + color.BOLD)
 
 # todo: send back all the extra funds

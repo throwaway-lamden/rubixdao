@@ -82,8 +82,8 @@ def close_vault(cdp_number: int):
     collateral = importlib.import_module(
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
 
-    stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'issued'] / \
-        vaults[cdp[cdp_number, 'vault_type'], 'total']
+    stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'total'] / \
+        vaults[cdp[cdp_number, 'vault_type'], 'issued']
     redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
     fee = redemption_cost * \
         (stability_rate[cdp[cdp_number, 'vault_type']] **
@@ -118,7 +118,7 @@ def fast_force_close_vault(cdp_number: int):
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
     raise
-    stability_ratio = vaults['issued'] / vaults['total']
+    stability_ratio = vaults['total'] / vaults['issued']
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
@@ -151,7 +151,7 @@ def fast_force_close_vault(cdp_number: int):
 
         vaults[cdp[cdp_number, 'vault_type'],
                'issued'] -= cdp[cdp_number, 'dai']
-        vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost
+        vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost_without_fee
 
     else:
         redemption_cost, redemption_cost_without_fee = redemption_cost * \
@@ -169,7 +169,7 @@ def fast_force_close_vault(cdp_number: int):
         collateral.transfer(amount=amount, to=ctx.caller)
 
         vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[number, 'dai']
-        vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost
+        vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost_without_fee
 
     stability_pool[cdp[number, 'collateral_type']
                    ] += redemption_cost - redemption_cost_without_fee
@@ -247,7 +247,7 @@ def settle_force_close(cdp_number: int):
 
     vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
     vaults[cdp[cdp_number, 'vault_type'],
-           'total'] -= cdp[cdp_number, 'auction', 'top_bid'] - fee  # Fee is technically not burned
+           'total'] -= cdp[cdp_number, 'auction', 'top_bid'] - fee  # Fee is not burned, so it does not count
 
     return cdp[cdp_number, 'auction', 'highest_bidder'], cdp[cdp_number,
                                                              'auction', 'top_bid']
