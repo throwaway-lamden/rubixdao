@@ -199,9 +199,8 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        original = self.vault.stability_pool[0]
         self.vault.sync_stability_pool(vault_type=0)
-        assert original == self.vault.stability_pool[0]
+        assert 0 == self.vault.stability_pool[0]
 
     def test_sync_stability_pool_positive(self):
         pass
