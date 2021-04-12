@@ -191,10 +191,22 @@ class VaultTests(unittest.TestCase):
         self.assertAlmostEqual(total - 1, self.dai.total_supply.get())
         self.assertAlmostEqual(original - 1, self.vault.vaults[0, 'total'])
 
-    def test_sync_pool_positive(self):
+    def test_sync_stability_pool_nonexistent(self):
+        with self.assertRaisesRegex(AssertionError, 'available'):
+            self.vault.sync_stability_pool(vault_type=-1)
+
+    def test_sync_stability_pool_zero(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        original = self.vault.stability_pool[0]
+        self.vault.sync_stability_pool(vault_type=0)
+        assert original == self.vault.stability_pool[0]
+
+    def test_sync_stability_pool_positive(self):
         pass
 
-    def test_sync_pool_negative(self):
+    def test_sync_stability_pool_negative(self):
         pass
 
     def test_remove_vault_unauthorised(self):

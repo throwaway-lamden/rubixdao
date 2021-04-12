@@ -278,7 +278,7 @@ def sync_stability_pool(vault_type: int):
         # Return new ratio
         return vaults[vault_type, 'issued'] / vaults[vault_type, 'total']
 
-    else:  # This also applies to negatives, although those situations are unlikely
+    else:  # This also applies to negatives and zeros, although those situations are unlikely
         vaults[vault_type, 'issued'] = vaults[vault_type, 'total']
         stability_pool[vault_type] -= default_amount
 
