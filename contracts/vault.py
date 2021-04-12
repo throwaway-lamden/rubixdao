@@ -111,12 +111,13 @@ def close_vault(cdp_number: int):
 
 @export
 def fast_force_close_vault(cdp_number: int):
+    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
 
     collateral = importlib.import_module(
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
-
+    raise
     stability_ratio = vaults['issued'] / vaults['total']
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
@@ -389,7 +390,7 @@ def change_any_state(key: Any, new_value: Any, convert_to_tuple: bool = False):
 
 
 @export
-def change_stability_rate(key: int, new_value: float):  # don't add type checks
+def change_stability_rate(key: int, new_value: float):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
     stability_rate[key] = new_value

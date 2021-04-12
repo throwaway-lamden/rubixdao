@@ -85,7 +85,7 @@ If the value of the collateral is less than 113.3% of the DAI borrowed, the liqu
 #### Checks:
 
 - Asserts the vault does not have sufficent collateral
-- Asserts the vault is not closed
+- Asserts the vault exists and is open
 
 Returns the amount of collateral paid out.
 

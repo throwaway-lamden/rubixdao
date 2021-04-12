@@ -380,3 +380,22 @@ class VaultTests(unittest.TestCase):
         assert self.vault.stability_rate[0] == 1.1
         self.vault.change_stability_rate(key=0, new_value=1.2)
         assert self.vault.stability_rate[0] == 1.2
+
+    def test_fast_force_close_vault_closed(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.approve(to='vault_contract', amount=100)
+        self.vault.close_vault(cdp_number=id)
+        with self.assertRaisesRegex(AssertionError, 'closed'):
+            self.vault.fast_force_close_vault(cdp_number=id)
+
+    def test_fast_force_close_vault_nonexistent(self):
+        with self.assertRaisesRegex(AssertionError, 'cdp'):
+            self.vault.fast_force_close_vault(cdp_number=id)
+
+    '''def test_fast_force_close_vault_normal(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.vault.fast_force_close_vault(cdp_number=0)'''
