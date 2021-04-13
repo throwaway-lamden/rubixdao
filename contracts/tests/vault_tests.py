@@ -38,6 +38,7 @@ class VaultTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=1.0)
         self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='sys')
         self.vault.change_any_state(key=(0, 'DSR', 'owner'), new_value='sys')
+        self.vault.change_any_state(key=('currency', 'DSR', 'owner'), new_value='sys')
 
     def tearDown(self):
         self.client.flush()
@@ -360,13 +361,39 @@ class VaultTests(unittest.TestCase):
             self.vault.export_rewards(vault_type=0, amount=1)
 
     def test_export_rewards_normal(self):
-        pass
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.vault.export_rewards(vault_type='currency', amount=0.1)
 
     def test_export_rewards_gives_rewards(self):
-        pass
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.vault.export_rewards(vault_type='currency', amount=0.1)
+        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 99.1) # 99 from unused dai amount
 
     def test_export_rewords_changes_state(self):
-        pass
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.vault.export_rewards(vault_type='currency', amount=0.1)
+        assert self.vault.stability_pool['currency'] == 0
 
     def test_mint_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
