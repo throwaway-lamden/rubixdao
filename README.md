@@ -52,6 +52,11 @@ To see the contracts in action on the testnet, clone this repository and run `de
 
 You can also see the demo in the [Github Actions demo.yml](https://github.com/throwaway-lamden/lamden-mkr/actions/workflows/demo.yml) tab. A WIP web demo on [Repl.it](https://replit.com/@testtestlamden/lamden-mkr) can also be used.
 
+### Expected Workflows
+
+1. User opens vault -> waits ? amount of time -> stakes DAI/sells DAI -> withdraws stake/buys back DAI -> closes vault with initial DAI and stability fee and gets collateral back
+2. User opens vault -> waits ? amount of time -> collateral value drops -> anyone can force close the vault instantly and get 3% profit
+3. User opens vault -> waits ? amount of time -> collateral value drops -> anyone can open an auction -> after 72 hours has passed, the highest DAI bid can claim the collateral and everyone else can claim their bids back
 ## Usage
 
 Calling these contracts from other smart contracts is simple.
