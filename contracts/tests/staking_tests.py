@@ -146,9 +146,7 @@ class StakingTests(unittest.TestCase):
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.staking.withdraw_stake(
             amount=1000000, signer='testing_user', environment=env)
-        with self.assertRaisesRegex(AssertionError, '!='):
-            self.assertEqual(self.dai.balance_of(
-                account='testing_user'), 2000000)
+        assert self.dai.balance_of(account='testing_user') > 2000000
 
     def test_transfer_negative(self):
         with self.assertRaisesRegex(AssertionError, 'negative'):

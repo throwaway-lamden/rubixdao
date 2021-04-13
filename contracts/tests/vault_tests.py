@@ -36,6 +36,7 @@ class VaultTests(unittest.TestCase):
         self.oracle = self.client.get_contract('oracle')
 
         self.oracle.set_price(number=0, new_price=1.0)
+        self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='staking')
 
     def tearDown(self):
         self.client.flush()
@@ -355,10 +356,14 @@ class VaultTests(unittest.TestCase):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.vault.get_timestamp()) % 14400 < 120
 
-    def test_mint_rewards(self):
+    def test_export_rewards(self):
         pass  # and the edge case tests
 
-    def test_export_rewards(self):
+    def test_mint_rewards_unauthorised(self):
+        with self.assertRaisesRegex(AssertionError, 'owner'):
+            self.vault.mint_rewards(amount=1)
+
+    def test_mint_rewards(self):
         pass  # and the edge case tests
 
     def test_get_collateralization_percent_nonexistent(self):
