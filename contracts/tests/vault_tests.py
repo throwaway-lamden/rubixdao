@@ -4,6 +4,7 @@ import time
 import unittest
 
 from contracting.client import ContractingClient
+from contracting.stdlib.bridge.time import Datetime
 
 class VaultTests(unittest.TestCase):
     def setUp(self):
@@ -358,8 +359,14 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.vault.export_rewards(vault_type=0, amount=1)
 
-    def test_export_rewards(self):
-        pass  # and the edge case tests
+    def test_export_rewards_normal(self):
+        pass
+
+    def test_export_rewards_gives_rewards(self):
+        pass
+
+    def test_export_rewords_changes_state(self):
+        pass
 
     def test_mint_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):

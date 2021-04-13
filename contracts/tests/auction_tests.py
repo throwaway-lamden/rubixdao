@@ -37,7 +37,6 @@ class AuctionTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.vault.vaults[0, 'minimum_auction_time'] = 10
 
     def tearDown(self):
         self.client.flush()
