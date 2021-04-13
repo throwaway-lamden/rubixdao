@@ -5,7 +5,6 @@ import unittest
 
 from contracting.client import ContractingClient
 
-
 class VaultTests(unittest.TestCase):
     def setUp(self):
         self.client = ContractingClient()
@@ -36,7 +35,7 @@ class VaultTests(unittest.TestCase):
         self.oracle = self.client.get_contract('oracle')
 
         self.oracle.set_price(number=0, new_price=1.0)
-        self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='staking')
+        self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='sys')
 
     def tearDown(self):
         self.client.flush()
@@ -318,29 +317,24 @@ class VaultTests(unittest.TestCase):
     def test_fast_force_close_vault(self):
         pass  # the tests for the auction are in the auction tests file
 
-    def test_open_and_close_vault_1000_times_works(self):
+    def test_open_and_close_vault_1000_times(self):
         id_list = [i for i in range(1000)]
 
         for x in range(1, 1001):
-            self.currency.approve(to='stu', amount=151)
-            self.currency.transfer(to='stu', amount=151)
             self.currency.approve(to='vault_contract',
-                                  amount=151, signer='stu')
-
+                                  amount=151)
             self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                    amount_of_collateral=151, signer='stu')
-
+                                    amount_of_collateral=151)
             self.assertEqual(self.vault.vaults[0, 'issued'], x * 100)
             self.assertEqual(self.vault.vaults[0, 'total'], x * 100)
-
-            self.assertEqual(self.dai.balances['stu'], x * 100)
+            self.assertEqual(self.dai.balances['sys'], x * 100)
             self.assertEqual(self.dai.total_supply.get(), x * 100)
 
         for x in range(1, 1001):
             id = random.choice(id_list)
             id_list.remove(id)
-            self.dai.approve(to='vault_contract', amount=100, signer='stu')
-            self.vault.close_vault(cdp_number=id, signer='stu')
+            self.dai.approve(to='vault_contract', amount=100)
+            self.vault.close_vault(cdp_number=id)
 
             self.assertEqual(
                 self.vault.vaults[0, 'issued'],
@@ -348,23 +342,46 @@ class VaultTests(unittest.TestCase):
             self.assertEqual(
                 self.vault.vaults[0, 'total'],
                 1000 * 100 - x * 100)
-
-            self.assertEqual(self.dai.balances['stu'], 1000 * 100 - x * 100)
+            self.assertEqual(self.dai.balances['sys'], 1000 * 100 - x * 100)
             self.assertEqual(self.dai.total_supply.get(), 1000 * 100 - x * 100)
 
     def test_timestamp_is_correct(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
                    self.vault.get_timestamp()) % 14400 < 120
 
+    def test_export_rewards_unauthorised(self):
+        with self.assertRaisesRegex(AssertionError, 'owner'):
+            self.vault.export_rewards(amount=1, signer='wallet2')
+
     def test_export_rewards(self):
         pass  # and the edge case tests
 
     def test_mint_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
-            self.vault.mint_rewards(amount=1)
+            self.vault.mint_rewards(amount=1, signer='wallet2')
 
-    def test_mint_rewards(self):
-        pass  # and the edge case tests
+    def test_mint_rewards_negative(self):
+        with self.assertRaisesRegex(AssertionError, 'negative'):
+            self.vault.mint_rewards(amount=-1)
+
+    def test_mint_rewards_normal(self):
+        self.vault.mint_rewards(amount=1)
+
+    def test_mint_rewards_gives_rewards(self):
+        self.vault.mint_rewards(amount=1)
+        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 1)
+
+    def test_mint_rewards_changes_state(self):
+        self.vault.mint_rewards(amount=1)
+        assert self.vault.vaults[0, 'total'] == 1
+
+    def test_mint_rewards_floating_point(self):
+        total = 0
+        for _ in range(1000):
+            minting = random.random() * 100
+            total += minting
+            self.vault.mint_rewards(amount=minting)
+        self.assertAlmostEqual(self.vault.vaults[0, 'total'], total)
 
     def test_get_collateralization_percent_nonexistent(self):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
