@@ -36,6 +36,7 @@ class VaultTests(unittest.TestCase):
 
         self.oracle.set_price(number=0, new_price=1.0)
         self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='sys')
+        self.vault.change_any_state(key=(0, 'DSR', 'owner'), new_value='sys')
 
     def tearDown(self):
         self.client.flush()
@@ -351,7 +352,11 @@ class VaultTests(unittest.TestCase):
 
     def test_export_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
-            self.vault.export_rewards(amount=1, signer='wallet2')
+            self.vault.export_rewards(vault_type=0, amount=1, signer='wallet2')
+
+    def test_export_rewards_insufficient(self):
+        with self.assertRaisesRegex(AssertionError, 'enough'):
+            self.vault.export_rewards(vault_type=0, amount=1)
 
     def test_export_rewards(self):
         pass  # and the edge case tests
