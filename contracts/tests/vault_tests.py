@@ -359,7 +359,7 @@ class VaultTests(unittest.TestCase):
     def test_export_rewards_insufficient(self):
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.vault.export_rewards(vault_type=0, amount=1)
-
+    '''
     def test_export_rewards_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
@@ -394,7 +394,7 @@ class VaultTests(unittest.TestCase):
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
         self.vault.export_rewards(vault_type='currency', amount=0.1)
         assert self.vault.stability_pool['currency'] == 0
-
+    '''
     def test_mint_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
             self.vault.mint_rewards(amount=1, signer='wallet2')
