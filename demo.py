@@ -158,7 +158,7 @@ nonce, result = submit_transaction(
 
 time.sleep(2)
 
-print_color("Setting stability rate to 3.2% per year", color.BOLD)
+print_color("Setting stability rate to 5% per year", color.BOLD)
 
 kwargs = dict()  # Reset dict
 kwargs['key'] = 0
@@ -272,7 +272,7 @@ nonce, result = submit_transaction(
 
 time.sleep(2)
 
-print_color("Staking 100 DAI at a rate of 2% per annum", color.BOLD)
+print_color("Staking 100 DAI at a rate of 5% per annum", color.BOLD)
 
 kwargs = dict()
 kwargs['amount'] = dict(__fixed__='100.0')
@@ -325,7 +325,7 @@ time.sleep(2)
 close_price = abs(old_amount - float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']))
 print_color(
-    f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this can be negative or zero).", color.CYAN)
+    f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this will likely be negative).", color.CYAN)
         
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
 print_color("Creating vault buffer to offset stability fee", color.BOLD)
@@ -353,3 +353,4 @@ else:
                 color.YELLOW + color.BOLD)
 
 # todo: send back all the extra funds
+# todo: change fee for staking to 25% (1.0000000070758357) so rewards will be positive instead of negative
