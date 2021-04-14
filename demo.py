@@ -39,7 +39,7 @@ def print_color_none(text, color_type):
 
 def submit_transaction(wallet, contract, function, kwargs, nonce):
     fail = False
-    while True:
+    while True: # TODO: Remove later, the check that used this is now depreceated
         tx = transaction.build_transaction(wallet=wallet,
                                            contract=contract,
                                            function=function,
@@ -49,27 +49,30 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                                            processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
                                            stamps=1000)
 
-        return_data = requests.post(
-            'https://testnet-master-1.lamden.io/', data=tx).content
-        return_data = return_data.decode("UTF-8")
-        return_data = ast.literal_eval(return_data)
-
         try:
+            return_data = requests.post(
+                'https://testnet-master-1.lamden.io/', data=tx).content
+            return_data = return_data.decode("UTF-8")
+            return_data = ast.literal_eval(return_data)
             print(return_data['hash'])
         except KeyError:
             # Raises error on second try (so it doesn't continuously retry)
-            if fail is True:
+            try:
+                print_color(
+                    f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
+                print_color(
+                    f"Retrying...", color.RED)
+                    
+                return_data = requests.post(
+                    'https://testnet-master-1.lamden.io/', data=tx).content
+                return_data = return_data.decode("UTF-8")
+                return_data = ast.literal_eval(return_data)
+                print(return_data['hash'])
+            except KeyError:
                 raise SubmissionError(str(return_data['error']))
 
-            print_color(
-                f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
-            print_color(
-                f"Retrying...", color.RED)
-
-            fail = True
-
             continue
-
+        
         return nonce + 1, return_data
 
 
@@ -307,6 +310,23 @@ return_amount = float(ast.literal_eval(requests.get(
 print_color(
     f"Stake closed for 100 DAI and an additional {return_amount - 100.0} DAI interest", color.CYAN)  # TODO: Make operation consistent
 
+print_color("Closing vault", color.BOLD)
+kwargs = dict()
+kwargs['cdp_number'] = 1
+
+old_amount = float(ast.literal_eval(requests.get(
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
+        
+nonce, result = submit_transaction(
+    new_wallet, f'con_{prefix}_vault', 'close_vault', kwargs, nonce)
+
+time.sleep(2)
+
+close_price = abs(float(ast.literal_eval(requests.get(
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - old_amount)
+print_color(
+    f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this can be negative or zero).", color.CYAN)
+        
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
 print_color("Creating vault buffer to offset stability fee", color.BOLD)
 
