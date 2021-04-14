@@ -322,8 +322,8 @@ nonce, result = submit_transaction(
 
 time.sleep(2)
 
-close_price = abs(float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - old_amount)
+close_price = abs(old_amount - float(ast.literal_eval(requests.get(
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']))
 print_color(
     f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this can be negative or zero).", color.CYAN)
         
