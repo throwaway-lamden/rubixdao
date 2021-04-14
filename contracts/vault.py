@@ -94,7 +94,7 @@ def close_vault(cdp_number: int):
         amount=amount, to=ctx.this, main_account=ctx.caller)
     dai_contract.burn(amount=redemption_cost)
 
-    stability_pool[cdp[cdp_number, 'collateral_type']] += fee
+    stability_pool[cdp[cdp_number, 'vault_type']] += fee
 
     vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
     # This is only different if the ratio is different
@@ -171,7 +171,7 @@ def fast_force_close_vault(cdp_number: int):
         vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[number, 'dai']
         vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost_without_fee
 
-    stability_pool[cdp[number, 'collateral_type']
+    stability_pool[cdp[number, 'vault_type']
                    ] += redemption_cost - redemption_cost_without_fee
 
     return amount
@@ -243,7 +243,7 @@ def settle_force_close(cdp_number: int):
         amount=cdp[cdp_number, 'collateral_amount'], to=ctx.caller, main_account=ctx.this)
     dai_contract.burn(amount=cdp[cdp_number, 'auction', 'top_bid'] - fee)
 
-    stability_pool[cdp[cdp_number, 'collateral_type']] += fee
+    stability_pool[cdp[cdp_number, 'vault_type']] += fee
 
     vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
     vaults[cdp[cdp_number, 'vault_type'],
