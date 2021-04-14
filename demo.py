@@ -312,7 +312,7 @@ print_color(
 
 print_color("Closing vault", color.BOLD)
 kwargs = dict()
-kwargs['cdp_number'] = 1
+kwargs['cdp_number'] = 2
 
 old_amount = float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
