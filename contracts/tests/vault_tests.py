@@ -351,9 +351,6 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.close_vault(cdp_number=id)
 
-    def test_fast_force_close_vault(self):
-        pass
-
     def test_open_and_close_vault_1000_times(self):
         id_list = [i for i in range(1000)]
 
@@ -489,3 +486,10 @@ class VaultTests(unittest.TestCase):
     def test_fast_force_close_vault_nonexistent(self):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
             self.vault.fast_force_close_vault(cdp_number=id)
+
+    def test_fast_force_close_vault(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.approve(to='vault_contract', amount=100)
+        self.vault.fast_force_close_vault(cdp_number=id)

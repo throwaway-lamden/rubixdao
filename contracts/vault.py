@@ -117,8 +117,8 @@ def fast_force_close_vault(cdp_number: int):
     collateral = importlib.import_module(
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
-    raise
-    stability_ratio = vaults['total'] / vaults['issued']
+
+    stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'total'] / vaults[cdp[cdp_number, 'vault_type'], 'issued']
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
