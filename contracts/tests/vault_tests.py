@@ -37,9 +37,11 @@ class VaultTests(unittest.TestCase):
         self.oracle = self.client.get_contract('oracle')
 
         self.oracle.set_price(number=0, new_price=1.0)
-        self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='sys')
+        self.vault.change_any_state(
+            key=('mint', 'DSR', 'owner'), new_value='sys')
         self.vault.change_any_state(key=(0, 'DSR', 'owner'), new_value='sys')
-        self.vault.change_any_state(key=('currency', 'DSR', 'owner'), new_value='sys')
+        self.vault.change_any_state(
+            key=('currency', 'DSR', 'owner'), new_value='sys')
 
     def tearDown(self):
         self.client.flush()
@@ -229,7 +231,8 @@ class VaultTests(unittest.TestCase):
         total = self.vault.vaults[0, 'total']
         issued = self.vault.vaults[0, 'issued']
         pool = self.vault.stability_pool[0]
-        self.assertAlmostEqual(self.vault.sync_stability_pool(vault_type=0), (issued + pool) / total)
+        self.assertAlmostEqual(self.vault.sync_stability_pool(
+            vault_type=0), (issued + pool) / total)
         self.assertAlmostEqual(issued + pool, self.vault.vaults[0, 'issued'])
         self.assertAlmostEqual(self.vault.stability_pool[0], 0)
 
@@ -467,7 +470,8 @@ class VaultTests(unittest.TestCase):
 
     def test_change_stability_rate_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
-            self.vault.change_stability_rate(key=0, new_value=1.2, signer='wallet2')
+            self.vault.change_stability_rate(
+                key=0, new_value=1.2, signer='wallet2')
 
     def test_change_stability_rate_normal(self):
         assert self.vault.stability_rate[0] == 1.1
@@ -487,9 +491,19 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
             self.vault.fast_force_close_vault(cdp_number=id)
 
+    def test_fast_force_close_vault_under_minimum(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.oracle.set_price(number=0, new_price=0)
+        self.dai.approve(to='vault_contract', amount=100)
+        with self.assertRaisesRegex(AssertionError, 'under'):
+            self.vault.fast_force_close_vault(cdp_number=id)
+
     def test_fast_force_close_vault(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
         self.vault.fast_force_close_vault(cdp_number=id)
+        # need to transfer money too

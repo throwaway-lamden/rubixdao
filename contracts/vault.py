@@ -118,26 +118,28 @@ def fast_force_close_vault(cdp_number: int):
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
 
-    stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'total'] / vaults[cdp[cdp_number, 'vault_type'], 'issued']
+    stability_ratio = vaults[cdp[cdp_number, 'vault_type'],
+                             'total'] / vaults[cdp[cdp_number, 'vault_type'], 'issued']
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost - redemption_cost * \
         (stability_rate[cdp[cdp_number, 'vault_type']]
-         ** (get_timestamp() - cdp[cdp_number, time]))
+         ** (get_timestamp() - cdp[cdp_number, 'time']))
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
     collateral_type = cdp[cdp_number, 'collateral_type']
+    price = oracle.get_price(cdp[cdp_number, 'vault_type'])
     collateral_percent = (amount_of_collateral * price) / \
         (redemption_cost + fee)
 
-    price = oracle.get_price(cdp[cdp_number, 'vault_type'])
-
-    # TODO: Make this not a one liner
+    minimum_collaterization = vaults[cdp[cdp_number,
+                                         'vault_type'], 'minimum_collaterization']
     assert cdp[cdp_number, 'collateral_amount'] * price / cdp[cdp_number,
-                                                              'dai'] < vaults['minimum_collaterization'][cdp[cdp_number, 'vault_type']], 'Vault above minimum collateralization!'
+                                                              'dai'] < minimum_collaterization, 'Vault above minimum collateralization!'
 
+    raise
     if collateral_percent >= 1.03:
         dai_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
@@ -151,7 +153,8 @@ def fast_force_close_vault(cdp_number: int):
 
         vaults[cdp[cdp_number, 'vault_type'],
                'issued'] -= cdp[cdp_number, 'dai']
-        vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost_without_fee
+        vaults[cdp[cdp_number, 'vault_type'],
+               'total'] -= redemption_cost_without_fee
 
     else:
         redemption_cost, redemption_cost_without_fee = redemption_cost * \
@@ -169,7 +172,8 @@ def fast_force_close_vault(cdp_number: int):
         collateral.transfer(amount=amount, to=ctx.caller)
 
         vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[number, 'dai']
-        vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost_without_fee
+        vaults[cdp[cdp_number, 'vault_type'],
+               'total'] -= redemption_cost_without_fee
 
     stability_pool[cdp[number, 'vault_type']
                    ] += redemption_cost - redemption_cost_without_fee

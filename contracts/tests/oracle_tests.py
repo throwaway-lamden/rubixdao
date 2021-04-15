@@ -11,7 +11,7 @@ class OracleTests(unittest.TestCase):
             code = file.read()
         self.client.submit(code, name='oracle')
         self.oracle = self.client.get_contract('oracle')
-        
+
         self.oracle.set_price(number=0, new_price=1.0)
 
     def tearDown(self):

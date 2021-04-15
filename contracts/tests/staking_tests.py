@@ -34,10 +34,12 @@ class StakingTests(unittest.TestCase):
         self.oracle = self.client.get_contract('oracle')
         self.staking = self.client.get_contract('staking')
         self.dai.mint(amount=2000000, signer='vault_contract')
-        self.dai.transfer(amount=2000000, to='testing_user', signer='vault_contract')
+        self.dai.transfer(amount=2000000, to='testing_user',
+                          signer='vault_contract')
 
         self.oracle.set_price(number=0, new_price=1.0)  # Probably not needed
-        self.vault.change_any_state(key=('mint', 'DSR', 'owner'), new_value='staking')
+        self.vault.change_any_state(
+            key=('mint', 'DSR', 'owner'), new_value='staking')
 
     def tearDown(self):
         self.client.flush()
@@ -150,11 +152,13 @@ class StakingTests(unittest.TestCase):
 
     def test_transfer_negative(self):
         with self.assertRaisesRegex(AssertionError, 'negative'):
-            self.staking.transfer(amount=-1, to='wallet2', signer='testing_user')
+            self.staking.transfer(amount=-1, to='wallet2',
+                                  signer='testing_user')
 
     def test_transfer_excess(self):
         with self.assertRaisesRegex(AssertionError, 'enough'):
-            self.staking.transfer(amount=1000001, to='wallet2', signer='testing_user')
+            self.staking.transfer(
+                amount=1000001, to='wallet2', signer='testing_user')
 
     def test_transfer_normal(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
@@ -166,17 +170,20 @@ class StakingTests(unittest.TestCase):
 
     def test_accounts_negative(self):
         with self.assertRaisesRegex(AssertionError, 'negative'):
-            self.staking.approve(amount=-1, to='account1', signer='testing_user')
+            self.staking.approve(amount=-1, to='account1',
+                                 signer='testing_user')
 
     def test_accounts_excess(self):
         with self.assertRaisesRegex(AssertionError, 'exceeds'):
-            self.staking.approve(amount=1000001, to='account1', signer='testing_user')
+            self.staking.approve(
+                amount=1000001, to='account1', signer='testing_user')
 
     def test_accounts_updates_internal_balance(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
-        self.assertAlmostEqual(self.staking.balances['testing_user', 'account1'], 42)
+        self.assertAlmostEqual(
+            self.staking.balances['testing_user', 'account1'], 42)
 
     def test_accounts_normal(self):
         self.dai.approve(to='staking', amount=1000000, signer='testing_user')
