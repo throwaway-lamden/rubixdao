@@ -318,7 +318,7 @@ class VaultTests(unittest.TestCase):
             self.vault.close_vault(cdp_number=id)
 
     def test_fast_force_close_vault(self):
-        pass  # the tests for the auction are in the auction tests file
+        pass
 
     def test_open_and_close_vault_1000_times(self):
         id_list = [i for i in range(1000)]
@@ -359,7 +359,7 @@ class VaultTests(unittest.TestCase):
     def test_export_rewards_insufficient(self):
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.vault.export_rewards(vault_type=0, amount=1)
-    '''
+
     def test_export_rewards_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
@@ -369,7 +369,7 @@ class VaultTests(unittest.TestCase):
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
-        self.vault.export_rewards(vault_type='currency', amount=0.1)
+        self.vault.export_rewards(vault_type=0, amount=0.1)
 
     def test_export_rewards_gives_rewards(self):
         self.currency.approve(to='vault_contract', amount=1500)
@@ -380,7 +380,7 @@ class VaultTests(unittest.TestCase):
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
-        self.vault.export_rewards(vault_type='currency', amount=0.1)
+        self.vault.export_rewards(vault_type=0, amount=0.1)
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), 99.1) # 99 from unused dai amount
 
     def test_export_rewords_changes_state(self):
@@ -392,9 +392,9 @@ class VaultTests(unittest.TestCase):
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
-        self.vault.export_rewards(vault_type='currency', amount=0.1)
-        assert self.vault.stability_pool['currency'] == 0
-    '''
+        self.vault.export_rewards(vault_type=0, amount=0.1)
+        assert self.vault.stability_pool[0] == 0
+
     def test_mint_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
             self.vault.mint_rewards(amount=1, signer='wallet2')
@@ -454,9 +454,3 @@ class VaultTests(unittest.TestCase):
     def test_fast_force_close_vault_nonexistent(self):
         with self.assertRaisesRegex(AssertionError, 'cdp'):
             self.vault.fast_force_close_vault(cdp_number=id)
-
-    '''def test_fast_force_close_vault_normal(self):
-        self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
-                                     amount_of_collateral=1500)
-        self.vault.fast_force_close_vault(cdp_number=0)'''
