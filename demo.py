@@ -328,7 +328,7 @@ print_color(
     f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this will likely be negative).", color.CYAN)
         
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
-print_color("Creating vault buffer to offset stability fee", color.BOLD)
+print_color("Not implemented yet", color.BOLD)
 
 try:
     input("Please press ENTER when you want to proceed")
@@ -337,7 +337,7 @@ except EOFError:
         "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
 
 print_color("Demo 4: Undercollateralized auction force close demo", color.GREEN)
-print_color("Creating vault buffer to offset stability fee", color.BOLD)
+print_color("Not implemented yet", color.BOLD)
 
 try:
     input("Please press ENTER when you want to proceed")
