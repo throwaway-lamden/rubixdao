@@ -6,6 +6,7 @@ import unittest
 from contracting.client import ContractingClient
 from contracting.stdlib.bridge.time import Datetime
 
+
 class VaultTests(unittest.TestCase):
     def setUp(self):
         self.client = ContractingClient()
@@ -206,10 +207,43 @@ class VaultTests(unittest.TestCase):
         assert 0 == self.vault.stability_pool[0]
 
     def test_sync_stability_pool_positive(self):
-        pass
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        self.vault.sync_stability_pool(vault_type=0)
+
+    def test_sync_stability_pool_positive_changes_state(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        self.id = self.vault.create_vault(
+            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        self.dai.approve(to='vault_contract', amount=1)
+        self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        total = self.vault.vaults[0, 'total']
+        issued = self.vault.vaults[0, 'issued']
+        pool = self.vault.stability_pool[0]
+        self.assertAlmostEqual(self.vault.sync_stability_pool(vault_type=0), (issued + pool) / total)
+        self.assertAlmostEqual(issued + pool, self.vault.vaults[0, 'issued'])
+        self.assertAlmostEqual(self.vault.stability_pool[0], 0)
 
     def test_sync_stability_pool_negative(self):
-        pass
+        self.vault.vaults[0, 'total'] = 0
+        self.vault.vaults[0, 'issued'] = 100
+        self.vault.sync_stability_pool(vault_type=0)
+
+    def test_sync_stability_pool_negative_changes_state(self):
+        self.vault.vaults[0, 'total'] = 0
+        self.vault.vaults[0, 'issued'] = 100
+        self.vault.sync_stability_pool(vault_type=0)
+        self.assertAlmostEqual(self.vault.vaults[0, 'issued'], 0)
+        self.assertAlmostEqual(self.vault.stability_pool[0], 100)
 
     def test_remove_vault_unauthorised(self):
         self.currency.approve(to='vault_contract', amount=1500)
@@ -381,9 +415,10 @@ class VaultTests(unittest.TestCase):
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
         self.vault.export_rewards(vault_type=0, amount=0.1)
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 99.1) # 99 from unused dai amount
+        self.assertAlmostEqual(self.dai.balance_of(account='sys'),
+                               99.1)  # 99 from unused dai amount
 
-    def test_export_rewords_changes_state(self):
+    def test_export_rewards_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)

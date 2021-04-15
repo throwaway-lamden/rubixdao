@@ -275,7 +275,6 @@ def sync_stability_pool(vault_type: int):
     if default_amount > stability_pool[vault_type]:
         vaults[vault_type, 'issued'] += stability_pool[vault_type]
         stability_pool[vault_type] = 0
-
         # Return new ratio
         return vaults[vault_type, 'issued'] / vaults[vault_type, 'total']
 
