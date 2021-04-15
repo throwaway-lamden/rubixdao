@@ -196,12 +196,12 @@ class AuctionTests(unittest.TestCase):
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         with self.assertRaisesRegex(AttributeError, 'has'):
             stability = self.vault.stability_pool[self.vault.cdp[self.id,
-                                                                 'collateral_type']]
+                                                                 'vault_type']]
         issued = self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'total']
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
         self.assertAlmostEqual(
-            self.vault.stability_pool[self.vault.cdp[self.id, 'collateral_type']], 0.1)
+            self.vault.stability_pool[self.vault.cdp[self.id, 'vault_type']], 0.1)
         self.assertAlmostEqual(
             issued - 100, self.vault.vaults[self.vault.cdp[self.id, 'vault_type'], 'issued'])
         self.assertAlmostEqual(
