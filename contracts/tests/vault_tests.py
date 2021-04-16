@@ -504,6 +504,8 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.dai.mint(amount=10, signer='vault_contract') # since we set dsr owner in setup
+        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
+        self.dai.approve(to='vault_contract', amount=110)
         self.vault.fast_force_close_vault(cdp_number=id)
         # need to transfer money too

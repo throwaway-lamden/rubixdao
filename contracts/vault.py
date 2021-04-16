@@ -147,8 +147,8 @@ def fast_force_close_vault(cdp_number: int):
         amount = (1 / price) * (redemption_cost_without_fee) * 1.03
 
         collateral.transfer(amount=amount, to=ctx.caller)
-        collateral.transfer(amount=collateral_amount -
-                            (amount * 1.1), to=cdp[number, 'owner'])
+        collateral.transfer(amount=amount_of_collateral -
+                            (amount * 1.1), to=cdp[cdp_number, 'owner'])
 
         vaults[cdp[cdp_number, 'vault_type'],
                'issued'] -= cdp[cdp_number, 'dai']
@@ -170,11 +170,11 @@ def fast_force_close_vault(cdp_number: int):
         # TODO: Add an assert later
         collateral.transfer(amount=amount, to=ctx.caller)
 
-        vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[number, 'dai']
+        vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
         vaults[cdp[cdp_number, 'vault_type'],
                'total'] -= redemption_cost_without_fee
 
-    stability_pool[cdp[number, 'vault_type']
+    stability_pool[cdp[cdp_number, 'vault_type']
                    ] += redemption_cost - redemption_cost_without_fee
 
     return amount
