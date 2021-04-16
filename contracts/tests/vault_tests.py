@@ -500,7 +500,7 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'under'):
             self.vault.fast_force_close_vault(cdp_number=id)
 
-    def test_fast_force_close_vault(self):
+    def test_fast_force_close_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
@@ -508,4 +508,24 @@ class VaultTests(unittest.TestCase):
         self.dai.transfer(amount=10, to='sys', signer='vault_contract')
         self.dai.approve(to='vault_contract', amount=110)
         self.vault.fast_force_close_vault(cdp_number=id)
-        # need to transfer money too
+
+    def test_fast_force_close_vault_takes_money(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.mint(amount=10, signer='vault_contract') # since we set dsr owner in setup
+        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
+        self.dai.approve(to='vault_contract', amount=110)
+        self.vault.fast_force_close_vault(cdp_number=id)
+        assert self.dai.balance_of(account='sys') == 0
+
+    def test_fast_force_close_vault_changes_state(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.mint(amount=10, signer='vault_contract') # since we set dsr owner in setup
+        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
+        self.dai.approve(to='vault_contract', amount=110)
+        self.vault.fast_force_close_vault(cdp_number=id)
+        assert self.dai.total_supply.get() == 10
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500 + 1500 * 1.03)

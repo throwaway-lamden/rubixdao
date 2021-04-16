@@ -166,7 +166,7 @@ def fast_force_close_vault(cdp_number: int):
 
         amount = (1 / price) * (redemption_cost_without_fee) * \
             1.03  # TODO: Double check math
-
+        
         # TODO: Add an assert later
         collateral.transfer(amount=amount, to=ctx.caller)
 
