@@ -139,7 +139,7 @@ def fast_force_close_vault(cdp_number: int):
     assert cdp[cdp_number, 'collateral_amount'] * price / cdp[cdp_number,
                                                               'dai'] < minimum_collaterization, 'Vault above minimum collateralization!'
 
-    
+
     if collateral_percent >= 1.03:
         dai_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
@@ -158,12 +158,12 @@ def fast_force_close_vault(cdp_number: int):
 
     else:
         redemption_cost, redemption_cost_without_fee = redemption_cost * \
-            (collateral_percent / 1.03), redemption_cost_without_fee * \
-            (collateral_percent / 1.03)
+            decimal(collateral_percent / 1.03), redemption_cost_without_fee * \
+            decimal(collateral_percent / 1.03)
 
         dai_contract.transfer_from(
-            amount=redemption_cost + fee, to=ctx.this, main_account=ctx.caller)
-        dai_contract.burn(amount=redemption_cost)
+            amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
+        dai_contract.burn(amount=redemption_cost_without_fee)
 
         amount = cdp[cdp_number, 'collateral_amount'] # TODO: Double check that 100% collateral transfer is correct
 
