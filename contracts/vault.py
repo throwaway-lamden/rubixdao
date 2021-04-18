@@ -165,7 +165,7 @@ def fast_force_close_vault(cdp_number: int):
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
         dai_contract.burn(amount=redemption_cost_without_fee)
 
-        amount = cdp[cdp_number, 'collateral_amount'] # TODO: Double check that 100% collateral transfer is correct
+        amount = cdp[cdp_number, 'collateral_amount']
 
         # TODO: Add an assert later
         collateral.transfer(amount=amount, to=ctx.caller)
@@ -176,7 +176,6 @@ def fast_force_close_vault(cdp_number: int):
 
     stability_pool[cdp[cdp_number, 'vault_type']
                    ] += redemption_cost - redemption_cost_without_fee
-
     return amount
 
 
