@@ -499,12 +499,22 @@ class VaultTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'above'):
             self.vault.fast_force_close_vault(cdp_number=id)
 
-    def test_fast_force_close_vault_normal(self):
+    def test_fast_force_close_vault_under_103_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
         self.oracle.set_price(number=0, new_price=0.01)
+        self.vault.fast_force_close_vault(cdp_number=id)
+
+    def test_fast_force_close_vault_above_103_normal(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.mint(amount=10, signer='vault_contract') # since we set dsr owner in setup
+        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
+        self.dai.approve(to='vault_contract', amount=110)
+        self.oracle.set_price(number=0, new_price=0.09)
         self.vault.fast_force_close_vault(cdp_number=id)
 
     def test_fast_force_close_vault_takes_money(self):
@@ -516,7 +526,7 @@ class VaultTests(unittest.TestCase):
         self.vault.fast_force_close_vault(cdp_number=id)
         assert self.dai.balance_of(account='sys') < 100
 
-    def test_fast_force_close_vault_changes_state(self):
+    def test_fast_force_close_vault_under_103_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
@@ -527,14 +537,26 @@ class VaultTests(unittest.TestCase):
         self.vault.fast_force_close_vault(cdp_number=id)
 
         redemption_cost_without_fee = (100) * (1500 * 0.01 / (100 * 1.1)) / 1.03 # original, dai minted, collateral percent, collateral reward respectively
+        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 100 - redemption_cost_without_fee * 1.1)
         self.assertAlmostEqual(self.dai.total_supply.get(), 100 - redemption_cost_without_fee)
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647)
         self.assertAlmostEqual(issued - 100, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued'])
         self.assertAlmostEqual(total - redemption_cost_without_fee, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total'])
         self.assertAlmostEqual(self.dai.balance_of(account='vault_contract'), self.vault.stability_pool[self.vault.cdp[0, 'vault_type']])
 
-    def test_fast_force_close_vault_percent_above_threshold(self):
-        pass
+    def test_fast_force_close_vault_above_103_changes_state(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+                                     amount_of_collateral=1500)
+        self.dai.mint(amount=10, signer='vault_contract') # since we set dsr owner in setup
+        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
+        self.dai.approve(to='vault_contract', amount=110)
+        self.oracle.set_price(number=0, new_price=0.09)
+        issued = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued']
+        total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
+        self.vault.fast_force_close_vault(cdp_number=id)
 
-    def test_fast_force_close_vault_percent_1000_times(self):
-        pass
+        redemption_cost_without_fee = 100
+        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 110 - redemption_cost_without_fee * 1.1)
+        self.assertAlmostEqual(self.dai.total_supply.get(), 110 - redemption_cost_without_fee)
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500 + (1 / 0.09) * 100 * 1.03)

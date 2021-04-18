@@ -145,8 +145,8 @@ def fast_force_close_vault(cdp_number: int):
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
         dai_contract.burn(amount=redemption_cost_without_fee)
 
-        amount = (1 / price) * (redemption_cost_without_fee) * 1.03
-
+        amount = (1 / price) * decimal(redemption_cost_without_fee) * 1.03
+    
         collateral.transfer(amount=amount, to=ctx.caller)
         collateral.transfer(amount=amount_of_collateral -
                             (amount * 1.1), to=cdp[cdp_number, 'owner'])
