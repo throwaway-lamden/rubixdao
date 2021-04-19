@@ -539,7 +539,7 @@ class VaultTests(unittest.TestCase):
         redemption_cost_without_fee = (100) * (1500 * 0.01 / (100 * 1.1)) / 1.03 # original, dai minted, collateral percent, collateral reward respectively
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), 100 - redemption_cost_without_fee * 1.1)
         self.assertAlmostEqual(self.dai.total_supply.get(), 100 - redemption_cost_without_fee)
-        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647)
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647) # reward to closer
         self.assertAlmostEqual(issued - 100, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued'])
         self.assertAlmostEqual(total - redemption_cost_without_fee, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total'])
         self.assertAlmostEqual(self.dai.balance_of(account='vault_contract'), self.vault.stability_pool[self.vault.cdp[0, 'vault_type']])
@@ -554,9 +554,14 @@ class VaultTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=0.09)
         issued = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
+        self.vault.cdp[0, 'owner'] = 'wallet2'
         self.vault.fast_force_close_vault(cdp_number=id)
 
         redemption_cost_without_fee = 100
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), 110 - redemption_cost_without_fee * 1.1)
         self.assertAlmostEqual(self.dai.total_supply.get(), 110 - redemption_cost_without_fee)
-        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500 + (1 / 0.09) * 100 * 1.03)
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), 2147483647 - 1500 + (1 / 0.09) * 100 * 1.03) # reward to closer
+        self.assertAlmostEqual(self.currency.balance_of(account='wallet2'), 1500 - (1 / 0.09) * 100 * 1.03) # reward to owner
+        self.assertAlmostEqual(issued - 100, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued'])
+        self.assertAlmostEqual(total - redemption_cost_without_fee, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total'])
+        self.assertAlmostEqual(self.dai.balance_of(account='vault_contract'), self.vault.stability_pool[self.vault.cdp[0, 'vault_type']])
