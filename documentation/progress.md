@@ -43,17 +43,17 @@
     - [x] Stake to earn excess tokens
     - [x] Allow multiple stakes/deposits
 
-- [ ] Tests
-    - [ ] Functionality tests
+- [x] Tests
+    - [x] Functionality tests
       - [x] DAI token
       - [x] Oracle
-      - [ ] Vaults
+      - [x] Vaults
       - [x] Auction
       - [x] Staking
-    - [ ] Edge case tests
+    - [x] Edge case tests
       - [x] DAI token
       - [x] Oracle
-      - [ ] Vaults
+      - [x] Vaults
       - [x] Auction
       - [x] Staking
 
