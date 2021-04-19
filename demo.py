@@ -39,7 +39,7 @@ def print_color_none(text, color_type):
 
 def submit_transaction(wallet, contract, function, kwargs, nonce):
     fail = False
-    while True: # TODO: Remove later, the check that used this is now depreceated
+    while True:  # TODO: Remove later, the check that used this is now depreceated
         tx = transaction.build_transaction(wallet=wallet,
                                            contract=contract,
                                            function=function,
@@ -62,7 +62,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                     f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
                 print_color(
                     f"Retrying...", color.RED)
-                    
+
                 return_data = requests.post(
                     'https://testnet-master-1.lamden.io/', data=tx).content
                 return_data = return_data.decode("UTF-8")
@@ -72,7 +72,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                 raise SubmissionError(str(return_data['error']))
 
             continue
-        
+
         return nonce + 1, return_data
 
 
@@ -316,7 +316,7 @@ kwargs['cdp_number'] = 2
 
 old_amount = float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
-        
+
 nonce, result = submit_transaction(
     new_wallet, f'con_{prefix}_vault', 'close_vault', kwargs, nonce)
 
@@ -326,7 +326,7 @@ close_price = abs(old_amount - float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']))
 print_color(
     f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this will likely be negative).", color.CYAN)
-        
+
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
 print_color("Not implemented yet", color.BOLD)
 

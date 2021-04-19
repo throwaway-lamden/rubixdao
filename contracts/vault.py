@@ -139,16 +139,16 @@ def fast_force_close_vault(cdp_number: int):
     assert cdp[cdp_number, 'collateral_amount'] * price / cdp[cdp_number,
                                                               'dai'] < minimum_collaterization, 'Vault above minimum collateralization!'
 
-
     if collateral_percent >= 1.03:
         dai_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
         dai_contract.burn(amount=redemption_cost_without_fee)
 
         amount = (1 / price) * decimal(redemption_cost_without_fee) * 1.03
-    
+
         collateral.transfer(amount=amount, to=ctx.caller)
-        collateral.transfer(amount=amount_of_collateral - amount, to=cdp[cdp_number, 'owner'])
+        collateral.transfer(amount=amount_of_collateral -
+                            amount, to=cdp[cdp_number, 'owner'])
 
         vaults[cdp[cdp_number, 'vault_type'],
                'issued'] -= cdp[cdp_number, 'dai']
@@ -169,13 +169,14 @@ def fast_force_close_vault(cdp_number: int):
         # TODO: Add an assert later
         collateral.transfer(amount=amount, to=ctx.caller)
 
-        vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
+        vaults[cdp[cdp_number, 'vault_type'],
+               'issued'] -= cdp[cdp_number, 'dai']
         vaults[cdp[cdp_number, 'vault_type'],
                'total'] -= redemption_cost_without_fee
 
     stability_pool[cdp[cdp_number, 'vault_type']
                    ] += redemption_cost - redemption_cost_without_fee
-    
+
     return amount
 
 
