@@ -1,8 +1,4 @@
 import amm
-import vault_contract
-import oracle
-import currency
-import dai_contract
 
 owner = Variable()
 vault_list = Variable()
