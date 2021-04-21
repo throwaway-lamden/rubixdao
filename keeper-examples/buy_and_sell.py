@@ -1,5 +1,3 @@
-import amm
-
 owner = Variable()
 vault_list = Variable()
 amm_reserves = ForeignHash(foreign_contract='amm', foreign_name='reserves')

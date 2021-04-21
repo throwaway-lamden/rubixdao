@@ -23,18 +23,23 @@ class BuySellTests(unittest.TestCase):
         with open('../keeper-examples/buy_and_sell.py') as file:
             buysell = file.read()
 
+        with open('test_amm.py') as file:
+            amm = file.read()
+
         self.client.submit(dai, name='dai_contract', constructor_args={
                            'owner': 'vault_contract'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
         self.client.submit(buysell, name='buysell')
+        self.client.submit(amm, name='amm')
 
         self.dai = self.client.get_contract('dai_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
         self.buysell = self.client.get_contract('buysell')
+        self.amm = self.client.get_contract('amm')
 
     def tearDown(self):
         self.client.flush()

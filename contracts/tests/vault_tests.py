@@ -538,7 +538,8 @@ class VaultTests(unittest.TestCase):
         self.vault.fast_force_close_vault(cdp_number=id)
 
         # original, dai minted, collateral percent, collateral reward respectively
-        redemption_cost_without_fee = (100) * (1500 * 0.01 / (100 * 1.1)) / 1.03
+        redemption_cost_without_fee = (
+            100) * (1500 * 0.01 / (100 * 1.1)) / 1.03
         self.assertAlmostEqual(self.dai.balance_of(account='sys'),
                                100 - redemption_cost_without_fee * 1.1)
         self.assertAlmostEqual(self.dai.total_supply.get(),
