@@ -66,7 +66,8 @@ def open_vault():
 
 def close_vault():
     # Asserts price after slippage allows for a profit
-    assert internal_amm(amount=100 / oracle.get_price(0), is_buy=True) > 100, "No profit possible!"
+    assert internal_amm(amount=100 / oracle.get_price(0),
+                        is_buy=True) > 100, "No profit possible!"
 
     v_list = vault_list.get()
     v_id = v_list.pop(0)
