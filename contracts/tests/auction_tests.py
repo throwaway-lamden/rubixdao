@@ -47,25 +47,32 @@ class AuctionTests(unittest.TestCase):
 
     def test_force_close_vault_closed(self):
         self.dai.approve(to='vault_contract', amount=100)
+        
         self.vault.close_vault(cdp_number=self.id)
+        
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.open_force_close_auction(cdp_number=self.id)
 
     def test_force_close_vault_in_auction(self):
+        
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         with self.assertRaisesRegex(AssertionError, 'already'):
             self.vault.open_force_close_auction(cdp_number=self.id)
 
     def test_force_close_vault_frozen(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         assert self.vault.cdp[self.id, 'open'] == False
         assert self.vault.cdp[self.id, 'auction', 'open'] == True
 
     def test_force_close_vault_top_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
         self.assertAlmostEqual(
             self.vault.cdp[self.id, 'auction', 'top_bid'], 0)
+        
         assert self.vault.cdp[self.id, 'auction',
                               'time'] == self.vault.get_timestamp()
 
@@ -82,33 +89,50 @@ class AuctionTests(unittest.TestCase):
 
     def test_bid_on_force_close_higher_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=2)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        
         with self.assertRaisesRegex(AssertionError, 'higher'):
             self.dai.approve(to='vault_contract', amount=1)
+            
             self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
     def test_bid_on_force_close_takes_dai(self):
+        
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=2)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        
         assert self.dai.balance_of(account='sys') == 98
 
     def test_bid_on_force_close_sets_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=2)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        
         assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
         assert self.vault.cdp[self.id, 'auction', 'top_bid'] == 2
         assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 2
 
     def test_bid_on_force_close_raise_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         assert self.dai.balance_of(account='sys') == 99
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
+        
         assert self.dai.balance_of(account='sys') == 98
 
     def test_bid_on_force_close_normal(self):
@@ -121,17 +145,23 @@ class AuctionTests(unittest.TestCase):
         self.dai.transfer(to='wallet2', amount=50)
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
         assert self.vault.cdp[self.id, 'auction', 'top_bid'] == 1
         assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 1
+        
         with self.assertRaisesRegex(AssertionError, 'higher'):
             self.dai.approve(to='vault_contract', amount=1, signer='wallet2')
             self.vault.bid_on_force_close(
                 cdp_number=self.id, amount=1, signer='wallet2')
+            
         self.dai.approve(to='vault_contract', amount=2, signer='wallet2')
+        
         self.vault.bid_on_force_close(
             cdp_number=self.id, amount=2, signer='wallet2')
+        
         assert self.vault.cdp[self.id, 'auction',
                               'highest_bidder'] == 'wallet2'
         assert self.vault.cdp[self.id, 'auction', 'top_bid'] == 2
@@ -144,31 +174,43 @@ class AuctionTests(unittest.TestCase):
 
     def test_settle_force_close_no_auction(self):
         self.dai.approve(to='vault_contract', amount=100)
+        
         self.vault.close_vault(cdp_number=self.id)
+        
         with self.assertRaisesRegex(AssertionError, 'not'):
             self.vault.settle_force_close(cdp_number=self.id)
 
     def test_settle_force_close_auction_open(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         with self.assertRaisesRegex(AssertionError, 'still'):
             self.vault.settle_force_close(cdp_number=self.id)
 
     def test_settle_force_close_auction_normal(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
 
     def test_settle_force_close_auction_state(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         highest_bidder, top_bid = self.vault.settle_force_close(
             cdp_number=self.id, environment=env)
+        
         assert self.vault.cdp[self.id, 'auction', 'settled'] == True
         assert self.vault.cdp[self.id, 'open'] == False
         assert self.vault.cdp[self.id, 'auction', 'open'] == False
@@ -179,36 +221,50 @@ class AuctionTests(unittest.TestCase):
 
     def test_settle_force_close_auction_burns_dai(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         original = self.dai.total_supply.get()
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        
         self.assertAlmostEqual(self.dai.total_supply.get(), original - 0.9)
 
     def test_settle_force_close_auction_returns_collateral(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         original = self.currency.balance_of(account='sys')
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        
         self.assertAlmostEqual(self.currency.balance_of(
             account='sys'), original + 1500)
 
     def test_settle_force_close_auction_updates_pool(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         with self.assertRaisesRegex(AttributeError, 'has'):
             stability = self.vault.stability_pool[self.vault.cdp[self.id,
-                                                                 'vault_type']]
+                                                                 'vault_type']] # ?
+            
         issued = self.vault.vaults[self.vault.cdp[self.id,
                                                   'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[self.id,
                                                  'vault_type'], 'total']
+        
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        
         self.assertAlmostEqual(
             self.vault.stability_pool[self.vault.cdp[self.id, 'vault_type']], 0.1)
         self.assertAlmostEqual(
@@ -222,31 +278,44 @@ class AuctionTests(unittest.TestCase):
 
     def test_claim_unwon_bid_auction_open(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         with self.assertRaisesRegex(AssertionError, 'still'):
             self.vault.claim_unwon_bid(cdp_number=self.id)
 
     def test_claim_unwon_bid_nothing_left(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        
         with self.assertRaisesRegex(AssertionError, 'negative'):
             self.vault.claim_unwon_bid(cdp_number=self.id)
 
     # recommend not breaking up because setup is long
     def test_claim_unwon_bid_normal(self):
         self.dai.transfer(to='wallet2', amount=50)
+        
         self.vault.open_force_close_auction(cdp_number=self.id)
+        
         self.dai.approve(to='vault_contract', amount=1)
+        
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
+        
         self.dai.approve(to='vault_contract', amount=2, signer='wallet2')
+        
         self.vault.bid_on_force_close(
             cdp_number=self.id, amount=2, signer='wallet2')
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
+        
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), 49)
+        
         self.vault.claim_unwon_bid(cdp_number=self.id)
+        
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), 50)
         assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 0
 
