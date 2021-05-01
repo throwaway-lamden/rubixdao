@@ -35,8 +35,11 @@ class AuctionTests(unittest.TestCase):
 
         self.oracle.set_price(number=0, new_price=1.0)
         self.currency.approve(to='vault_contract', amount=1500)
+        
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        
+        self.oracle.set_price(number=0, new_price=0.1) # Allow the vaults to be liquidated 
 
     def tearDown(self):
         self.client.flush()
@@ -66,7 +69,7 @@ class AuctionTests(unittest.TestCase):
         assert self.vault.cdp[self.id, 'open'] == False
         assert self.vault.cdp[self.id, 'auction', 'open'] == True
 
-    def test_force_close_vault_top_bid(self):
+    def test_force_close_vault_default_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
         
         assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
@@ -75,7 +78,26 @@ class AuctionTests(unittest.TestCase):
         
         assert self.vault.cdp[self.id, 'auction',
                               'time'] == self.vault.get_timestamp()
+        
+    def test_force_close_vault_default_bid_cannot_close(self):
+        self.vault.open_force_close_auction(cdp_number=self.id)
+        
+        assert self.vault.cdp[self.id, 'auction', 'highest_bidder'] == 'sys'
+        self.assertAlmostEqual(
+            self.vault.cdp[self.id, 'auction', 'top_bid'], 0)
+        
+        assert self.vault.cdp[self.id, 'auction',
+                              'time'] == self.vault.get_timestamp()
+        
+        with self.assertRaises():
+            env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+            self.vault.settle_force_close(
+                cdp_number=self.id, environment=env)
 
+    def test_force_close_vault_sufficent_collateral_fail(self):
+        # self.vault.open_force_close_auction(cdp_number=self.id)
+        pass
+        
     def test_force_close_vault_normal(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
@@ -317,8 +339,82 @@ class AuctionTests(unittest.TestCase):
         self.vault.claim_unwon_bid(cdp_number=self.id)
         
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), 50)
-        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 0
+        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 0 #
 
+    def test_instant_force_close_vault_sufficent_collateral_fail(self):
+        # self.vault.open_force_close_auction(cdp_number=self.id)
+        pass
+    
+    def test_instant_force_close_vault_normal(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+
+    def test_instant_force_close_nonexistent(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        
+        with self.assertRaisesRegex(AssertionError, 'cdp'):
+            self.vault.fast_force_close_vault(cdp_number=1)
+
+    def test_instant_force_close_cannot_close_twice(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        
+        with self.assertRaisesRegex(AssertionError, 'already'):
+            self.dai.approve(to='vault_contract', amount=1000)
+            
+            self.vault.fast_force_close_vault(cdp_number=self.id)
+            
+    def test_after_instant_force_close_cannot_open_auction(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        
+        with self.assertRaisesRegex(AssertionError, 'already'):
+            self.vault.open_force_close_auction(cdp_number=self.id)
+
+    def test_instant_force_close_takes_dai(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        old_balance = self.dai.balances['sys']
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        assert self.dai.balance_of(account='sys') < old_balance
+        
+    def test_instant_force_close_takes_correct_amount_of_dai(self):
+        pass
+    
+        self.dai.approve(to='vault_contract', amount=1000)
+        old_balance = self.dai.balances['sys']
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        assert self.dai.balance_of(account='sys') != old_balance # TODO: Make test actually do thing
+        
+    def test_instant_force_close_gives_collateral(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        old_balance = self.currency.balances['sys']
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        assert self.currency.balance_of(account='sys') > old_balance
+        
+    def test_instant_force_close_gives_correct_proportion_of_collateral(self):
+        self.dai.approve(to='vault_contract', amount=1000)
+        old_balance_dai = self.dai.balances['sys']
+        old_balance_collateral = self.currency.balances['sys']
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        
+        # The math in this might not be right - if it fails, check it!
+        assert (self.currency.balance_of(account='sys') - old_balance_collateral) / 1.03 * 10 == (old_balance_dai - self.dai.balance_of(account='sys'))
+        
+    def test_instant_force_close_gives_correct_amount_of_collateral(self):
+        pass
+    
+        self.dai.approve(to='vault_contract', amount=1000)
+        old_balance = self.currency.balances['sys']
+        
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+        assert self.currency.balance_of(account='sys') != old_balance
 
 if __name__ == '__main__':
     unittest.main()
