@@ -374,14 +374,14 @@ class AuctionTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'already'):
             self.vault.open_force_close_auction(cdp_number=self.id)
 
-    def test_instant_force_close_takes_dai(self):
+    def test_instant_force_close_takes_dai_when_ratio_is_above_1_03(self):
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance = self.dai.balances['sys']
         
         self.vault.fast_force_close_vault(cdp_number=self.id)
         assert self.dai.balance_of(account='sys') < old_balance
         
-    def test_instant_force_close_takes_correct_amount_of_dai(self):
+    def test_instant_force_close_takes_correct_amount_of_dai_when_ratio_is_above_1_03(self):
         pass
     
         self.dai.approve(to='vault_contract', amount=1000)
@@ -390,14 +390,14 @@ class AuctionTests(unittest.TestCase):
         self.vault.fast_force_close_vault(cdp_number=self.id)
         assert self.dai.balance_of(account='sys') != old_balance # TODO: Make test actually do thing
         
-    def test_instant_force_close_gives_collateral(self):
+    def test_instant_force_close_gives_collateral_when_ratio_is_above_1_03(self):
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance = self.currency.balances['sys']
         
         self.vault.fast_force_close_vault(cdp_number=self.id)
         assert self.currency.balance_of(account='sys') > old_balance
         
-    def test_instant_force_close_gives_correct_proportion_of_collateral(self):
+    def test_instant_force_close_gives_correct_proportion_of_collateral_when_ratio_is_above_1_03(self):
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance_dai = self.dai.balances['sys']
         old_balance_collateral = self.currency.balances['sys']
@@ -407,7 +407,7 @@ class AuctionTests(unittest.TestCase):
         # The math in this might not be right - if it fails, check it!
         assert (self.currency.balance_of(account='sys') - old_balance_collateral) / 1.03 * 10 == (old_balance_dai - self.dai.balance_of(account='sys'))
         
-    def test_instant_force_close_gives_correct_amount_of_collateral(self):
+    def test_instant_force_close_gives_correct_amount_of_collateral_when_ratio_is_above_1_03(self):
         pass
     
         self.dai.approve(to='vault_contract', amount=1000)
@@ -415,6 +415,6 @@ class AuctionTests(unittest.TestCase):
         
         self.vault.fast_force_close_vault(cdp_number=self.id)
         assert self.currency.balance_of(account='sys') != old_balance
-
+        
 if __name__ == '__main__':
     unittest.main()
