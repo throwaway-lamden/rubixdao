@@ -132,7 +132,7 @@ def fast_force_close_vault(cdp_number: int):
     collateral_type = cdp[cdp_number, 'collateral_type']
     price = oracle.get_price(cdp[cdp_number, 'vault_type'])
     collateral_percent = (amount_of_collateral * price) / \
-        (redemption_cost + fee)
+        redemption_cost
 
     minimum_collaterization = vaults[cdp[cdp_number,
                                          'vault_type'], 'minimum_collaterization']
@@ -144,7 +144,7 @@ def fast_force_close_vault(cdp_number: int):
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
         dai_contract.burn(amount=redemption_cost_without_fee)
 
-        amount = (1 / price) * decimal(redemption_cost_without_fee) * 1.03
+        amount = (1 / price) * decimal(redemption_cost) * 1.03 # Double check this math is correct
 
         collateral.transfer(amount=amount, to=ctx.caller)
         collateral.transfer(amount=amount_of_collateral -
