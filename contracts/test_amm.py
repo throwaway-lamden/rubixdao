@@ -16,7 +16,6 @@ pairs = Hash()
 prices = Hash(default_value=0)
 lp_points = Hash(default_value=0)
 reserves = Hash(default_value=[0, 0])
-
 FEE_PERCENTAGE = 0.3 / 100
 
 

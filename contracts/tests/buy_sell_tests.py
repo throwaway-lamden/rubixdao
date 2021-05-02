@@ -45,7 +45,9 @@ class BuySellTests(unittest.TestCase):
         self.client.flush()
 
     def test_buysell_main(self):
-        self.buysell.main()
+        print(self.amm.reserves["dai"])
+        print(self.buysell.main()["dai"])
+        raise
 
 if __name__ == '__main__':
     unittest.main()

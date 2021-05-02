@@ -11,6 +11,7 @@ def seed():
 
 @export
 def main():  # Amount compatibility can be added
+    return amm_reserves
     if amm_reserves['dai_contract'][0] / amm_reserves['dai_contract'][1] > 1:
         open_vault()
 
