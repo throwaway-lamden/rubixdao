@@ -566,16 +566,15 @@ class VaultTests(unittest.TestCase):
         total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
         self.vault.cdp[0, 'owner'] = 'wallet2'
         self.vault.fast_force_close_vault(cdp_number=id)
-
         redemption_cost_without_fee = 100
         self.assertAlmostEqual(self.dai.balance_of(account='sys'),
                                110 - redemption_cost_without_fee * 1.1)
         self.assertAlmostEqual(self.dai.total_supply.get(),
                                110 - redemption_cost_without_fee)
         self.assertAlmostEqual(self.currency.balance_of(
-            account='sys'), 2147483647 - 1500 + (1 / 0.09) * 100 * 1.03)  # reward to closer
+            account='sys'), 2147483647 - 1500 + (1 / 0.09) * 100 * 1.1 * 1.03)  # reward to closer
         self.assertAlmostEqual(self.currency.balance_of(
-            account='wallet2'), 1500 - (1 / 0.09) * 100 * 1.03)  # reward to owner
+            account='wallet2'), 1500 - (1 / 0.09) * 100 * 1.1 * 1.03)  # reward to owner
         self.assertAlmostEqual(
             issued - 100, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued'])
         self.assertAlmostEqual(total - redemption_cost_without_fee,

@@ -112,8 +112,8 @@ def close_vault(cdp_number: int):
 @export
 def fast_force_close_vault(cdp_number: int):
     assert_insufficent_collateral(cdp_number=cdp_number)
-    
-    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp' # TODO: Remove - likely unnecessary and checking 'owner' is arbitrary 
+
+    assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp' # TODO: Remove - likely unnecessary and checking 'owner' is arbitrary
     assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
 
     collateral = importlib.import_module(
@@ -145,8 +145,7 @@ def fast_force_close_vault(cdp_number: int):
         dai_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
         dai_contract.burn(amount=redemption_cost_without_fee)
-
-        amount = (1 / price) * decimal(redemption_cost) * 1.03 # Double check this math is correct
+        amount = (1 / price) * redemption_cost * 1.03 # Double check this math is correct
 
         collateral.transfer(amount=amount, to=ctx.caller)
         collateral.transfer(amount=amount_of_collateral -
@@ -180,14 +179,14 @@ def fast_force_close_vault(cdp_number: int):
                    ] += redemption_cost - redemption_cost_without_fee
 
     cdp[cdp_number, 'open'] = False
-    
+
     return amount
 
 
 @export
 def open_force_close_auction(cdp_number: int):
     assert_insufficent_collateral(cdp_number=cdp_number)
-    
+
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction',
                'open'] is not True, 'Auction is already taking place!' # Probably a redundant check, can be removed
@@ -415,11 +414,10 @@ def get_collateralization_percent(cdp_number: int):
     return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']
     # code to check if minimum is met would be
     # assert cdp[cdp_number, 'collateral_amount'] >= vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collaterization']
-    
+
 def assert_insufficent_collateral(cdp_number: int):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
-    
+
     oracle = importlib.import_module(vaults['oracle'])
     return (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) > \
         vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collaterization'] # TODO: Fix style
-    
