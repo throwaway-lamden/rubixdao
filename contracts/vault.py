@@ -151,8 +151,8 @@ def fast_force_close_vault(cdp_number: int):
 
     else:
         redemption_cost, redemption_cost_without_fee = redemption_cost * \
-            decimal(1.03 * collateral_percent), redemption_cost_without_fee * \
-            decimal(1.03 * collateral_percent)
+            decimal(collateral_percent / 1.03), redemption_cost_without_fee * \
+            decimal(collateral_percent / 1.03)
 
         dai_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
