@@ -378,6 +378,9 @@ class AuctionTests(unittest.TestCase):
             self.vault.open_force_close_auction(cdp_number=self.id)
 
     def test_instant_force_close_takes_dai_when_ratio_is_above_1_03(self):
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+
         self.oracle.set_price(number=0, new_price=0.09)
 
         self.dai.approve(to='vault_contract', amount=1000)
@@ -388,6 +391,8 @@ class AuctionTests(unittest.TestCase):
 
     def test_instant_force_close_takes_correct_amount_of_dai_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance = self.dai.balances['sys']
@@ -397,6 +402,8 @@ class AuctionTests(unittest.TestCase):
 
     def test_instant_force_close_gives_collateral_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.dai.approve(to='vault_contract', amount=1000, signer='stu')
         old_balance = old_balance = self.currency.balance_of(account='stu')
@@ -432,14 +439,17 @@ class AuctionTests(unittest.TestCase):
         old_balance = self.currency.balance_of(account='sys')
 
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
-        assert self.currency.balance_of(account='sys') == old_balance + 1500 - (110 * 1.03) / 0.09
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), old_balance + 1500 - (110 * 1.03) / 0.09)
 
     def test_instant_force_close_gives_correct_amount_of_collateral_when_ratio_is_above_1_03(self):
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
         self.oracle.set_price(number=0, new_price=0.09)
 
         self.dai.approve(to='vault_contract', amount=1000, signer='stu')
         old_balance = old_balance = self.currency.balance_of(account='stu')
 
+        self.dai.approve(to='vault_contract', amount=1000)
         self.vault.fast_force_close_vault(cdp_number=self.id)
         assert self.currency.balance_of(account='stu') == old_balance + 1500
 
@@ -494,6 +504,8 @@ class AuctionTests(unittest.TestCase):
 
     def test_instant_force_close_takes_correct_amount_of_dai_when_ratio_is_below_1_03(self):
         pass
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance = self.dai.balances['sys']
@@ -503,7 +515,8 @@ class AuctionTests(unittest.TestCase):
 
     def test_instant_force_close_gives_collateral_when_ratio_is_below_1_03(self):
         pass
-
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
         self.oracle.set_price(number=0, new_price=0.09)
 
         self.dai.approve(to='vault_contract', amount=1000)
@@ -528,6 +541,8 @@ class AuctionTests(unittest.TestCase):
 
     def test_instant_force_close_gives_correct_amount_of_collateral_when_ratio_is_below_1_03(self):
         pass
+        self.dai.mint(amount=1000, signer='vault_contract')
+        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.oracle.set_price(number=0, new_price=0.09)
 
