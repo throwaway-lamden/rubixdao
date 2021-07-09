@@ -16,7 +16,7 @@ vaults['oracle'] = 'oracle'  # the contract will pull all price data from 'oracl
 vaults['stability_rate'] = 1.1 # dummy for testing
 
 vaults[0, 'collateral_type'] = 'currency'
-vaults[0, 'minimum_collaterization'] = 1.5
+vaults[0, 'minimum_collateralization'] = 1.5
 vaults[0, 'minimum_auction_time'] = 259200
 vaults[0, 'cap'] = 100000
 vaults[0, 'weight'] = 10
@@ -196,7 +196,7 @@ Adds a vault with the following properties. Increments the current vault number 
 vaults['current_number'] += 1
 
 vaults[vault_number, 'collateral_type'] = collateral_type
-vaults[vault_number, 'minimum_collaterization'] = collateral_amount
+vaults[vault_number, 'minimum_collateralization'] = collateral_amount
 vaults[vault_number, 'minimum_auction_time'] = collateral_amount
 vaults[vault_number, 'cap'] = max_minted
 vaults[vault_number, 'weight'] = weight
