@@ -54,6 +54,8 @@ def withdraw_stake(amount: float):
     assert amount > 0, 'Stake amount must be positive!'
     assert balances[ctx.caller] >= amount, 'Not enough coins to withdraw!'
 
+    balances[ctx.caller] -= amount
+    
     current_price = get_price()
     return_amount = current_price * amount
 
