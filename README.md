@@ -61,8 +61,8 @@ You can also see the demo in the [Github Actions demo.yml](https://github.com/th
 
 Calling these contracts from other smart contracts is simple.
 ```python
-import amm
-amm.foo(bar, baz, etc.)
+import mkr
+mkr.foo(bar, baz, etc.)
 ```
 Calling these contracts from an application is harder. Refer to [Contracting documentation](https://contracting.lamden.io/), and [Lamden's GitHub page](https://github.com/Lamden/lamden).
 ```python
@@ -80,11 +80,11 @@ kwargs = dict() # Add kwargs to dict
 # Builds transaction
 tx = transaction.build_transaction(wallet=new_wallet,
 contract='{contract}',
-function=f'{function}',
+function='{function}',
 kwargs=kwargs,
-nonce=nonce, # Starts at zero, increments with every transaction
+nonce={nonce}, # Starts at zero, increments with every transaction
 processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497', # Masternode address
-stamps=stamp_limit) # Max amount of stamps you're willing to spend. As of 2021/02, the TAU/stamp ratio on mainnet is 1:65
+stamps={stamp_limit}) # Max amount of stamps you're willing to spend. As of 2021/02, the TAU/stamp ratio on mainnet is 1:65
 
 requests.post('https://testnet-master-1.lamden.io/', data = tx) # Submits transaction
 ```
