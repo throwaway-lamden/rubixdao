@@ -123,9 +123,9 @@ def fast_force_close_vault(cdp_number: int):
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
-    fee = redemption_cost - redemption_cost * \
+    fee = redemption_cost_without_fee * \
         (stability_rate[cdp[cdp_number, 'vault_type']]
-         ** (get_timestamp() - cdp[cdp_number, 'time']))
+         ** (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost_without_fee
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
