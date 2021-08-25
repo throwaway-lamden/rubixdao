@@ -45,7 +45,7 @@ class BuySellTests(unittest.TestCase):
         self.client.flush()
 
     def test_buysell_main(self):
-        self.buysell.main()
+        self.buysell.main() # foreignhash documentation is unclear, todo fix
 
 if __name__ == '__main__':
     unittest.main()
