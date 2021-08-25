@@ -83,5 +83,4 @@
    - [x] Ensure OS compatibility
       - [x] Linux
       - [x] MacOS (works with ANSI colours)
-      - [x] Contracting does not support Windows
    - [ ] Return funds to faucet
