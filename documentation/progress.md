@@ -57,18 +57,18 @@
       - [x] Auction
       - [x] Staking
 
-- [ ] Documentation
-    - [ ] Overview
-    - [ ] Usage guide
-    - [ ] Demo guide
-    - [ ] Testing guide
-    - [ ] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
-    - [ ] Function documentation
+- [x] Documentation
+    - [x] Overview
+    - [x] Usage guide
+    - [x] Demo guide
+    - [x] Testing guide
+    - [x] Basic API guide (this is more suited for Lamden docs, but it's always nice to have a quick reference)
+    - [x] Function documentation
     - [x] Progress
     - [x] Todo
 
-- [ ] Demo
-   - [ ] Overview
+- [x] Demo
+   - [x] Overview
    - [x] Fund dTAU from faucet
    - [x] Setup
    - [x] Create vaults
