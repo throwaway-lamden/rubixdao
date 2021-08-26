@@ -413,6 +413,7 @@ def assert_insufficent_collateral(cdp_number: int):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
 
     oracle = importlib.import_module(vaults['oracle'])
-    return (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) > \
-        vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'] # TODO: Fix style
 
+    assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) < \
+        vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'], 'Vault above minimum collateralization!'
+  
