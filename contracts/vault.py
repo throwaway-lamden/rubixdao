@@ -111,7 +111,7 @@ def close_vault(cdp_number: int):
 
 @export
 def fast_force_close_vault(cdp_number: int):
-    assert assert_insufficent_collateral(cdp_number=cdp_number), 'Vault above minimum collateralization!'
+    assert_insufficent_collateral(cdp_number=cdp_number)
     assert cdp[cdp_number, 'open'] is True, 'Vault has already been closed!'
 
     collateral = importlib.import_module(
@@ -178,7 +178,7 @@ def fast_force_close_vault(cdp_number: int):
 
 @export
 def open_force_close_auction(cdp_number: int):
-    assert assert_insufficent_collateral(cdp_number=cdp_number), 'Vault above minimum collateralization!'
+    assert_insufficent_collateral(cdp_number=cdp_number)
 
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
     assert cdp[cdp_number, 'auction',
@@ -413,6 +413,6 @@ def assert_insufficent_collateral(cdp_number: int):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
 
     oracle = importlib.import_module(vaults['oracle'])
-    return (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) < \
-        vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'] # TODO: Fix style
+    assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) < \
+        vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'], 'Vault above minimum collateralization!'
 
