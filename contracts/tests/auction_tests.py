@@ -510,7 +510,7 @@ class AuctionTests(unittest.TestCase):
         old_balance = [self.dai.balances['sys'], self.currency.balances['sys']]
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
-        
+
         self.assertAlmostEqual(self.dai.balance_of(account='sys'), old_balance[0] - 15 / (1.03))
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), old_balance[1] + 1500)
 
@@ -529,7 +529,7 @@ class AuctionTests(unittest.TestCase):
     def test_instant_force_close_gives_correct_proportion_of_collateral_when_ratio_is_below_1_03(self):
         pass
 
-        self.oracle.set_price(number=0, new_price=0.09)
+        self.oracle.set_price(number=0, new_price=0.01)
 
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance_dai = self.dai.balances['sys']
