@@ -123,9 +123,9 @@ def fast_force_close_vault(cdp_number: int):
     redemption_cost_without_fee = cdp[cdp_number,
                                       'dai'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
-    fee = redemption_cost - redemption_cost * \
+    fee = redemption_cost_without_fee * \
         (stability_rate[cdp[cdp_number, 'vault_type']]
-         ** (get_timestamp() - cdp[cdp_number, 'time']))
+         ** (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost_without_fee
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
@@ -413,6 +413,7 @@ def assert_insufficent_collateral(cdp_number: int):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
 
     oracle = importlib.import_module(vaults['oracle'])
+
     assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) < \
         vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'], 'Vault above minimum collateralization!'
-
+  

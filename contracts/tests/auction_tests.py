@@ -451,7 +451,7 @@ class AuctionTests(unittest.TestCase):
 
         self.dai.approve(to='vault_contract', amount=1000)
         self.vault.fast_force_close_vault(cdp_number=self.id)
-        assert self.currency.balance_of(account='stu') == old_balance + 1500
+        assert self.currency.balance_of(account='stu') == (old_balance + 1500)
 
     def test_instant_force_close_takes_into_account_stability_fee_when_ratio_is_above_1_03(self): # TODO: make this less complex
         self.oracle.set_price(number=0, new_price=1.0)
@@ -465,9 +465,9 @@ class AuctionTests(unittest.TestCase):
 
         assert self.vault.vaults[0, 'issued'] == 200 - 100
 
-        redemption_cost = 100 * 1.1
-        amount_redeemed = redemption_cost * ((15 / redemption_cost) / 1.03)
-        self.assertAlmostEqual(self.vault.vaults[0, 'total'], 200 - amount_redeemed)
+        # redemption_cost = 100 * 1.1 # don't know why this is here
+        amount_redeemed = 15 / 1.03
+        self.assertAlmostEqual(self.vault.vaults[0, 'total'], 200 - (amount_redeemed / 1.1))
 
         self.oracle.set_price(number=0, new_price=0.15) # This is a inconsistent price because otherwise the ratio drops below 1.03
 
@@ -507,10 +507,12 @@ class AuctionTests(unittest.TestCase):
         self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.dai.approve(to='vault_contract', amount=1000)
-        old_balance = self.dai.balances['sys']
+        old_balance = [self.dai.balances['sys'], self.currency.balances['sys']]
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'), old_balance - 100)
+
+        self.assertAlmostEqual(self.dai.balance_of(account='sys'), old_balance[0] - 15 / (1.03))
+        self.assertAlmostEqual(self.currency.balance_of(account='sys'), old_balance[1] + 1500)
 
     def test_instant_force_close_gives_collateral_when_ratio_is_below_1_03(self):
         pass
@@ -527,7 +529,7 @@ class AuctionTests(unittest.TestCase):
     def test_instant_force_close_gives_correct_proportion_of_collateral_when_ratio_is_below_1_03(self):
         pass
 
-        self.oracle.set_price(number=0, new_price=0.09)
+        self.oracle.set_price(number=0, new_price=0.01)
 
         self.dai.approve(to='vault_contract', amount=1000)
         old_balance_dai = self.dai.balances['sys']
