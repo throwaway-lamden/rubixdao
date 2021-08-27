@@ -349,7 +349,7 @@ def add_vault(collateral_type: str, collateral_amount: float, auction_time: floa
 
     vaults[vault_number, 'collateral_type'] = collateral_type
     vaults[vault_number, 'minimum_collateralization'] = collateral_amount
-    vaults[vault_number, 'minimum_auction_time'] = collateral_amount
+    vaults[vault_number, 'minimum_auction_time'] = auction_time
     vaults[vault_number, 'cap'] = max_minted
     vaults[vault_number, 'weight'] = weight
 
@@ -416,4 +416,3 @@ def assert_insufficent_collateral(cdp_number: int):
 
     assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) < \
         vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'], 'Vault above minimum collateralization!'
-  
