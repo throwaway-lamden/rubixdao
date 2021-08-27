@@ -463,7 +463,7 @@ class AuctionTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=0.01)
 
         self.dai.approve(to='vault_contract', amount=1000, signer='stu')
-        self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
+        self.vault.fast_force_close_vault(cdp_number=v_id, signer='stu')
 
         assert self.vault.vaults[0, 'issued'] == 200 - 100
 
