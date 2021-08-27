@@ -212,6 +212,9 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
@@ -223,6 +226,9 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
@@ -398,6 +404,9 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
@@ -409,6 +418,9 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
@@ -422,6 +434,9 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
         self.dai.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
@@ -483,6 +498,9 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.close_vault(cdp_number=id)
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.fast_force_close_vault(cdp_number=id)
@@ -505,6 +523,9 @@ class VaultTests(unittest.TestCase):
                                      amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
         self.oracle.set_price(number=0, new_price=0.01)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.fast_force_close_vault(cdp_number=id)
 
     def test_fast_force_close_vault_above_103_normal(self):
@@ -516,6 +537,9 @@ class VaultTests(unittest.TestCase):
         self.dai.transfer(amount=10, to='sys', signer='vault_contract')
         self.dai.approve(to='vault_contract', amount=110)
         self.oracle.set_price(number=0, new_price=0.09)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.fast_force_close_vault(cdp_number=id)
 
     def test_fast_force_close_vault_takes_money(self):
@@ -523,6 +547,9 @@ class VaultTests(unittest.TestCase):
         id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
                                      amount_of_collateral=1500)
         self.dai.approve(to='vault_contract', amount=100)
+        self.oracle.set_price(number=0, new_price=0.01)
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.fast_force_close_vault(cdp_number=id)
         assert self.dai.balance_of(account='sys') < 100
@@ -535,6 +562,9 @@ class VaultTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=0.01)
         issued = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
         self.vault.fast_force_close_vault(cdp_number=id)
 
         # original, dai minted, collateral percent, collateral reward respectively
@@ -565,6 +595,8 @@ class VaultTests(unittest.TestCase):
         issued = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
         self.vault.cdp[0, 'owner'] = 'wallet2'
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.vault.fast_force_close_vault(cdp_number=id)
         redemption_cost_without_fee = 100
         self.assertAlmostEqual(self.dai.balance_of(account='sys'),
