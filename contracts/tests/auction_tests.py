@@ -39,7 +39,9 @@ class AuctionTests(unittest.TestCase):
         self.id = self.vault.create_vault(
             vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
 
-        self.oracle.set_price(number=0, new_price=0.01) # Allow the vaults to be liquidated
+        # Allow the vaults to be liquidated
+        self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
+        self.oracle.set_price(number=0, new_price=0.01)
 
         self.dai.mint(amount=1000, signer='vault_contract')
         self.dai.transfer(to='stu', amount=1000, signer='vault_contract')
