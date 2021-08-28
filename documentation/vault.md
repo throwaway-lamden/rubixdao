@@ -11,7 +11,7 @@ Sets the constants to their default value. As of now, you cannot pass arguments,
 The default values are as follows:
 ```python
 vaults['OWNER'] = ctx.caller
-cdp['current_value'] = 0    
+cdp['current_value'] = 0
 vaults['oracle'] = 'oracle'  # the contract will pull all price data from 'oracle'. Please change this prior to deployment
 vaults['stability_rate'] = 1.1 # dummy for testing
 
@@ -229,7 +229,7 @@ Changes `vault[key]` to `new_value`.
 
 #### Checks:
 
-- Asserts the caller is the address specified in `vaults['OWNER']`  
+- Asserts the caller is the address specified in `vaults['OWNER']`
 - Asserts `key` and `new_value` are both strings
 
 Returns `new_value`.
@@ -242,7 +242,7 @@ Changes `vault[key]` to `new_value`.
 
 #### Checks:
 
-- Asserts the caller is the address specified in `vaults['OWNER']`  
+- Asserts the caller is the address specified in `vaults['OWNER']`
 
 Returns `new_value`.
 
@@ -254,7 +254,7 @@ Changes `stability_rate[key]` to `new_value`.
 
 #### Checks:
 
-- Asserts the caller is the address specified in `vaults['OWNER']`  
+- Asserts the caller is the address specified in `vaults['OWNER']`
 
 Returns `new_value`.
 
@@ -269,3 +269,14 @@ This is a getter and does not impact state in any way. It returns the collateral
 - Asserts the vault exists
 
 Returns collateralization percent.
+
+
+### assert_insufficent_collateral
+Takes `cdp_number: int`
+
+**Cannot be called**
+
+#### Checks:
+
+- Asserts the vault exists
+- Asserts the vault is under-collateralized
