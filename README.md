@@ -7,10 +7,6 @@
 
 This repository contains the backend code for the Lamden MKR clone and some associated tests.
 
-## Progress
-
-You can see the current progress of the project in [progress.md](https://github.com/throwaway-lamden/rubixdao/blob/main/documentation/progress.md).
-
 ## Testing
 
 You can run the included unittests with the [Pytest](https://pytest.org/) framework.
