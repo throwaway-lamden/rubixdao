@@ -479,7 +479,7 @@ class AuctionTests(unittest.TestCase):
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
 
         # May not work if the ratio becomes less than 1.03 - double check
-        '''assert self.dai.balance_of(account='stu') == 1000 - amount_redeemed - (self.vault.vaults[0, 'total'] / self.vault.vaults[0, 'issued']) * 110
+        '''assert self.tad.balance_of(account='stu') == 1000 - amount_redeemed - (self.vault.vaults[0, 'total'] / self.vault.vaults[0, 'issued']) * 110
         assert self.currency.balance_of(account='stu') == old_balance + (((self.vault.vaults[0, 'total'] / self.vault.vaults[0, 'issued']) * 110 * 1.03) / 0.15)'''
 
     def test_instant_force_close_does_not_update_stability_fee_when_ratio_is_above_1_03(self):
