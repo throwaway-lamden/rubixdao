@@ -1,15 +1,11 @@
-# lamden-mkr
+# rubixdao
 
 ![Python Version](https://img.shields.io/badge/Python-3.6-blue?style=flat-square)
 ![Dependencies](https://img.shields.io/badge/Dependencies-contracting%2C%20requests-blue?style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/tests?label=Tests&style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/CodeQL?label=CodeQL&style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/rubixdao/tests?label=Tests&style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/rubixdao/CodeQL?label=CodeQL&style=flat-square)
 
 This repository contains the backend code for the Lamden MKR clone and some associated tests.
-
-## Progress
-
-You can see the current progress of the project in [progress.md](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/progress.md).
 
 ## Testing
 
@@ -24,7 +20,7 @@ For better performance, you can run tests multithreaded with [pytest-xdist](http
 python3 -m pytest tests -n {amount of threads} --force-flaky
 ```
 
-You can see the current build status in the [Actions](https://github.com/throwaway-lamden/lamden-mkr/actions) tab of this repository.
+You can see the current build status in the [Actions](https://github.com/throwaway-lamden/rubixdao/actions) tab of this repository.
 
 ## Deployment
 
@@ -44,13 +40,13 @@ To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamde
 
 ## Demo
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/lamden-mkr/demo?label=Demo&style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/rubixdao/demo?label=Demo&style=flat-square)
 
 *The demo is untested and a WIP. It may not always be up-to-date. The GitHub action is flaky because it uses the actual blockchain, so it may take several runs to succeed if the blockchain is under high load.*
 
 To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`. If you are running the script on Windows, `colorama` is recommended.
 
-You can also see the demo in the [Github Actions demo.yml](https://github.com/throwaway-lamden/lamden-mkr/actions/workflows/demo.yml) tab. A WIP web demo on [Repl.it](https://replit.com/@testtestlamden/lamden-mkr) can also be used.
+You can also see the demo in the [Github Actions demo.yml](https://github.com/throwaway-lamden/rubixdao/actions/workflows/demo.yml) tab. A WIP web demo on [Repl.it](https://replit.com/@testtestlamden/lamden-mkr) can also be used.
 
 ### Expected Workflows
 
@@ -95,17 +91,17 @@ requests.post('https://testnet-master-1.lamden.io/', data = tx) # Submits transa
 
 This is the main SC. It handles creating CDPs and closing CDPs as well as auctions for undercollateralized CDPs. This contract should be the only contract that can mint tad. The staking contract (`stake.py`) calls this to pay out rewards. As well, future contracts can pay stability pool rewards to lMKR holders with `export_rewards()`.
 
-[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/vault.py)
+[Contract](https://github.com/throwaway-lamden/rubixdao/blob/main/contracts/vault.py)
 
-[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/vault.md)
+[Documentation](https://github.com/throwaway-lamden/rubixdao/blob/main/documentation/vault.md)
 
 ### stake
 
 This is the equivalent to the DSR. It has an adjustable interest rate. Payouts are made through the vault contract. The staked token conforms to LST-001 and LST-002.
 
-[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/stake.py)
+[Contract](https://github.com/throwaway-lamden/rubixdao/blob/main/contracts/stake.py)
 
-[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/stake.md)
+[Documentation](https://github.com/throwaway-lamden/rubixdao/blob/main/documentation/stake.md)
 
 ### tad
 
@@ -119,9 +115,9 @@ This is the tad equivalent. It conforms to LST-001 and LST-002.
 
 This is the base oracle contract.
 
-[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/oracle.py)
+[Contract](https://github.com/throwaway-lamden/rubixdao/blob/main/contracts/oracle.py)
 
-[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/oracle.md)
+[Documentation](https://github.com/throwaway-lamden/rubixdao/blob/main/documentation/oracle.md)
 
 ## API Guide
 
