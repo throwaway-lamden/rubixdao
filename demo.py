@@ -123,7 +123,7 @@ except Exception as e:
     input("Please press ENTER when you've sent dTAU to the demo address")
 
 nonce = 0
-contract_list = ['dai', 'oracle', 'vault', 'stake']
+contract_list = ['tad', 'oracle', 'vault', 'stake']
 # To prevent issues with sending the SCs
 prefix = f'demo{random.randint(100000, 999999)}'
 
@@ -134,10 +134,10 @@ for x in contract_list:
     with open(f'contracts/{x}.py') as f:
         kwargs = dict()
         kwargs['code'] = f.read().replace("importlib.import_module('vault_contract')", f"importlib.import_module('con_{prefix}_vault')").replace(
-            "importlib.import_module('dai_contract')", f"importlib.import_module('con_{prefix}_dai')")  # Make a lot shorter
+            "importlib.import_module('tad_contract')", f"importlib.import_module('con_{prefix}_tad')")  # Make a lot shorter
         kwargs['name'] = f'con_{prefix}_{x}'
 
-        if x == "dai":
+        if x == "tad":
             kwargs['constructor_args'] = dict(owner=f'con_{prefix}_vault')
 
         nonce, result = submit_transaction(
@@ -190,7 +190,7 @@ for x in contract_list:
     nonce, result = submit_transaction(
         new_wallet, f'currency', 'approve', kwargs, nonce)
     nonce, result = submit_transaction(
-        new_wallet, f'con_{prefix}_dai', 'approve', kwargs, nonce)
+        new_wallet, f'con_{prefix}_tad', 'approve', kwargs, nonce)
 
     time.sleep(2)
 
@@ -201,17 +201,17 @@ print_color("Creating vault buffer to offset stability fee", color.BOLD)
 
 kwargs = dict()
 kwargs['vault_type'] = 0
-kwargs['amount_of_dai'] = dict(__fixed__='25.0')
+kwargs['amount_of_tad'] = dict(__fixed__='25.0')
 kwargs['amount_of_collateral'] = dict(__fixed__='38.0')
 
 nonce, result = submit_transaction(
     new_wallet, f'con_{prefix}_vault', 'create_vault', kwargs, nonce)
 
-print_color("Creating 100 DAI vault with 155 dTAU as collateral", color.BOLD)
+print_color("Creating 100 tad vault with 155 dTAU as collateral", color.BOLD)
 
 kwargs = dict()
 kwargs['vault_type'] = 0
-kwargs['amount_of_dai'] = dict(__fixed__='100.0')
+kwargs['amount_of_tad'] = dict(__fixed__='100.0')
 kwargs['amount_of_collateral'] = dict(__fixed__='155.0')
 
 nonce, result = submit_transaction(
@@ -234,9 +234,9 @@ time.sleep(2)
 
 # close_price = requests.get(f"https://testnet-master-1.lamden.io/tx?hash={result['hash']}").json()['result'] fails because it returns a decimal object instead of a human readable number
 close_price = abs(float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 25)
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_tad/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 25)
 print_color(
-    f"Vault closed for 100 DAI and an additional {close_price} DAI stability fee", color.CYAN)
+    f"Vault closed for 100 tad and an additional {close_price} tad stability fee", color.CYAN)
 
 # TODO: Make function to decode bytes dict
 
@@ -260,11 +260,11 @@ nonce, result = submit_transaction(
 
 time.sleep(2)
 
-print_color("Creating 100 DAI vault with 155 dTAU as collateral", color.BOLD)
+print_color("Creating 100 tad vault with 155 dTAU as collateral", color.BOLD)
 
 kwargs = dict()
 kwargs['vault_type'] = 0
-kwargs['amount_of_dai'] = dict(__fixed__='100.0')
+kwargs['amount_of_tad'] = dict(__fixed__='100.0')
 kwargs['amount_of_collateral'] = dict(__fixed__='155.0')
 
 nonce, result = submit_transaction(
@@ -272,7 +272,7 @@ nonce, result = submit_transaction(
 
 time.sleep(2)
 
-print_color("Staking 100 DAI at a rate of 5% per annum", color.BOLD)
+print_color("Staking 100 tad at a rate of 5% per annum", color.BOLD)
 
 kwargs = dict()
 kwargs['amount'] = dict(__fixed__='100.0')
@@ -288,13 +288,13 @@ except EOFError:
     print_color(
         "\nError with input. If this is run in GitHub Actions, ignore.", color.RED)
 
-print_color("Unstaking 100 DAI", color.BOLD)
+print_color("Unstaking 100 tad", color.BOLD)
 
 s_amount = float(ast.literal_eval(requests.get(
     f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_stake/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - 0.00000000000001  # Prevent floating point issue
 
 old_amount = float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_tad/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
 
 kwargs = dict()
 kwargs['amount'] = dict(__fixed__=str(s_amount))
@@ -305,17 +305,17 @@ nonce, result = submit_transaction(
 time.sleep(2)
 
 return_amount = float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - old_amount
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_tad/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']) - old_amount
 
 print_color(
-    f"Stake closed for 100 DAI and an additional {return_amount - 100.0} DAI interest", color.CYAN)  # TODO: Make operation consistent
+    f"Stake closed for 100 tad and an additional {return_amount - 100.0} tad interest", color.CYAN)  # TODO: Make operation consistent
 
 print_color("Closing vault", color.BOLD)
 kwargs = dict()
 kwargs['cdp_number'] = 2
 
 old_amount = float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_tad/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__'])
 
 nonce, result = submit_transaction(
     new_wallet, f'con_{prefix}_vault', 'close_vault', kwargs, nonce)
@@ -323,9 +323,9 @@ nonce, result = submit_transaction(
 time.sleep(2)
 
 close_price = abs(old_amount - float(ast.literal_eval(requests.get(
-    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_dai/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']))
+    f"https://testnet-master-1.lamden.io/contracts/con_{prefix}_tad/balances?key={new_wallet.verifying_key}").content.decode("UTF-8"))['value']['__fixed__']))
 print_color(
-    f"Vault closed for 100 DAI and an additional {close_price - 100.0} DAI stability fee. The overall profit from staking is {return_amount - close_price} (this will likely be negative).", color.CYAN)
+    f"Vault closed for 100 tad and an additional {close_price - 100.0} tad stability fee. The overall profit from staking is {return_amount - close_price} (this will likely be negative).", color.CYAN)
 
 print_color("Demo 3: Undercollateralized instant force close demo", color.GREEN)
 print_color("Not implemented yet", color.BOLD)

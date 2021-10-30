@@ -12,8 +12,8 @@ class VaultTests(unittest.TestCase):
         self.client = ContractingClient()
         self.client.flush()
 
-        with open('dai.py') as file:
-            dai = file.read()
+        with open('tad.py') as file:
+            tad = file.read()
 
         with open('vault.py') as file:
             vault = file.read()
@@ -24,14 +24,14 @@ class VaultTests(unittest.TestCase):
         with open('oracle.py') as file:
             oracle = file.read()
 
-        self.client.submit(dai, name='dai_contract', constructor_args={
+        self.client.submit(tad, name='tad_contract', constructor_args={
                            'owner': 'vault_contract'})
 
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
 
-        self.dai = self.client.get_contract('dai_contract')
+        self.tad = self.client.get_contract('tad_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
@@ -49,34 +49,34 @@ class VaultTests(unittest.TestCase):
     def test_create_vault_unavailable(self):
         with self.assertRaisesRegex(AssertionError, 'available'):
             self.vault.create_vault(
-                vault_type=-1, amount_of_dai=100, amount_of_collateral=100)
+                vault_type=-1, amount_of_tad=100, amount_of_collateral=100)
 
     def test_create_vault_negative(self):
         with self.assertRaisesRegex(AssertionError, 'positive'):
-            self.vault.create_vault(vault_type=0, amount_of_dai=-
+            self.vault.create_vault(vault_type=0, amount_of_tad=-
                                     1,  amount_of_collateral=100)
 
     def test_create_vault_insufficient_allowance(self):
         with self.assertRaisesRegex(AssertionError, 'allowance'):
             self.vault.create_vault(
-                vault_type=0, amount_of_dai=1000001,
+                vault_type=0, amount_of_tad=1000001,
                 amount_of_collateral=1000001)
 
     def test_create_vault_insufficient_collateral(self):
         self.currency.approve(to='vault_contract', amount=100)
         with self.assertRaisesRegex(AssertionError, 'collateral'):
-            self.vault.create_vault(vault_type=0, amount_of_dai=100,
+            self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                     amount_of_collateral=100)
 
     def test_create_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
 
     def test_create_vault_states(self):
         self.currency.approve(to='vault_contract', amount=1500)
         id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
 
         assert self.vault.cdp['current_value'] == 1
         assert self.vault.cdp[id, 'owner'] == 'sys'
@@ -84,7 +84,7 @@ class VaultTests(unittest.TestCase):
         assert self.vault.cdp[id,
                               'collateral_type'] == self.vault.vaults[0, 'collateral_type']
         assert self.vault.cdp[id, 'vault_type'] == 0
-        assert self.vault.cdp[id, 'dai'] == 100
+        assert self.vault.cdp[id, 'tad'] == 100
         assert self.vault.cdp[id, 'collateral_amount'] == 1500
         assert self.vault.cdp[id, 'time'] == self.vault.get_timestamp()
 
@@ -93,25 +93,25 @@ class VaultTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
 
         self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500,
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500,
             signer='stu')  # Might fail, not sure why commented
 
         self.assertEqual(self.currency.balances['stu'], 0)
 
-    def test_create_vault_gives_dai(self):
+    def test_create_vault_gives_tad(self):
         self.currency.transfer(to='stu', amount=1500)
         self.currency.approve(to='vault_contract', amount=1500, signer='stu')
 
         self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500,
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500,
             signer='stu')  # Might fail, not sure why commented
 
-        self.assertEqual(self.dai.balances['stu'], 100)
+        self.assertEqual(self.tad.balances['stu'], 100)
 
     def test_create_vault_updates_reserves(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                 amount_of_collateral=1500)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
@@ -181,20 +181,20 @@ class VaultTests(unittest.TestCase):
     def test_sync_burn_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=1)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.sync_burn(vault_type=0, amount=1)
 
     def test_sync_burn_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
-        total = self.dai.total_supply.get()
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
+        total = self.tad.total_supply.get()
         original = self.vault.vaults[0, 'total']
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.sync_burn(vault_type=0, amount=1)
 
-        self.assertAlmostEqual(total - 1, self.dai.total_supply.get())
+        self.assertAlmostEqual(total - 1, self.tad.total_supply.get())
         self.assertAlmostEqual(original - 1, self.vault.vaults[0, 'total'])
 
     def test_sync_stability_pool_nonexistent(self):
@@ -204,19 +204,19 @@ class VaultTests(unittest.TestCase):
     def test_sync_stability_pool_zero(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         self.vault.sync_stability_pool(vault_type=0)
         assert 0 == self.vault.stability_pool[0]
 
     def test_sync_stability_pool_positive(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
@@ -225,12 +225,12 @@ class VaultTests(unittest.TestCase):
     def test_sync_stability_pool_positive_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
@@ -256,31 +256,31 @@ class VaultTests(unittest.TestCase):
 
     def test_remove_vault_unauthorised(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                 amount_of_collateral=1500)
         with self.assertRaisesRegex(AssertionError, 'owner'):
             self.vault.remove_vault(vault_type=0, signer='bob')
 
     def test_remove_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                 amount_of_collateral=1500)
         self.vault.remove_vault(vault_type=0)
         assert 0 not in self.vault.vaults['list']
 
     def test_close_vault_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
     def test_close_vault_closes_vault(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
         self.assertEqual(self.vault.cdp[id, 'open'], False)
@@ -288,27 +288,27 @@ class VaultTests(unittest.TestCase):
     def test_close_vault_updates_reserves(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
         self.assertEqual(self.vault.vaults[0, 'total'], 100)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 0)
         self.assertEqual(self.vault.vaults[0, 'total'], 0)
 
-    def test_close_vault_takes_dai(self):
+    def test_close_vault_takes_tad(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
 
         self.assertEqual(self.vault.vaults[0, 'issued'], 100)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
-    def close_vault_takes_dai_and_stability_fee(self):
+    def close_vault_takes_tad_and_stability_fee(self):
         pass
 
     def close_vault_adjusts_based_on_reserves(self):  # use ENV
@@ -320,13 +320,13 @@ class VaultTests(unittest.TestCase):
 
     def test_close_vault_returns_collateral(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
 
         self.assertAlmostEqual(
             self.currency.balance_of(account='sys'),
             2147483647 - 1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
         self.assertAlmostEqual(
             self.currency.balance_of(account='sys'),
@@ -334,28 +334,28 @@ class VaultTests(unittest.TestCase):
 
     def test_close_vault_funds_burned(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.assertAlmostEqual(self.dai.total_supply.get(), 100)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.assertAlmostEqual(self.tad.total_supply.get(), 100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
-        self.assertAlmostEqual(self.dai.total_supply.get(), 0)
+        self.assertAlmostEqual(self.tad.total_supply.get(), 0)
 
     def close_vault_fee_not_burned(self):
         pass
 
     def test_close_vault_unauthorised(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
         with self.assertRaisesRegex(AssertionError, 'owner'):
             self.vault.close_vault(cdp_number=id, signer='wallet2')
 
     def test_close_vault_twice_fails(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
         with self.assertRaisesRegex(AssertionError, 'closed'):
             self.vault.close_vault(cdp_number=id)
@@ -366,17 +366,17 @@ class VaultTests(unittest.TestCase):
         for x in range(1, 1001):
             self.currency.approve(to='vault_contract',
                                   amount=151)
-            self.vault.create_vault(vault_type=0, amount_of_dai=100,
+            self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                     amount_of_collateral=151)
             self.assertEqual(self.vault.vaults[0, 'issued'], x * 100)
             self.assertEqual(self.vault.vaults[0, 'total'], x * 100)
-            self.assertEqual(self.dai.balances['sys'], x * 100)
-            self.assertEqual(self.dai.total_supply.get(), x * 100)
+            self.assertEqual(self.tad.balances['sys'], x * 100)
+            self.assertEqual(self.tad.total_supply.get(), x * 100)
 
         for x in range(1, 1001):
             id = random.choice(id_list)
             id_list.remove(id)
-            self.dai.approve(to='vault_contract', amount=100)
+            self.tad.approve(to='vault_contract', amount=100)
             self.vault.close_vault(cdp_number=id)
 
             self.assertEqual(
@@ -385,8 +385,8 @@ class VaultTests(unittest.TestCase):
             self.assertEqual(
                 self.vault.vaults[0, 'total'],
                 1000 * 100 - x * 100)
-            self.assertEqual(self.dai.balances['sys'], 1000 * 100 - x * 100)
-            self.assertEqual(self.dai.total_supply.get(), 1000 * 100 - x * 100)
+            self.assertEqual(self.tad.balances['sys'], 1000 * 100 - x * 100)
+            self.assertEqual(self.tad.total_supply.get(), 1000 * 100 - x * 100)
 
     def test_timestamp_is_correct(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
@@ -403,12 +403,12 @@ class VaultTests(unittest.TestCase):
     def test_export_rewards_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
@@ -417,28 +417,28 @@ class VaultTests(unittest.TestCase):
     def test_export_rewards_gives_rewards(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
         self.vault.export_rewards(vault_type=0, amount=0.1)
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'),
-                               99.1)  # 99 from unused dai amount
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'),
+                               99.1)  # 99 from unused tad amount
 
     def test_export_rewards_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
         self.id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
@@ -458,7 +458,7 @@ class VaultTests(unittest.TestCase):
 
     def test_mint_rewards_gives_rewards(self):
         self.vault.mint_rewards(amount=1)
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 1)
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'), 1)
 
     def test_mint_rewards_changes_state(self):
         self.vault.mint_rewards(amount=1)
@@ -478,7 +478,7 @@ class VaultTests(unittest.TestCase):
 
     def test_get_collateralization_percent_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
         self.assertAlmostEqual(
             self.vault.get_collateralization_percent(cdp_number=id), 15)
@@ -495,9 +495,9 @@ class VaultTests(unittest.TestCase):
 
     def test_fast_force_close_vault_closed(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
@@ -511,17 +511,17 @@ class VaultTests(unittest.TestCase):
 
     def test_fast_force_close_vault_above_minimum(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         with self.assertRaisesRegex(AssertionError, 'above'):
             self.vault.fast_force_close_vault(cdp_number=id)
 
     def test_fast_force_close_vault_under_103_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.oracle.set_price(number=0, new_price=0.01)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
@@ -530,12 +530,12 @@ class VaultTests(unittest.TestCase):
 
     def test_fast_force_close_vault_above_103_normal(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
         # since we set dsr owner in setup
-        self.dai.mint(amount=10, signer='vault_contract')
-        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
-        self.dai.approve(to='vault_contract', amount=110)
+        self.tad.mint(amount=10, signer='vault_contract')
+        self.tad.transfer(amount=10, to='sys', signer='vault_contract')
+        self.tad.approve(to='vault_contract', amount=110)
         self.oracle.set_price(number=0, new_price=0.09)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
@@ -544,21 +544,21 @@ class VaultTests(unittest.TestCase):
 
     def test_fast_force_close_vault_takes_money(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.oracle.set_price(number=0, new_price=0.01)
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.fast_force_close_vault(cdp_number=id)
-        assert self.dai.balance_of(account='sys') < 100
+        assert self.tad.balance_of(account='sys') < 100
 
     def test_fast_force_close_vault_under_103_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
         self.oracle.set_price(number=0, new_price=0.01)
         issued = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
@@ -567,12 +567,12 @@ class VaultTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=0.01)
         self.vault.fast_force_close_vault(cdp_number=id)
 
-        # original, dai minted, collateral percent, collateral reward respectively
+        # original, tad minted, collateral percent, collateral reward respectively
         redemption_cost_without_fee = (
             100) * (1500 * 0.01 / (100 * 1.1)) / 1.03
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'),
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'),
                                100 - redemption_cost_without_fee * 1.1)
-        self.assertAlmostEqual(self.dai.total_supply.get(),
+        self.assertAlmostEqual(self.tad.total_supply.get(),
                                100 - redemption_cost_without_fee)
         self.assertAlmostEqual(self.currency.balance_of(
             account='sys'), 2147483647)  # reward to closer
@@ -580,17 +580,17 @@ class VaultTests(unittest.TestCase):
             issued - 100, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued'])
         self.assertAlmostEqual(total - redemption_cost_without_fee,
                                self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total'])
-        self.assertAlmostEqual(self.dai.balance_of(
+        self.assertAlmostEqual(self.tad.balance_of(
             account='vault_contract'), self.vault.stability_pool[self.vault.cdp[0, 'vault_type']])
 
     def test_fast_force_close_vault_above_103_changes_state(self):
         self.currency.approve(to='vault_contract', amount=1500)
-        id = self.vault.create_vault(vault_type=0, amount_of_dai=100,
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500)
         # since we set dsr owner in setup
-        self.dai.mint(amount=10, signer='vault_contract')
-        self.dai.transfer(amount=10, to='sys', signer='vault_contract')
-        self.dai.approve(to='vault_contract', amount=110)
+        self.tad.mint(amount=10, signer='vault_contract')
+        self.tad.transfer(amount=10, to='sys', signer='vault_contract')
+        self.tad.approve(to='vault_contract', amount=110)
         self.oracle.set_price(number=0, new_price=0.09)
         issued = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued']
         total = self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total']
@@ -599,9 +599,9 @@ class VaultTests(unittest.TestCase):
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.vault.fast_force_close_vault(cdp_number=id)
         redemption_cost_without_fee = 100
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'),
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'),
                                110 - redemption_cost_without_fee * 1.1)
-        self.assertAlmostEqual(self.dai.total_supply.get(),
+        self.assertAlmostEqual(self.tad.total_supply.get(),
                                110 - redemption_cost_without_fee)
         self.assertAlmostEqual(self.currency.balance_of(
             account='sys'), 2147483647 - 1500 + (1 / 0.09) * 100 * 1.1 * 1.03)  # reward to closer
@@ -611,5 +611,5 @@ class VaultTests(unittest.TestCase):
             issued - 100, self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'issued'])
         self.assertAlmostEqual(total - redemption_cost_without_fee,
                                self.vault.vaults[self.vault.cdp[0, 'vault_type'], 'total'])
-        self.assertAlmostEqual(self.dai.balance_of(
+        self.assertAlmostEqual(self.tad.balance_of(
             account='vault_contract'), self.vault.stability_pool[self.vault.cdp[0, 'vault_type']])

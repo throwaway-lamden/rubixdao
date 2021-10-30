@@ -1,4 +1,4 @@
-dai_contract = importlib.import_module('dai_contract')
+tad_contract = importlib.import_module('tad_contract')
 vault_contract = importlib.import_module('vault_contract')
 
 rate = Hash()
@@ -20,8 +20,8 @@ def seed():
     rate['rate'] = 1.0000000015469297  # interest per second
     rate['start_price'] = 1
 
-    metadata['token_name'] = 'Staked DAI'
-    metadata['token_symbol'] = 'sDAI'
+    metadata['token_name'] = 'Staked tad'
+    metadata['token_symbol'] = 'stad'
     metadata['token_logo_url'] = 'image.site'
     metadata['operator'] = ctx.caller
     total_minted.set(0)
@@ -37,7 +37,7 @@ def get_timestamp():
 @export
 def stake(amount: float):
     assert amount > 0, 'Stake amount must be positive!'
-    dai_contract.transfer_from(
+    tad_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
 
     amount_minted = amount / get_price()
@@ -55,12 +55,12 @@ def withdraw_stake(amount: float):
     assert balances[ctx.caller] >= amount, 'Not enough coins to withdraw!'
 
     balances[ctx.caller] -= amount
-    
+
     current_price = get_price()
     return_amount = current_price * amount
 
     supply = total_minted.get()
-    current_average = supply / dai_contract.balance_of(ctx.this)
+    current_average = supply / tad_contract.balance_of(ctx.this)
     transfer_away_amount = amount * current_average
 
     total_minted.set(supply - amount)
@@ -69,7 +69,7 @@ def withdraw_stake(amount: float):
         vault_contract.mint_rewards(
             amount=return_amount - transfer_away_amount)
 
-    dai_contract.transfer(amount=return_amount, to=ctx.caller)
+    tad_contract.transfer(amount=return_amount, to=ctx.caller)
 
     return return_amount
 

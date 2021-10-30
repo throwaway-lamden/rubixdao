@@ -8,8 +8,8 @@ class BuySellTests(unittest.TestCase):
         self.client = ContractingClient()
         self.client.flush()
 
-        with open('dai.py') as file:
-            dai = file.read()
+        with open('tad.py') as file:
+            tad = file.read()
 
         with open('vault.py') as file:
             vault = file.read()
@@ -26,7 +26,7 @@ class BuySellTests(unittest.TestCase):
         with open('../keeper-examples/buy_and_sell.py') as file:
             buysell = file.read()
 
-        self.client.submit(dai, name='dai_contract', constructor_args={
+        self.client.submit(tad, name='tad_contract', constructor_args={
                            'owner': 'vault_contract'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
@@ -34,7 +34,7 @@ class BuySellTests(unittest.TestCase):
         self.client.submit(amm, name='amm')
         self.client.submit(buysell, name='buysell')
 
-        self.dai = self.client.get_contract('dai_contract')
+        self.tad = self.client.get_contract('tad_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')

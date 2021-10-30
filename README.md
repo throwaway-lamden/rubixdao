@@ -54,9 +54,9 @@ You can also see the demo in the [Github Actions demo.yml](https://github.com/th
 
 ### Expected Workflows
 
-1. User opens vault -> waits ? amount of time -> stakes DAI/sells DAI -> withdraws stake/buys back DAI -> closes vault with initial DAI and stability fee and gets collateral back
+1. User opens vault -> waits ? amount of time -> stakes tad/sells tad -> withdraws stake/buys back tad -> closes vault with initial tad and stability fee and gets collateral back
 2. User opens vault -> waits ? amount of time -> collateral value drops -> anyone can force close the vault instantly and get 3% profit
-3. User opens vault -> waits ? amount of time -> collateral value drops -> anyone can open an auction -> after 72 hours has passed, the highest DAI bid can claim the collateral and everyone else can claim their bids back
+3. User opens vault -> waits ? amount of time -> collateral value drops -> anyone can open an auction -> after 72 hours has passed, the highest tad bid can claim the collateral and everyone else can claim their bids back
 ## Usage
 
 Calling these contracts from other smart contracts is simple.
@@ -93,7 +93,7 @@ requests.post('https://testnet-master-1.lamden.io/', data = tx) # Submits transa
 
 ### vault
 
-This is the main SC. It handles creating CDPs and closing CDPs as well as auctions for undercollateralized CDPs. This contract should be the only contract that can mint DAI. The staking contract (`stake.py`) calls this to pay out rewards. As well, future contracts can pay stability pool rewards to lMKR holders with `export_rewards()`.
+This is the main SC. It handles creating CDPs and closing CDPs as well as auctions for undercollateralized CDPs. This contract should be the only contract that can mint tad. The staking contract (`stake.py`) calls this to pay out rewards. As well, future contracts can pay stability pool rewards to lMKR holders with `export_rewards()`.
 
 [Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/vault.py)
 
@@ -107,13 +107,13 @@ This is the equivalent to the DSR. It has an adjustable interest rate. Payouts a
 
 [Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/stake.md)
 
-### dai
+### tad
 
-This is the DAI equivalent. It conforms to LST-001 and LST-002.
+This is the tad equivalent. It conforms to LST-001 and LST-002.
 
-[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/dai.py)
+[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/tad.py)
 
-[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/dai.md)
+[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/tad.md)
 
 ### oracle
 

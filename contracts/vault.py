@@ -1,4 +1,4 @@
-dai_contract = importlib.import_module('dai_contract')
+tad_contract = importlib.import_module('tad_contract')
 
 vaults = Hash(default_value=0)
 stability_rate = Hash(default_value=1)
@@ -32,7 +32,7 @@ def get_timestamp():
 
 
 @export
-def create_vault(vault_type: int, amount_of_dai: float,
+def create_vault(vault_type: int, amount_of_tad: float,
                  amount_of_collateral: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
     collateral = importlib.import_module(
@@ -41,12 +41,12 @@ def create_vault(vault_type: int, amount_of_dai: float,
 
     price = oracle.get_price(vault_type)
 
-    assert amount_of_dai > 0, 'Amount of DAI must be positive!'
-    assert vaults[vault_type, 'total'] + amount_of_dai <= vaults[vault_type,
+    assert amount_of_tad > 0, 'Amount of tad must be positive!'
+    assert vaults[vault_type, 'total'] + amount_of_tad <= vaults[vault_type,
                                                                  'cap'], 'The allowance is not sufficent!'
 
     assert (amount_of_collateral * price) / \
-        amount_of_dai >= vaults[vault_type,
+        amount_of_tad >= vaults[vault_type,
                                 'minimum_collateralization'], 'Not enough collateral!'
 
     cdp_number = cdp['current_value']
@@ -57,7 +57,7 @@ def create_vault(vault_type: int, amount_of_dai: float,
 
     cdp[cdp_number, 'collateral_type'] = vaults[vault_type, 'collateral_type']
     cdp[cdp_number, 'vault_type'] = vault_type
-    cdp[cdp_number, 'dai'] = amount_of_dai
+    cdp[cdp_number, 'tad'] = amount_of_tad
     cdp[cdp_number, 'collateral_amount'] = amount_of_collateral
     cdp[cdp_number, 'time'] = get_timestamp()
 
@@ -65,11 +65,11 @@ def create_vault(vault_type: int, amount_of_dai: float,
     collateral.transfer_from(amount=amount_of_collateral,
                              to=ctx.this, main_account=ctx.caller)
 
-    dai_contract.mint(amount=amount_of_dai)
-    dai_contract.transfer(amount=amount_of_dai, to=ctx.caller)
+    tad_contract.mint(amount=amount_of_tad)
+    tad_contract.transfer(amount=amount_of_tad, to=ctx.caller)
 
-    vaults[vault_type, 'issued'] += amount_of_dai
-    vaults[vault_type, 'total'] += amount_of_dai
+    vaults[vault_type, 'issued'] += amount_of_tad
+    vaults[vault_type, 'total'] += amount_of_tad
 
     return cdp_number
 
@@ -84,19 +84,19 @@ def close_vault(cdp_number: int):
 
     stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'total'] / \
         vaults[cdp[cdp_number, 'vault_type'], 'issued']
-    redemption_cost = cdp[cdp_number, 'dai'] * stability_ratio
+    redemption_cost = cdp[cdp_number, 'tad'] * stability_ratio
     fee = redemption_cost * \
         (stability_rate[cdp[cdp_number, 'vault_type']] **
          (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost
 
     amount = redemption_cost + fee
-    dai_contract.transfer_from(
+    tad_contract.transfer_from(
         amount=amount, to=ctx.this, main_account=ctx.caller)
-    dai_contract.burn(amount=redemption_cost)
+    tad_contract.burn(amount=redemption_cost)
 
     stability_pool[cdp[cdp_number, 'vault_type']] += fee
 
-    vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
+    vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'tad']
     # This is only different if the ratio is different
     vaults[cdp[cdp_number, 'vault_type'], 'total'] -= redemption_cost
 
@@ -121,7 +121,7 @@ def fast_force_close_vault(cdp_number: int):
     stability_ratio = vaults[cdp[cdp_number, 'vault_type'],
                              'total'] / vaults[cdp[cdp_number, 'vault_type'], 'issued']
     redemption_cost_without_fee = cdp[cdp_number,
-                                      'dai'] * stability_ratio
+                                      'tad'] * stability_ratio
     redemption_cost = redemption_cost_without_fee * 1.1
     fee = redemption_cost_without_fee * \
         (stability_rate[cdp[cdp_number, 'vault_type']]
@@ -135,9 +135,9 @@ def fast_force_close_vault(cdp_number: int):
         redemption_cost
 
     if collateral_percent >= 1.03:
-        dai_contract.transfer_from(
+        tad_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
-        dai_contract.burn(amount=redemption_cost_without_fee)
+        tad_contract.burn(amount=redemption_cost_without_fee)
         amount = (redemption_cost * 1.03) / price # Double check this math is correct
 
         collateral.transfer(amount=amount, to=ctx.caller)
@@ -145,7 +145,7 @@ def fast_force_close_vault(cdp_number: int):
                             amount, to=cdp[cdp_number, 'owner'])
 
         vaults[cdp[cdp_number, 'vault_type'],
-               'issued'] -= cdp[cdp_number, 'dai']
+               'issued'] -= cdp[cdp_number, 'tad']
         vaults[cdp[cdp_number, 'vault_type'],
                'total'] -= redemption_cost_without_fee
 
@@ -154,9 +154,9 @@ def fast_force_close_vault(cdp_number: int):
             decimal(collateral_percent / 1.03), redemption_cost_without_fee * \
             decimal(collateral_percent / 1.03)
 
-        dai_contract.transfer_from(
+        tad_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
-        dai_contract.burn(amount=redemption_cost_without_fee)
+        tad_contract.burn(amount=redemption_cost_without_fee)
 
         amount = cdp[cdp_number, 'collateral_amount']
 
@@ -164,7 +164,7 @@ def fast_force_close_vault(cdp_number: int):
         collateral.transfer(amount=amount, to=ctx.caller)
 
         vaults[cdp[cdp_number, 'vault_type'],
-               'issued'] -= cdp[cdp_number, 'dai']
+               'issued'] -= cdp[cdp_number, 'tad']
         vaults[cdp[cdp_number, 'vault_type'],
                'total'] -= redemption_cost_without_fee
 
@@ -206,12 +206,12 @@ def bid_on_force_close(cdp_number: int, amount: float):
                         'top_bid'], 'There is already a higher bid!'
 
     if cdp[cdp_number, 'auction', ctx.caller, 'bid'] is not None:
-        dai_contract.transfer_from(
+        tad_contract.transfer_from(
             amount=amount - cdp[cdp_number, 'auction', ctx.caller, 'bid'],
             to=ctx.this, main_account=ctx.caller)
 
     else:
-        dai_contract.transfer_from(
+        tad_contract.transfer_from(
             amount=amount, to=ctx.this, main_account=ctx.caller)
 
     cdp[cdp_number, 'auction', 'highest_bidder'] = ctx.caller
@@ -242,11 +242,11 @@ def settle_force_close(cdp_number: int):
     fee = cdp[cdp_number, 'auction', 'top_bid'] * 0.1
     collateral.transfer_from(
         amount=cdp[cdp_number, 'collateral_amount'], to=ctx.caller, main_account=ctx.this)
-    dai_contract.burn(amount=cdp[cdp_number, 'auction', 'top_bid'] - fee)
+    tad_contract.burn(amount=cdp[cdp_number, 'auction', 'top_bid'] - fee)
 
     stability_pool[cdp[cdp_number, 'vault_type']] += fee
 
-    vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'dai']
+    vaults[cdp[cdp_number, 'vault_type'], 'issued'] -= cdp[cdp_number, 'tad']
     vaults[cdp[cdp_number, 'vault_type'],
            'total'] -= cdp[cdp_number, 'auction', 'top_bid'] - fee  # Fee is not burned, so it does not count
 
@@ -260,7 +260,7 @@ def claim_unwon_bid(cdp_number: int):
     assert cdp[cdp_number, 'auction',
                'settled'] is True, 'Auction is still open or not opened!'
 
-    dai_contract.transfer(
+    tad_contract.transfer(
         to=ctx.caller, amount=cdp[cdp_number, 'auction', ctx.caller, 'bid'])
     cdp[cdp_number, 'auction', ctx.caller, 'bid'] = 0
 
@@ -290,10 +290,10 @@ def sync_stability_pool(vault_type: int):
 def export_rewards(vault_type: int, amount: float):
     # TODO: Change DSR to something else in future
     assert vaults[vault_type, 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
-    assert stability_pool[vault_type] >= amount, 'Not enough DAI in stability pool to export!'
+    assert stability_pool[vault_type] >= amount, 'Not enough tad in stability pool to export!'
 
     stability_pool[vault_type] -= amount
-    dai_contract.transfer(to=ctx.caller, amount=amount)
+    tad_contract.transfer(to=ctx.caller, amount=amount)
 
     return True
 
@@ -304,8 +304,8 @@ def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
     assert vaults['mint', 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
     assert amount > 0, 'Cannot mint negative amount!'
 
-    dai_contract.mint(amount=amount)
-    dai_contract.transfer(to=ctx.caller, amount=amount)
+    tad_contract.mint(amount=amount)
+    tad_contract.transfer(to=ctx.caller, amount=amount)
 
     total_weight = 0
     total_funds = amount
@@ -329,9 +329,9 @@ def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
 def sync_burn(vault_type: int, amount: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
 
-    dai_contract.transfer_from(
+    tad_contract.transfer_from(
         to=ctx.this, amount=amount, main_account=ctx.caller)
-    dai_contract.burn(amount=amount)
+    tad_contract.burn(amount=amount)
 
     vaults[vault_type, 'total'] -= amount
 
@@ -404,7 +404,7 @@ def get_collateralization_percent(cdp_number: int):
     # TODO: Change this from a one-liner to proper function
     oracle = importlib.import_module(vaults['oracle'])
 
-    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']
+    return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'tad']
     # code to check if minimum is met would be
     # assert cdp[cdp_number, 'collateral_amount'] >= vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization']
 
@@ -414,5 +414,5 @@ def assert_insufficent_collateral(cdp_number: int):
 
     oracle = importlib.import_module(vaults['oracle'])
 
-    assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'dai']) < \
+    assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'tad']) < \
         vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'], 'Vault above minimum collateralization!'

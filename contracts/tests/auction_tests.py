@@ -9,8 +9,8 @@ class AuctionTests(unittest.TestCase):
         self.client = ContractingClient()
         self.client.flush()
 
-        with open('dai.py') as file:
-            dai = file.read()
+        with open('tad.py') as file:
+            tad = file.read()
 
         with open('vault.py') as file:
             vault = file.read()
@@ -21,14 +21,14 @@ class AuctionTests(unittest.TestCase):
         with open('oracle.py') as file:
             oracle = file.read()
 
-        self.client.submit(dai, name='dai_contract', constructor_args={
+        self.client.submit(tad, name='tad_contract', constructor_args={
                            'owner': 'vault_contract'})
 
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
 
-        self.dai = self.client.get_contract('dai_contract')
+        self.tad = self.client.get_contract('tad_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
@@ -37,15 +37,15 @@ class AuctionTests(unittest.TestCase):
         self.currency.approve(to='vault_contract', amount=1500)
 
         self.id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
 
         # Allow the vaults to be liquidated
         self.vault.vaults['currency', 'minimum_collateralization'] = 1.5
         self.oracle.set_price(number=0, new_price=0.01)
 
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='stu', amount=1000, signer='vault_contract')
-        self.dai.approve(to='vault_contract', amount=1000, signer='stu')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='stu', amount=1000, signer='vault_contract')
+        self.tad.approve(to='vault_contract', amount=1000, signer='stu')
 
     def tearDown(self):
         self.client.flush()
@@ -55,7 +55,7 @@ class AuctionTests(unittest.TestCase):
             self.vault.open_force_close_auction(cdp_number=1)
 
     def test_force_close_vault_closed(self):
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
 
         self.vault.close_vault(cdp_number=self.id)
 
@@ -118,29 +118,29 @@ class AuctionTests(unittest.TestCase):
     def test_bid_on_force_close_higher_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=2)
+        self.tad.approve(to='vault_contract', amount=2)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
 
         with self.assertRaisesRegex(AssertionError, 'higher'):
-            self.dai.approve(to='vault_contract', amount=1)
+            self.tad.approve(to='vault_contract', amount=1)
 
             self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
-    def test_bid_on_force_close_takes_dai(self):
+    def test_bid_on_force_close_takes_tad(self):
 
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=2)
+        self.tad.approve(to='vault_contract', amount=2)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
 
-        assert self.dai.balance_of(account='sys') == 98
+        assert self.tad.balance_of(account='sys') == 98
 
     def test_bid_on_force_close_sets_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=2)
+        self.tad.approve(to='vault_contract', amount=2)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
 
@@ -151,28 +151,28 @@ class AuctionTests(unittest.TestCase):
     def test_bid_on_force_close_raise_bid(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
-        assert self.dai.balance_of(account='sys') == 99
+        assert self.tad.balance_of(account='sys') == 99
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=2)
 
-        assert self.dai.balance_of(account='sys') == 98
+        assert self.tad.balance_of(account='sys') == 98
 
     def test_bid_on_force_close_normal(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
     # recommend not breaking up because setup is long
     def test_multiple_user_bids(self):
-        self.dai.transfer(to='wallet2', amount=50)
+        self.tad.transfer(to='wallet2', amount=50)
         self.vault.open_force_close_auction(cdp_number=self.id)
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -181,11 +181,11 @@ class AuctionTests(unittest.TestCase):
         assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 1
 
         with self.assertRaisesRegex(AssertionError, 'higher'):
-            self.dai.approve(to='vault_contract', amount=1, signer='wallet2')
+            self.tad.approve(to='vault_contract', amount=1, signer='wallet2')
             self.vault.bid_on_force_close(
                 cdp_number=self.id, amount=1, signer='wallet2')
 
-        self.dai.approve(to='vault_contract', amount=2, signer='wallet2')
+        self.tad.approve(to='vault_contract', amount=2, signer='wallet2')
 
         self.vault.bid_on_force_close(
             cdp_number=self.id, amount=2, signer='wallet2')
@@ -201,7 +201,7 @@ class AuctionTests(unittest.TestCase):
             self.vault.settle_force_close(cdp_number=1)
 
     def test_settle_force_close_no_auction(self):
-        self.dai.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=100)
 
         self.vault.close_vault(cdp_number=self.id)
 
@@ -211,7 +211,7 @@ class AuctionTests(unittest.TestCase):
     def test_settle_force_close_auction_open(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -221,7 +221,7 @@ class AuctionTests(unittest.TestCase):
     def test_settle_force_close_auction_normal(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -231,7 +231,7 @@ class AuctionTests(unittest.TestCase):
     def test_settle_force_close_auction_state(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -247,23 +247,23 @@ class AuctionTests(unittest.TestCase):
         assert highest_bidder == 'sys'
         assert top_bid == 1
 
-    def test_settle_force_close_auction_burns_dai(self):
+    def test_settle_force_close_auction_burns_tad(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
-        original = self.dai.total_supply.get()
+        original = self.tad.total_supply.get()
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
 
-        self.assertAlmostEqual(self.dai.total_supply.get(), original - 0.9)
+        self.assertAlmostEqual(self.tad.total_supply.get(), original - 0.9)
 
     def test_settle_force_close_auction_returns_collateral(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -277,7 +277,7 @@ class AuctionTests(unittest.TestCase):
     def test_settle_force_close_auction_updates_pool(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -313,7 +313,7 @@ class AuctionTests(unittest.TestCase):
     def test_claim_unwon_bid_nothing_left(self):
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
@@ -325,26 +325,26 @@ class AuctionTests(unittest.TestCase):
 
     # recommend not breaking up because setup is long
     def test_claim_unwon_bid_normal(self):
-        self.dai.transfer(to='wallet2', amount=50)
+        self.tad.transfer(to='wallet2', amount=50)
 
         self.vault.open_force_close_auction(cdp_number=self.id)
 
-        self.dai.approve(to='vault_contract', amount=1)
+        self.tad.approve(to='vault_contract', amount=1)
 
         self.vault.bid_on_force_close(cdp_number=self.id, amount=1)
 
-        self.dai.approve(to='vault_contract', amount=2, signer='wallet2')
+        self.tad.approve(to='vault_contract', amount=2, signer='wallet2')
 
         self.vault.bid_on_force_close(
             cdp_number=self.id, amount=2, signer='wallet2')
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.vault.settle_force_close(cdp_number=self.id, environment=env)
 
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 49)
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'), 49)
 
         self.vault.claim_unwon_bid(cdp_number=self.id)
 
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'), 50)
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'), 50)
         assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 0 #
 
     def test_instant_force_close_vault_sufficent_collateral_fail(self):
@@ -352,62 +352,62 @@ class AuctionTests(unittest.TestCase):
         pass
 
     def test_instant_force_close_vault_normal(self):
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
 
     def test_instant_force_close_nonexistent(self):
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
 
         with self.assertRaisesRegex(AssertionError, 'cdp'):
             self.vault.fast_force_close_vault(cdp_number=1)
 
     def test_instant_force_close_cannot_close_twice(self):
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
 
         with self.assertRaisesRegex(AssertionError, 'already'):
-            self.dai.approve(to='vault_contract', amount=1000)
+            self.tad.approve(to='vault_contract', amount=1000)
 
             self.vault.fast_force_close_vault(cdp_number=self.id)
 
     def test_after_instant_force_close_cannot_open_auction(self):
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
         self.vault.fast_force_close_vault(cdp_number=self.id)
 
         with self.assertRaisesRegex(AssertionError, 'already'):
             self.vault.open_force_close_auction(cdp_number=self.id)
 
-    def test_instant_force_close_takes_dai_when_ratio_is_above_1_03(self):
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+    def test_instant_force_close_takes_tad_when_ratio_is_above_1_03(self):
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000)
-        old_balance = self.dai.balances['sys']
+        self.tad.approve(to='vault_contract', amount=1000)
+        old_balance = self.tad.balances['sys']
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
-        assert self.dai.balance_of(account='sys') < old_balance
+        assert self.tad.balance_of(account='sys') < old_balance
 
-    def test_instant_force_close_takes_correct_amount_of_dai_when_ratio_is_above_1_03(self):
+    def test_instant_force_close_takes_correct_amount_of_tad_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
 
-        self.dai.approve(to='vault_contract', amount=1000)
-        old_balance = self.dai.balances['sys']
+        self.tad.approve(to='vault_contract', amount=1000)
+        old_balance = self.tad.balances['sys']
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
-        assert self.dai.balance_of(account='sys') == old_balance - (100 * 1.1)
+        assert self.tad.balance_of(account='sys') == old_balance - (100 * 1.1)
 
     def test_instant_force_close_gives_collateral_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
 
-        self.dai.approve(to='vault_contract', amount=1000, signer='stu')
+        self.tad.approve(to='vault_contract', amount=1000, signer='stu')
         old_balance = old_balance = self.currency.balance_of(account='stu')
 
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
@@ -416,19 +416,19 @@ class AuctionTests(unittest.TestCase):
     def test_instant_force_close_gives_correct_proportion_of_collateral_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000)
-        old_balance_dai = self.dai.balances['stu']
+        self.tad.approve(to='vault_contract', amount=1000)
+        old_balance_tad = self.tad.balances['stu']
         old_balance_collateral = old_balance = self.currency.balance_of(account='stu')
 
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
 
         # The math in this might not be right - if it fails, check it!
-        self.assertAlmostEqual(float((self.currency.balance_of(account='stu') - old_balance_collateral)) / 1.03 * 0.09, old_balance_dai - self.dai.balance_of(account='stu'))
+        self.assertAlmostEqual(float((self.currency.balance_of(account='stu') - old_balance_collateral)) / 1.03 * 0.09, old_balance_tad - self.tad.balance_of(account='stu'))
 
     def test_instant_force_close_returns_collateral_to_owner_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000, signer='stu')
+        self.tad.approve(to='vault_contract', amount=1000, signer='stu')
         old_balance = self.currency.balance_of(account='sys')
 
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
@@ -437,21 +437,21 @@ class AuctionTests(unittest.TestCase):
     def test_instant_force_close_returns_correct_amount_of_collateral_to_owner_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000, signer='stu')
+        self.tad.approve(to='vault_contract', amount=1000, signer='stu')
         old_balance = self.currency.balance_of(account='sys')
 
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), old_balance + 1500 - (110 * 1.03) / 0.09)
 
     def test_instant_force_close_gives_correct_amount_of_collateral_when_ratio_is_above_1_03(self):
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000, signer='stu')
+        self.tad.approve(to='vault_contract', amount=1000, signer='stu')
         old_balance = self.currency.balance_of(account='stu')
 
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
         self.vault.fast_force_close_vault(cdp_number=self.id)
         assert self.currency.balance_of(account='stu') == (old_balance + 1500)
 
@@ -459,10 +459,10 @@ class AuctionTests(unittest.TestCase):
         self.oracle.set_price(number=0, new_price=1.0)
         self.currency.approve(to='vault_contract', amount=1500)
         v_id = self.vault.create_vault(
-            vault_type=0, amount_of_dai=100, amount_of_collateral=1500)
+            vault_type=0, amount_of_tad=100, amount_of_collateral=1500)
         self.oracle.set_price(number=0, new_price=0.01)
 
-        self.dai.approve(to='vault_contract', amount=1000, signer='stu')
+        self.tad.approve(to='vault_contract', amount=1000, signer='stu')
         self.vault.fast_force_close_vault(cdp_number=v_id, signer='stu')
 
         assert self.vault.vaults[0, 'issued'] == 200 - 100
@@ -473,56 +473,56 @@ class AuctionTests(unittest.TestCase):
 
         self.oracle.set_price(number=0, new_price=0.15) # This is a inconsistent price because otherwise the ratio drops below 1.03
 
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
         old_balance = old_balance = self.currency.balance_of(account='stu')
 
         self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
 
         # May not work if the ratio becomes less than 1.03 - double check
-        assert self.dai.balance_of(account='stu') == 1000 - amount_redeemed - (self.vault.vaults[0, 'total'] / self.vault.vaults[0, 'issued']) * 110
+        assert self.tad.balance_of(account='stu') == 1000 - amount_redeemed - (self.vault.vaults[0, 'total'] / self.vault.vaults[0, 'issued']) * 110
         assert self.currency.balance_of(account='stu') == old_balance + (((self.vault.vaults[0, 'total'] / self.vault.vaults[0, 'issued']) * 110 * 1.03) / 0.15)
 
     def test_instant_force_close_does_not_update_stability_fee_when_ratio_is_above_1_03(self):
         self.oracle.set_price(number=0, new_price=0.09)
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
 
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
         self.vault.fast_force_close_vault(cdp_number=self.id)
 
         assert self.vault.vaults[0, 'issued'] == 0
         assert self.vault.vaults[0, 'total'] == 0
 
-    def test_instant_force_close_takes_dai_when_ratio_is_below_1_03(self):
+    def test_instant_force_close_takes_tad_when_ratio_is_below_1_03(self):
         pass
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
 
-        self.dai.approve(to='vault_contract', amount=1000)
-        old_balance = self.dai.balances['sys']
-
-        self.vault.fast_force_close_vault(cdp_number=self.id)
-        assert self.dai.balance_of(account='sys') < old_balance
-
-    def test_instant_force_close_takes_correct_amount_of_dai_when_ratio_is_below_1_03(self):
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
-
-        self.dai.approve(to='vault_contract', amount=1000)
-        old_balance = [self.dai.balances['sys'], self.currency.balances['sys']]
+        self.tad.approve(to='vault_contract', amount=1000)
+        old_balance = self.tad.balances['sys']
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
+        assert self.tad.balance_of(account='sys') < old_balance
 
-        self.assertAlmostEqual(self.dai.balance_of(account='sys'), old_balance[0] - 15 / (1.03))
+    def test_instant_force_close_takes_correct_amount_of_tad_when_ratio_is_below_1_03(self):
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
+
+        self.tad.approve(to='vault_contract', amount=1000)
+        old_balance = [self.tad.balances['sys'], self.currency.balances['sys']]
+
+        self.vault.fast_force_close_vault(cdp_number=self.id)
+
+        self.assertAlmostEqual(self.tad.balance_of(account='sys'), old_balance[0] - 15 / (1.03))
         self.assertAlmostEqual(self.currency.balance_of(account='sys'), old_balance[1] + 1500)
 
     def test_instant_force_close_gives_collateral_when_ratio_is_below_1_03(self):
         pass
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
         old_balance = self.currency.balance_of(account='sys')
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
@@ -533,23 +533,23 @@ class AuctionTests(unittest.TestCase):
 
         self.oracle.set_price(number=0, new_price=0.01)
 
-        self.dai.approve(to='vault_contract', amount=1000)
-        old_balance_dai = self.dai.balances['sys']
+        self.tad.approve(to='vault_contract', amount=1000)
+        old_balance_tad = self.tad.balances['sys']
         old_balance_collateral = self.currency.balances['sys']
 
         self.vault.fast_force_close_vault(cdp_number=self.id)
 
         # The math in this might not be right - if it fails, check it!
-        self.assertAlmostEqual((self.currency.balance_of(account='sys') - old_balance_collateral) / 1.03 * 0.01, old_balance_dai - self.dai.balance_of(account='sys'))
+        self.assertAlmostEqual((self.currency.balance_of(account='sys') - old_balance_collateral) / 1.03 * 0.01, old_balance_tad - self.tad.balance_of(account='sys'))
 
     def test_instant_force_close_gives_correct_amount_of_collateral_when_ratio_is_below_1_03(self):
         pass
-        self.dai.mint(amount=1000, signer='vault_contract')
-        self.dai.transfer(to='sys', amount=1000, signer='vault_contract')
+        self.tad.mint(amount=1000, signer='vault_contract')
+        self.tad.transfer(to='sys', amount=1000, signer='vault_contract')
 
         self.oracle.set_price(number=0, new_price=0.09)
 
-        self.dai.approve(to='vault_contract', amount=1000)
+        self.tad.approve(to='vault_contract', amount=1000)
         old_balance = self.currency.balance_of(account='sys')
 
         self.vault.fast_force_close_vault(cdp_number=self.id)

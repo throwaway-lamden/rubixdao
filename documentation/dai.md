@@ -1,6 +1,6 @@
 # Lamden MKR Contracts
 
-## dai.py functions
+## tad.py functions
 
 ### seed
 Takes `owner: str`
@@ -32,7 +32,7 @@ Reference the linked repos for documentation on those functions.
 Asserts that the caller is the operator.
 
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address stored in `operator`
 
@@ -41,12 +41,12 @@ Takes `amount: float`
 
 Mints the amount specified and sends it to the caller.
 
-Adds `amount` to `total_supply`. 
+Adds `amount` to `total_supply`.
 
-#### Checks: 
+#### Checks:
 
 - Calls assert_owner
-- Asserts that `amount` is positive 
+- Asserts that `amount` is positive
 
 Returns `None`.
 
@@ -55,11 +55,11 @@ Takes `amount: float`
 
 Transfers the amount specified from the caller and burns it.
 
-Subtracts `amount` from `total_supply`. 
+Subtracts `amount` from `total_supply`.
 
-#### Checks: 
+#### Checks:
 
-- Asserts that `amount` is positive 
+- Asserts that `amount` is positive
 - Asserts that the balance of the caller is greater than `amount`
 
 Returns `None`.

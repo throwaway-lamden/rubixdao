@@ -17,8 +17,8 @@ rate['start_time'] = get_timestamp()
 rate['rate'] = 1.0000000015469297  # interest per second
 rate['start_price'] = 1
 
-metadata['token_name'] = 'Staked DAI'
-metadata['token_symbol'] = 'sDAI'
+metadata['token_name'] = 'Staked tad'
+metadata['token_symbol'] = 'stad'
 metadata['token_logo_url'] = 'image.site'
 metadata['operator'] = ctx.caller
 total_minted.set(0)
@@ -34,7 +34,7 @@ Reference the linked repos for documentation on those functions.
 
 Asserts that the caller is the operator.
 
-#### Checks: 
+#### Checks:
 
 - Asserts the caller is the address stored in `operator`
 
@@ -50,32 +50,32 @@ Returns current UTC timestamp.
 
 **Cannot be called**
 
-Returns current price per sDAI.
+Returns current price per stad.
 
 
 ### stake
 Takes `amount: float`
 
-Transfers the amount specified from the caller to the contract, and mints an equivalent amount of sDAI at a rate of `amount / get_price()`. 
+Transfers the amount specified from the caller to the contract, and mints an equivalent amount of stad at a rate of `amount / get_price()`.
 
-Adds the amount of sDAI minted to `total_minted`. 
+Adds the amount of stad minted to `total_minted`.
 
-#### Checks: 
+#### Checks:
 
-- Asserts that `amount` is positive 
+- Asserts that `amount` is positive
 
-Returns amount of sDAI minted.
+Returns amount of stad minted.
 
 ### withdraw_stake
 Takes `amount: float`
 
-Burns the amount of sDAI specified. Transfers `total_minted / dai.balance_of(ctx.this)` to the caller, and calls `vault.mint_rewards()` to mint `(amount * price) - (total_minted / dai.balance_of(ctx.this)).
+Burns the amount of stad specified. Transfers `total_minted / tad.balance_of(ctx.this)` to the caller, and calls `vault.mint_rewards()` to mint `(amount * price) - (total_minted / tad.balance_of(ctx.this)).
 
-Subtracts `amount` from `total_minted`. 
+Subtracts `amount` from `total_minted`.
 
-#### Checks: 
+#### Checks:
 
-- Asserts that `amount` is positive 
+- Asserts that `amount` is positive
 - Asserts that the balance of the caller is greater than `amount`
 
 Returns `None`.

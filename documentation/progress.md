@@ -1,6 +1,6 @@
 ### Progress:
 
-- [x] Dai SC
+- [x] tad SC
    - [x] LST-001
     - [x] Metadata
     - [x] Mint/burn
@@ -45,13 +45,13 @@
 
 - [x] Tests
     - [x] Functionality tests
-      - [x] DAI token
+      - [x] tad token
       - [x] Oracle
       - [x] Vaults
       - [x] Auction
       - [x] Staking
     - [x] Edge case tests
-      - [x] DAI token
+      - [x] tad token
       - [x] Oracle
       - [x] Vaults
       - [x] Auction
@@ -73,7 +73,7 @@
    - [x] Setup
    - [x] Create vaults
    - [x] Close vaults
-   - [x] Stake DAI
+   - [x] Stake tad
    - [x] Open auction (due to undercollateralization)
    - [ ] Force close auction
    - [ ] Create new vault type

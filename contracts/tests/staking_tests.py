@@ -10,8 +10,8 @@ class StakingTests(unittest.TestCase):
     def setUp(self):
         self.client = ContractingClient()
         self.client.flush()
-        with open('dai.py') as file:
-            dai = file.read()
+        with open('tad.py') as file:
+            tad = file.read()
         with open('vault.py') as file:
             vault = file.read()
         with open('test_currency.py') as file:
@@ -21,20 +21,20 @@ class StakingTests(unittest.TestCase):
         with open('stake.py') as file:
             staking = file.read()
 
-        self.client.submit(dai, name='dai_contract', constructor_args={
+        self.client.submit(tad, name='tad_contract', constructor_args={
                            'owner': 'vault_contract'})
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
         self.client.submit(oracle, name='oracle')
         self.client.submit(staking, name='staking')
 
-        self.dai = self.client.get_contract('dai_contract')
+        self.tad = self.client.get_contract('tad_contract')
         self.vault = self.client.get_contract('vault_contract')
         self.currency = self.client.get_contract('currency')
         self.oracle = self.client.get_contract('oracle')
         self.staking = self.client.get_contract('staking')
-        self.dai.mint(amount=2000000, signer='vault_contract')
-        self.dai.transfer(amount=2000000, to='testing_user',
+        self.tad.mint(amount=2000000, signer='vault_contract')
+        self.tad.transfer(amount=2000000, to='testing_user',
                           signer='vault_contract')
 
         self.oracle.set_price(number=0, new_price=1.0)  # Probably not needed
@@ -89,66 +89,66 @@ class StakingTests(unittest.TestCase):
             self.staking.stake(amount=1000001)
 
     def test_stake_normal(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
 
     def test_stake_takes_money(self):
-        self.assertAlmostEqual(self.dai.balance_of(
+        self.assertAlmostEqual(self.tad.balance_of(
             account='testing_user'), 2000000)
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
-        self.assertAlmostEqual(self.dai.balance_of(
+        self.assertAlmostEqual(self.tad.balance_of(
             account='testing_user'), 1000000)
 
     def test_stake_updates_balance(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.assertAlmostEqual(self.staking.balances['testing_user'], 1000000)
 
     def test_stake_sets_total_minted(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.assertAlmostEqual(self.staking.total_minted.get(), 2000000)
 
     def test_withdraw_stake_negative(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'positive'):
             self.staking.withdraw_stake(amount=-1, signer='testing_user')
 
     def test_withdraw_stake_insufficient(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'enough'):
             self.staking.withdraw_stake(amount=1000001, signer='testing_user')
 
     def test_stake_records_balance(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.assertAlmostEqual(self.staking.balances['testing_user'], 1000000)
         self.assertEqual(self.staking.balances['wallet2'], None)
 
     def test_withdraw_stake_normal(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.withdraw_stake(amount=1000000, signer='testing_user')
 
     def test_withdraw_stake_returns_money(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.withdraw_stake(amount=1000000, signer='testing_user')
-        self.assertAlmostEqual(self.dai.balance_of(
+        self.assertAlmostEqual(self.tad.balance_of(
             account='testing_user'), 2000000)
 
     def test_withdraw_stake_returns_rewards(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         self.staking.withdraw_stake(
             amount=1000000, signer='testing_user', environment=env)
-        assert self.dai.balance_of(account='testing_user') > 2000000
+        assert self.tad.balance_of(account='testing_user') > 2000000
 
     def test_transfer_negative(self):
         with self.assertRaisesRegex(AssertionError, 'negative'):
@@ -161,7 +161,7 @@ class StakingTests(unittest.TestCase):
                 amount=1000001, to='wallet2', signer='testing_user')
 
     def test_transfer_normal(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.transfer(amount=42, to='wallet2', signer='testing_user')
         self.assertAlmostEqual(
@@ -179,21 +179,21 @@ class StakingTests(unittest.TestCase):
                 amount=1000001, to='account1', signer='testing_user')
 
     def test_accounts_updates_internal_balance(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         self.assertAlmostEqual(
             self.staking.balances['testing_user', 'account1'], 42)
 
     def test_accounts_normal(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         self.assertAlmostEqual(self.staking.allowance(
             owner='testing_user', spender='account1', signer='me'), 42)
 
     def test_transfer_from_negative(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'negative'):
@@ -201,7 +201,7 @@ class StakingTests(unittest.TestCase):
                                        main_account='testing_user', signer='account1')
 
     def test_transfer_from_excess(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'enough'):
@@ -209,7 +209,7 @@ class StakingTests(unittest.TestCase):
                                        main_account='testing_user', signer='account1')
 
     def test_transfer_from_approved(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         with self.assertRaisesRegex(AssertionError, 'approved'):
@@ -217,7 +217,7 @@ class StakingTests(unittest.TestCase):
                                        main_account='testing_user', signer='account1')
 
     def test_transfer_from_normal_sends(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         self.staking.transfer_from(amount=42, to='wallet2',
@@ -228,7 +228,7 @@ class StakingTests(unittest.TestCase):
             self.staking.balance_of(account='testing_user'), 1000000 - 42)
 
     def test_transfer_from_normal_receives(self):
-        self.dai.approve(to='staking', amount=1000000, signer='testing_user')
+        self.tad.approve(to='staking', amount=1000000, signer='testing_user')
         self.staking.stake(amount=1000000, signer='testing_user')
         self.staking.approve(amount=42, to='account1', signer='testing_user')
         self.staking.transfer_from(amount=42, to='wallet2',
