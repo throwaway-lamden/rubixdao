@@ -1,4 +1,4 @@
-# Lamden MKR Contracts
+# RubixDAO Contracts
 
 ## stake.py functions
 

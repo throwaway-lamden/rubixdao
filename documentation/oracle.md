@@ -1,4 +1,4 @@
-# Lamden MKR Contracts
+# RubixDAO Contracts
 
 ## oracle.py functions
 
@@ -18,9 +18,9 @@ Takes `number: int, new_price: float`
 
 Sets `current_price[number]` to `new_price`.
 
-#### Checks: 
+#### Checks:
 
-- Asserts that `new_price` is positive 
+- Asserts that `new_price` is positive
 - Asserts that the caller is the address specified in `operator`
 
 Returns `None`.
@@ -29,11 +29,11 @@ Returns `None`.
 ### get_price
 Takes `number: int`
 
-This function does not modify state. 
+This function does not modify state.
 
 This function returns the current price for the specified vault.
 
-#### Checks: 
+#### Checks:
 
 - N/A
 

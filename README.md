@@ -5,7 +5,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/rubixdao/tests?label=Tests&style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/throwaway-lamden/rubixdao/CodeQL?label=CodeQL&style=flat-square)
 
-This repository contains the backend code for the Lamden MKR clone and some associated tests.
+This repository contains the backend code for the RubixDAO clone and some associated tests.
 
 ## Testing
 
@@ -46,7 +46,7 @@ To test, `contracting`, `requests`, and `pytest` are required. To deploy, `Lamde
 
 To see the contracts in action on the testnet, clone this repository and run `demo.py`. The dependencies are `Lamden` and `requests`. If you are running the script on Windows, `colorama` is recommended.
 
-You can also see the demo in the [Github Actions demo.yml](https://github.com/throwaway-lamden/rubixdao/actions/workflows/demo.yml) tab. A WIP web demo on [Repl.it](https://replit.com/@testtestlamden/lamden-mkr) can also be used.
+You can also see the demo in the [Github Actions demo.yml](https://github.com/throwaway-lamden/rubixdao/actions/workflows/demo.yml) tab. A WIP web demo on [Repl.it](https://replit.com/@testtestlamden/rubixdao) can also be used.
 
 ### Expected Workflows
 
@@ -107,9 +107,9 @@ This is the equivalent to the DSR. It has an adjustable interest rate. Payouts a
 
 This is the tad equivalent. It conforms to LST-001 and LST-002.
 
-[Contract](https://github.com/throwaway-lamden/lamden-mkr/blob/main/contracts/tad.py)
+[Contract](https://github.com/throwaway-lamden/rubixdao/blob/main/contracts/tad.py)
 
-[Documentation](https://github.com/throwaway-lamden/lamden-mkr/blob/main/documentation/tad.md)
+[Documentation](https://github.com/throwaway-lamden/rubixdao/blob/main/documentation/tad.md)
 
 ### oracle
 

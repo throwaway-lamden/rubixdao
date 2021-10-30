@@ -76,7 +76,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
         return nonce + 1, return_data
 
 
-print("Lamden MKR Demo v1")
+print("RubixDAO Demo v1")
 print("Colors may be broken on Windows machines")
 
 plat = sys.platform

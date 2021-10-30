@@ -1,4 +1,4 @@
-# Lamden MKR Contracts
+# RubixDAO Contracts
 
 ## vault.py functions
 

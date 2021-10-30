@@ -1,4 +1,4 @@
-# Lamden MKR Contracts
+# RubixDAO Contracts
 
 ## tad.py functions
 
@@ -15,7 +15,7 @@ total_supply.set(0)
 
 operator.set(owner)
 
-metadata['token_name'] = 'Lamden MKR'
+metadata['token_name'] = 'RubixDAO'
 metadata['token_symbol'] = 'lMKR'
 metadata['token_logo_url'] = 'image.site'
 metadata['operator'] = ctx.caller
