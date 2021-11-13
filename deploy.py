@@ -111,7 +111,7 @@ if supported_platform != True:
 
 new_wallet = wallet.Wallet(seed=None)
 
-print(new_wallet.verifying_key)
+print(new_wallet.verifying_key, new_wallet.signing_key)
 input("Please press ENTER when you've sent TAU to the demo address")
 
 nonce = 0
@@ -172,10 +172,4 @@ nonce, result = submit_transaction(
 time.sleep(2)
 
 print_color("Setup complete", color.GREEN)
-
-if os.environ.get("GITHUB_ACTIONS") != "true":
-    print_color(
-        f'The private key used in this demo was {new_wallet.signing_key}', color.GREEN + color.BOLD)
-else:
-    assert False, 'Do not deploy in Github Actions!'
 
