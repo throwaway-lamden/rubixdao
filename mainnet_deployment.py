@@ -46,12 +46,12 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                                            kwargs=kwargs,
                                            nonce=nonce,  # Starts at zero, increments with every transaction
                                            # Masternode address
-                                           processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
+                                           processor='5b09493df6c18d17cc883ebce54fcb1f5afbd507533417fe32c006009a9c3c4a',
                                            stamps=1000)
 
         try:
             return_data = requests.post(
-                'https://testnet-master-1.lamden.io/', data=tx).content
+                'https://masternode-01.lamden.io/', data=tx).content
             return_data = return_data.decode("UTF-8")
             return_data = ast.literal_eval(return_data)
             print(return_data['hash'])
@@ -64,7 +64,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                     f"Retrying...", color.RED)
 
                 return_data = requests.post(
-                    'https://testnet-master-1.lamden.io/', data=tx).content
+                    'https://masternode-01.lamden.io/', data=tx).content
                 return_data = return_data.decode("UTF-8")
                 return_data = ast.literal_eval(return_data)
                 print(return_data['hash'])
@@ -180,5 +180,3 @@ else:
     print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions',
                 color.YELLOW + color.BOLD)
 
-# todo: send back all the extra funds
-# todo: change fee for staking to 25% (1.0000000070758357) so rewards will be positive instead of negative
