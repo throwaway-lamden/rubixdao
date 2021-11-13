@@ -171,20 +171,6 @@ nonce, result = submit_transaction(
 
 time.sleep(2)
 
-print_color("Approving TAU for spending", color.BOLD)
-
-for x in contract_list:
-    kwargs = dict()
-    kwargs['amount'] = dict(__fixed__='1000.0')
-    kwargs['to'] = f'con_{prefix}_{x}'
-
-    nonce, result = submit_transaction(
-        new_wallet, f'currency', 'approve', kwargs, nonce)
-    nonce, result = submit_transaction(
-        new_wallet, f'con_{prefix}_tad', 'approve', kwargs, nonce)
-
-    time.sleep(2)
-
 print_color("Setup complete", color.GREEN)
 
 if os.environ.get("GITHUB_ACTIONS") != "true":
