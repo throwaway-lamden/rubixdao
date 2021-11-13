@@ -177,6 +177,5 @@ if os.environ.get("GITHUB_ACTIONS") != "true":
     print_color(
         f'The private key used in this demo was {new_wallet.signing_key}', color.GREEN + color.BOLD)
 else:
-    print_color(f'The private key used in this demo is omitted because this was run in GitHub Actions',
-                color.YELLOW + color.BOLD)
+    assert False, 'Do not deploy in Github Actions!'
 
