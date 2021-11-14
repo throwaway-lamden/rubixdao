@@ -116,7 +116,7 @@ else:
 print(new_wallet.verifying_key, new_wallet.signing_key)
 input("Please press ENTER when you've sent TAU to the demo address")
 
-nonce = 0
+nonce = requests.get(f'https://masternode-01.lamden.io/nonce/{new_wallet.verifying_key}'
 contract_list = ['tad', 'oracle', 'vault', 'stake']
 prefix = f'rubix_test_decimal'
 
