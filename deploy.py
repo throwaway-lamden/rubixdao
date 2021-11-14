@@ -108,15 +108,17 @@ if supported_platform != True:
         print("Unable to import colorama, defaulting to no colors")
         print_color = print_color_none
 
-
-new_wallet = wallet.Wallet(seed=None)
+if sys.argv[1] != None:
+    new_wallet = wallet.Wallet(seed=sys.argv[1])
+else:
+    new_wallet = wallet.Wallet(seed=None)
 
 print(new_wallet.verifying_key, new_wallet.signing_key)
 input("Please press ENTER when you've sent TAU to the demo address")
 
 nonce = 0
 contract_list = ['tad', 'oracle', 'vault', 'stake']
-prefix = f'rubix_test'
+prefix = f'rubix_test_decimal'
 
 for x in contract_list:
     print_color(
