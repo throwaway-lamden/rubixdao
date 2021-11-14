@@ -118,7 +118,7 @@ input("Please press ENTER when you've sent TAU to the demo address")
 
 nonce = requests.get(f'https://masternode-01.lamden.io/nonce/{new_wallet.verifying_key}').json()['nonce']
 contract_list = ['tad', 'oracle', 'vault', 'stake']
-prefix = f'rubix_test_decimal'
+prefix = f'rubix_test_dec'
 
 for x in contract_list:
     print_color(
