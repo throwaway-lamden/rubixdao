@@ -151,8 +151,8 @@ def fast_force_close_vault(cdp_number: int):
 
     else:
         redemption_cost, redemption_cost_without_fee = redemption_cost * \
-            decimal(collateral_percent / 1.03), redemption_cost_without_fee * \
-            decimal(collateral_percent / 1.03)
+            (collateral_percent / 1.03), redemption_cost_without_fee * \
+            (collateral_percent / 1.03)
 
         tad_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
@@ -315,7 +315,7 @@ def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
 
     # To make the contract more robust, and to prevent floating point errors
     for vault_type in vaults['list']:
-        funds_transferred = decimal(
+        funds_transferred = (
             vaults[vault_type, 'weight'] / total_weight) * total_funds
         vaults[vault_type, 'total'] += funds_transferred
 
