@@ -47,7 +47,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                                            nonce=nonce,  # Starts at zero, increments with every transaction
                                            # Masternode address
                                            processor='5b09493df6c18d17cc883ebce54fcb1f5afbd507533417fe32c006009a9c3c4a',
-                                           stamps=1000)
+                                           stamps=1500)
 
         try:
             return_data = requests.post(
