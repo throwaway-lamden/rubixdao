@@ -108,9 +108,11 @@ if supported_platform != True:
         print("Unable to import colorama, defaulting to no colors")
         print_color = print_color_none
 
-if sys.argv[1] != None: # todo: change this to try except block
+try: 
     new_wallet = wallet.Wallet(seed=sys.argv[1])
-else:
+    cli_seed = True
+    
+except IndexError:
     new_wallet = wallet.Wallet(seed=None)
 
 print(new_wallet.verifying_key, new_wallet.signing_key)
@@ -118,8 +120,12 @@ input("Please press ENTER when you've sent TAU to the demo address")
 
 nonce = requests.get(f'https://masternode-01.lamden.io/nonce/{new_wallet.verifying_key}').json()['nonce']
 contract_list = ['tad', 'oracle', 'vault', 'stake']
-prefix = str(sys.argv[2]) # todo: patch this once sys.argv[1] issue is fixed
 
+if cli_seed:
+    prefix = str(sys.argv[2]) 
+else: # no try except because we want this to fail if no prefix is given
+    prefix = str(sys.argv[1])
+    
 for x in contract_list:
     print_color(
         f"Submitting {x} contract to mainnet as con_{prefix + '_' + x}", color.BOLD)
