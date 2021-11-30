@@ -60,7 +60,7 @@ def withdraw_stake(amount: float):
     return_amount = current_price * amount
 
     supply = total_minted.get()
-    current_average = supply / tad_contract.balance_of(ctx.this)
+    current_average = fix_decimal(supply / tad_contract.balance_of(ctx.this))
     transfer_away_amount = amount * current_average
 
     total_minted.set(supply - amount)
@@ -153,3 +153,9 @@ def change_owner(new_owner: str):
 
 def assert_owner():
     assert ctx.caller == operator.get(), 'Only operator can call!'
+    
+    
+def fix_decimal(old_decimal: float):
+    new_decimal = (temporary_var.set(old_decimal)).get()
+    
+    return new_decimal
