@@ -108,7 +108,7 @@ if supported_platform != True:
         print("Unable to import colorama, defaulting to no colors")
         print_color = print_color_none
 
-if sys.argv[1] != None:
+if sys.argv[1] != None: # todo: change this to try except block
     new_wallet = wallet.Wallet(seed=sys.argv[1])
 else:
     new_wallet = wallet.Wallet(seed=None)
@@ -118,7 +118,7 @@ input("Please press ENTER when you've sent TAU to the demo address")
 
 nonce = requests.get(f'https://masternode-01.lamden.io/nonce/{new_wallet.verifying_key}').json()['nonce']
 contract_list = ['tad', 'oracle', 'vault', 'stake']
-prefix = f'rubix_test_dec'
+prefix = str(sys.argv[2]) # todo: patch this once sys.argv[1] issue is fixed
 
 for x in contract_list:
     print_color(
