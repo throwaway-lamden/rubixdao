@@ -420,6 +420,7 @@ def assert_insufficent_collateral(cdp_number: int):
 
     
 def fix_decimal(old_decimal: float):
-    new_decimal = (temporary_var.set(old_decimal)).get()
+    temporary_var.set(old_decimal)
+    new_decimal = temporary_var.get()
     
     return new_decimal
