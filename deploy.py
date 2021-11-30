@@ -112,7 +112,7 @@ try:
     new_wallet = wallet.Wallet(seed=sys.argv[1])
     cli_seed = True
     
-except IndexError:
+except ValueError: # otherwise, will error if only prefix given
     new_wallet = wallet.Wallet(seed=None)
 
 print(new_wallet.verifying_key, new_wallet.signing_key)
