@@ -114,6 +114,7 @@ try:
     
 except ValueError: # otherwise, will error if only prefix given
     new_wallet = wallet.Wallet(seed=None)
+    cli_seed = False
 
 print(new_wallet.verifying_key, new_wallet.signing_key)
 input("Please press ENTER when you've sent TAU to the demo address")
