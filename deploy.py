@@ -45,7 +45,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                                        nonce=nonce,  # Starts at zero, increments with every transaction
                                        # Masternode address
                                        processor='5b09493df6c18d17cc883ebce54fcb1f5afbd507533417fe32c006009a9c3c4a',
-                                       stamps=1000)
+                                       stamps=1500)
 
     try:
         return_data = requests.post(
@@ -104,17 +104,24 @@ if supported_platform != True:
         print("Unable to import colorama, defaulting to no colors")
         print_color = print_color_none
 
-if sys.argv[1] != None:
+try:
     new_wallet = wallet.Wallet(seed=sys.argv[1])
-else:
+    cli_seed = True
+
+except ValueError: # otherwise, will error if only prefix given
     new_wallet = wallet.Wallet(seed=None)
+    cli_seed = False
 
 print(new_wallet.verifying_key, new_wallet.signing_key)
 input("Please press ENTER when you've sent TAU to the demo address")
 
 nonce = requests.get(f'https://masternode-01.lamden.io/nonce/{new_wallet.verifying_key}').json()['nonce']
 contract_list = ['tad', 'oracle', 'vault', 'stake']
-prefix = f'rubix_test_dec'
+
+if cli_seed:
+    prefix = str(sys.argv[2])
+else: # no try except because we want this to fail if no prefix is given
+    prefix = str(sys.argv[1])
 
 for x in contract_list:
     print_color(

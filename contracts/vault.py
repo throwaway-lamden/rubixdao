@@ -5,6 +5,7 @@ stability_rate = Hash(default_value=1)
 cdp = Hash(default_value=0)
 stability_pool = Hash(default_value=0)
 
+temporary_var = Variable()
 
 @construct
 def seed():
@@ -28,7 +29,7 @@ def seed():
 def get_timestamp():
     # https://developers.lamden.io/docs/smart-contracts/datetime-module/
     td = now - datetime.datetime(1970, 1, 1, 0, 0, 0)
-    return td.seconds
+    return fix_decimal(td.seconds)
 
 
 @export
@@ -46,8 +47,8 @@ def create_vault(vault_type: int, amount_of_tad: float,
     assert vaults[vault_type, 'total'] + amount_of_tad <= vaults[vault_type,
                                                                  'cap'], 'The allowance is not sufficent!'
 
-    assert (amount_of_collateral * price) / \
-        amount_of_tad >= vaults[vault_type,
+    assert fix_decimal((amount_of_collateral * price) / \
+        amount_of_tad) >= vaults[vault_type,
                                 'minimum_collateralization'], 'Not enough collateral!'
 
     cdp_number = cdp['current_value']
@@ -83,8 +84,8 @@ def close_vault(cdp_number: int):
     collateral = importlib.import_module(
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
 
-    stability_ratio = vaults[cdp[cdp_number, 'vault_type'], 'total'] / \
-        vaults[cdp[cdp_number, 'vault_type'], 'issued']
+    stability_ratio = fix_decimal(vaults[cdp[cdp_number, 'vault_type'], 'total'] / \
+        vaults[cdp[cdp_number, 'vault_type'], 'issued'])
     redemption_cost = cdp[cdp_number, 'tad'] * stability_ratio
     fee = redemption_cost * \
         (stability_rate[cdp[cdp_number, 'vault_type']] **
@@ -119,11 +120,11 @@ def fast_force_close_vault(cdp_number: int):
         vaults[cdp[cdp_number, 'vault_type'], 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
 
-    stability_ratio = vaults[cdp[cdp_number, 'vault_type'],
-                             'total'] / vaults[cdp[cdp_number, 'vault_type'], 'issued']
+    stability_ratio = fix_decimal(vaults[cdp[cdp_number, 'vault_type'],
+                             'total'] / vaults[cdp[cdp_number, 'vault_type'], 'issued'])
     redemption_cost_without_fee = cdp[cdp_number,
                                       'tad'] * stability_ratio
-    redemption_cost = redemption_cost_without_fee * 1.1
+    redemption_cost = redemption_cost_without_fee * fix_decimal(1.1)
     fee = redemption_cost_without_fee * \
         (stability_rate[cdp[cdp_number, 'vault_type']]
          ** (get_timestamp() - cdp[cdp_number, 'time'])) - redemption_cost_without_fee
@@ -131,14 +132,14 @@ def fast_force_close_vault(cdp_number: int):
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
     price = oracle.get_price(cdp[cdp_number, 'vault_type'])
-    collateral_percent = (amount_of_collateral * price) / \
-        redemption_cost
+    collateral_percent = fix_decimal((amount_of_collateral * price) / \
+        redemption_cost)
 
-    if collateral_percent >= 1.03:
+    if collateral_percent >= fix_decimal(1.03):
         tad_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
         tad_contract.burn(amount=redemption_cost_without_fee)
-        amount = (redemption_cost * 1.03) / price # Double check this math is correct
+        amount = fix_decimal((redemption_cost * fix_decimal(1.03)) / price) # Double check this math is correct
 
         collateral.transfer(amount=amount, to=ctx.caller)
         collateral.transfer(amount=amount_of_collateral -
@@ -151,8 +152,8 @@ def fast_force_close_vault(cdp_number: int):
 
     else:
         redemption_cost, redemption_cost_without_fee = redemption_cost * \
-            (collateral_percent / 1.03), redemption_cost_without_fee * \
-            (collateral_percent / 1.03)
+            fix_decimal(collateral_percent / fix_decimal(1.03)), redemption_cost_without_fee * \
+            fix_decimal(collateral_percent / fix_decimal(1.03))
 
         tad_contract.transfer_from(
             amount=redemption_cost, to=ctx.this, main_account=ctx.caller)
@@ -276,7 +277,7 @@ def sync_stability_pool(vault_type: int):
         vaults[vault_type, 'issued'] += stability_pool[vault_type]
         stability_pool[vault_type] = 0
         # Return new ratio
-        return vaults[vault_type, 'issued'] / vaults[vault_type, 'total']
+        return fix_decimal(vaults[vault_type, 'issued'] / vaults[vault_type, 'total'])
 
     else:  # This also applies to negatives and zeros, although those situations are unlikely
         vaults[vault_type, 'issued'] = vaults[vault_type, 'total']
@@ -312,7 +313,7 @@ def mint_rewards(amount: float):
 
     # To make the contract more robust, and to prevent floating point errors
     for vault_type in vaults['list']:
-        funds_transferred = (
+        funds_transferred = fix_decimal(
             vaults[vault_type, 'weight'] / total_weight) * total_funds
         vaults[vault_type, 'total'] += funds_transferred
 
@@ -410,3 +411,10 @@ def assert_insufficent_collateral(cdp_number: int):
 
     assert (cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'tad']) < \
         vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization'], 'Vault above minimum collateralization!'
+
+    
+def fix_decimal(old_decimal: float):
+    temporary_var.set(old_decimal)
+    new_decimal = temporary_var.get()
+    
+    return new_decimal
