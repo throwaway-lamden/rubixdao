@@ -9,7 +9,7 @@ metadata = Hash()
 total_minted = Variable()
 operator = Variable()
 
-# 31536000 seconds per year
+temporary_var = Variable()
 
 
 @construct
@@ -31,7 +31,7 @@ def seed():
 def get_timestamp():
     # https://developers.lamden.io/docs/smart-contracts/datetime-module/
     td = now - datetime.datetime(1970, 1, 1, 0, 0, 0)
-    return td.seconds
+    return fix_decimal(td.seconds / 1000)
 
 
 @export
