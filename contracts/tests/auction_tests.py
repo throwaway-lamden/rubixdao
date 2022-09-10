@@ -345,7 +345,7 @@ class AuctionTests(unittest.TestCase):
         self.vault.claim_unwon_bid(cdp_number=self.id)
 
         self.assertAlmostEqual(self.tad.balance_of(account='sys'), 50)
-        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 0 #
+        assert self.vault.cdp[self.id, 'auction', 'sys', 'bid'] == 0
 
     def test_instant_force_close_vault_sufficent_collateral_fail(self):
         # self.vault.open_force_close_auction(cdp_number=self.id)

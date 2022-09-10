@@ -18,7 +18,7 @@ def seed():
 
     vaults[0, 'collateral_type'] = 'currency'
     vaults[0, 'minimum_collateralization'] = 1.5
-    vaults[0, 'minimum_auction_time'] = 259200
+    vaults[0, 'minimum_auction_time'] = 259.2
     vaults[0, 'cap'] = 100000
     vaults[0, 'weight'] = 10
 
