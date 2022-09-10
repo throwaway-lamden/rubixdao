@@ -243,8 +243,8 @@ class StakingTests(unittest.TestCase):
                 environment=env))
 
     def test_timestamp_is_correct(self):
-        assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) % 14400 * 1000 < 120
+        self.assertLess(abs(datetime.datetime.utcnow().timestamp() -
+                            self.vault.get_timestamp()) % 14400 * 1000, 120)
 
 
 if __name__ == '__main__':

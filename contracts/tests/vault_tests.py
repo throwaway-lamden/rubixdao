@@ -25,7 +25,7 @@ class VaultTests(unittest.TestCase):
             oracle = file.read()
 
         self.client.submit(tad, name='tad_contract', constructor_args={
-                           'owner': 'vault_contract'})
+            'owner': 'vault_contract'})
 
         self.client.submit(vault, name='vault_contract')
         self.client.submit(currency, name='currency')
@@ -54,7 +54,7 @@ class VaultTests(unittest.TestCase):
     def test_create_vault_negative(self):
         with self.assertRaisesRegex(AssertionError, 'positive'):
             self.vault.create_vault(vault_type=0, amount_of_tad=-
-                                    1,  amount_of_collateral=100)
+            1, amount_of_collateral=100)
 
     def test_create_vault_insufficient_allowance(self):
         with self.assertRaisesRegex(AssertionError, 'allowance'):
@@ -389,8 +389,8 @@ class VaultTests(unittest.TestCase):
             self.assertEqual(self.tad.total_supply.get(), 1000 * 100 - x * 100)
 
     def test_timestamp_is_correct(self):
-        assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) % 14400 * 1000 < 120
+        self.assertLess(abs(datetime.datetime.utcnow().timestamp() -
+                            self.vault.get_timestamp()) % 14400 * 1000, 120)
 
     def test_export_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
@@ -569,7 +569,7 @@ class VaultTests(unittest.TestCase):
 
         # original, tad minted, collateral percent, collateral reward respectively
         redemption_cost_without_fee = (
-            100) * (1500 * 0.01 / (100 * 1.1)) / 1.03
+                                          100) * (1500 * 0.01 / (100 * 1.1)) / 1.03
         self.assertAlmostEqual(self.tad.balance_of(account='sys'),
                                100 - redemption_cost_without_fee * 1.1)
         self.assertAlmostEqual(self.tad.total_supply.get(),

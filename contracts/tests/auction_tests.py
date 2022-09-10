@@ -449,7 +449,7 @@ class AuctionTests(unittest.TestCase):
         old_balance = self.currency.balance_of(account='stu')
 
         self.tad.approve(to='vault_contract', amount=1000)
-        self.vault.fast_force_close_vault(cdp_number=self.id)
+        self.vault.fast_force_close_vault(cdp_number=self.id, signer='stu')
         self.assertAlmostEqual(self.currency.balance_of(account='stu'), (old_balance + 1500))
 
     def test_instant_force_close_takes_into_account_stability_fee_when_ratio_is_above_1_03(self): # TODO: make this less complex
