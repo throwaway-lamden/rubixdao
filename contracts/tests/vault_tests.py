@@ -390,7 +390,7 @@ class VaultTests(unittest.TestCase):
 
     def test_timestamp_is_correct(self):
         assert abs(datetime.datetime.utcnow().timestamp() -
-                   self.vault.get_timestamp()) % 14400 < 120
+                   self.vault.get_timestamp()) % 14400 * 1000 < 120
 
     def test_export_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
