@@ -389,8 +389,11 @@ class VaultTests(unittest.TestCase):
             self.assertEqual(self.tad.total_supply.get(), 1000 * 100 - x * 100)
 
     def test_timestamp_is_correct(self):
+        # mocks the date to be today
+        env = {'now': Datetime(year=datetime.datetime.now().year, month=datetime.datetime.now().month,
+                               day=datetime.datetime.now().day)}
         self.assertLess(abs(datetime.datetime.utcnow().timestamp() -
-                            self.vault.get_timestamp()) % 14400 * 1000, 120)
+                            self.vault.get_timestamp(env=env)) % 14400 * 1000, 120)
 
     def test_export_rewards_unauthorised(self):
         with self.assertRaisesRegex(AssertionError, 'owner'):
