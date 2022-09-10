@@ -58,7 +58,7 @@ def open_vault():
     v_id = vault_contract.create_vault(
         vault_type=0, amount_of_tad=100, amount_of_collateral=200 / oracle.get_price(0))
 
-    # Append new vault id to list # TODO: Make consistent with close_specific_vault
+    # Append new vault id to list
     vault_list.set(vault_list.get() + [v_id])
 
     return amm.sell(contract='tad_contract', amount=100)
@@ -110,15 +110,3 @@ def internal_amm(amount: float = 100, is_buy: bool = True):
 def assert_owner():
     assert ctx.caller == owner.get(), 'Only operator can call!'
 
-# def internal_sell(amount: float): #REPLACED WITH internal_amm
-#    currency_reserve, token_reserve = amm_reserves['tad_contract']
-#
-#    k = currency_reserve * token_reserve
-#    new_token_reserve = token_reserve + token_amount
-#    new_currency_reserve = k / new_token_reserve
-#
-#    currency_purchased = currency_reserve - new_currency_reserve
-#
-#    fee = currency_purchased * 0.3 / 100
-#
-#    return currency_purchased - fee

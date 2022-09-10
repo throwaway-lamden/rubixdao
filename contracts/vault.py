@@ -35,8 +35,9 @@ def get_timestamp():
 def create_vault(vault_type: int, amount_of_tad: float,
                  amount_of_collateral: float):
     assert vault_type in vaults['list'], 'Not an available contract!'
+    # interface enforcement is unnecessary because collateral types should be pre-vetted
     collateral = importlib.import_module(
-        vaults[vault_type, 'collateral_type'])  # TODO: Add interface enforcement
+        vaults[vault_type, 'collateral_type'])
     oracle = importlib.import_module(vaults['oracle'])
 
     price = oracle.get_price(vault_type)
@@ -129,7 +130,6 @@ def fast_force_close_vault(cdp_number: int):
     redemption_cost += fee
 
     amount_of_collateral = cdp[cdp_number, 'collateral_amount']
-    collateral_type = cdp[cdp_number, 'collateral_type']
     price = oracle.get_price(cdp[cdp_number, 'vault_type'])
     collateral_percent = (amount_of_collateral * price) / \
         redemption_cost
@@ -160,7 +160,6 @@ def fast_force_close_vault(cdp_number: int):
 
         amount = cdp[cdp_number, 'collateral_amount']
 
-        # TODO: Add an assert later
         collateral.transfer(amount=amount, to=ctx.caller)
 
         vaults[cdp[cdp_number, 'vault_type'],
@@ -288,7 +287,6 @@ def sync_stability_pool(vault_type: int):
 
 @export
 def export_rewards(vault_type: int, amount: float):
-    # TODO: Change DSR to something else in future
     assert vaults[vault_type, 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
     assert stability_pool[vault_type] >= amount, 'Not enough tad in stability pool to export!'
 
@@ -299,8 +297,7 @@ def export_rewards(vault_type: int, amount: float):
 
 
 @export
-def mint_rewards(amount: float):  # TODO: MAKE SURE MATH CHECKS OUT
-    # TODO: Change DSR to something else in future
+def mint_rewards(amount: float):
     assert vaults['mint', 'DSR', 'owner'] == ctx.caller, 'Not the owner!'
     assert amount > 0, 'Cannot mint negative amount!'
 
@@ -401,12 +398,9 @@ def change_stability_rate(key: int, new_value: float):
 @export
 def get_collateralization_percent(cdp_number: int):
     assert cdp[cdp_number, 'owner'] != 0, 'Nonexistent cdp'
-    # TODO: Change this from a one-liner to proper function
     oracle = importlib.import_module(vaults['oracle'])
 
     return cdp[cdp_number, 'collateral_amount'] * oracle.get_price(cdp[cdp_number, 'vault_type']) / cdp[cdp_number, 'tad']
-    # code to check if minimum is met would be
-    # assert cdp[cdp_number, 'collateral_amount'] >= vaults[cdp[cdp_number, 'collateral_type'], 'minimum_collateralization']
 
 
 def assert_insufficent_collateral(cdp_number: int):

@@ -38,42 +38,38 @@ def print_color_none(text, color_type):
 
 
 def submit_transaction(wallet, contract, function, kwargs, nonce):
-    fail = False
-    while True:  # TODO: Remove later, the check that used this is now depreceated
-        tx = transaction.build_transaction(wallet=wallet,
-                                           contract=contract,
-                                           function=function,
-                                           kwargs=kwargs,
-                                           nonce=nonce,  # Starts at zero, increments with every transaction
-                                           # Masternode address
-                                           processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
-                                           stamps=1000)
+    tx = transaction.build_transaction(wallet=wallet,
+                                       contract=contract,
+                                       function=function,
+                                       kwargs=kwargs,
+                                       nonce=nonce,  # Starts at zero, increments with every transaction
+                                       # Masternode address
+                                       processor='89f67bb871351a1629d66676e4bd92bbacb23bd0649b890542ef98f1b664a497',
+                                       stamps=1000)
 
+    try:
+        return_data = requests.post(
+            'https://testnet-master-1.lamden.io/', data=tx).content
+        return_data = return_data.decode("UTF-8")
+        return_data = ast.literal_eval(return_data)
+        print(return_data['hash'])
+    except KeyError:
+        # Raises error on second try (so it doesn't continuously retry)
         try:
+            print_color(
+                f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
+            print_color(
+                f"Retrying...", color.RED)
+
             return_data = requests.post(
                 'https://testnet-master-1.lamden.io/', data=tx).content
             return_data = return_data.decode("UTF-8")
             return_data = ast.literal_eval(return_data)
             print(return_data['hash'])
         except KeyError:
-            # Raises error on second try (so it doesn't continuously retry)
-            try:
-                print_color(
-                    f"Transaction failed, debug data: {str(return_data['error'])}", color.RED)
-                print_color(
-                    f"Retrying...", color.RED)
+            raise SubmissionError(str(return_data['error']))
 
-                return_data = requests.post(
-                    'https://testnet-master-1.lamden.io/', data=tx).content
-                return_data = return_data.decode("UTF-8")
-                return_data = ast.literal_eval(return_data)
-                print(return_data['hash'])
-            except KeyError:
-                raise SubmissionError(str(return_data['error']))
-
-            continue
-
-        return nonce + 1, return_data
+    return nonce + 1, return_data
 
 
 print("RubixDAO Demo v1")

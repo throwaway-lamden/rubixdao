@@ -139,13 +139,3 @@ This is the base oracle contract.
 `GET` the results of a tx with `{masternode}/tx?hash={hash}`
 
 `POST` a tx to `{masternode}/`.
-
-## TODO
-
-Make tense consistent in progress section
-
-A test TODO section/file
-
-Demo script w/ optional colorama for non-ANSI compatible OSes
-
-Record gif of demo script (possibly with asciinemia) and add to readme
