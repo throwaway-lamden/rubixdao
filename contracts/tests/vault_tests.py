@@ -275,6 +275,15 @@ class VaultTests(unittest.TestCase):
         self.tad.approve(to='vault_contract', amount=100)
         self.vault.close_vault(cdp_number=id)
 
+    def test_close_vault_after_time(self):
+        self.currency.approve(to='vault_contract', amount=1500)
+        env = {'now': Datetime(year=2020, month=12, day=31)}  # mocks the date
+        id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
+                                     amount_of_collateral=1500, env=env)
+        self.tad.approve(to='vault_contract', amount=100)
+        env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        self.vault.close_vault(cdp_number=id, env=env)
+
     def test_close_vault_closes_vault(self):
         self.currency.approve(to='vault_contract', amount=1500)
 
