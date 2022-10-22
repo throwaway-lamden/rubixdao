@@ -1,4 +1,3 @@
-import ast
 import os
 import random
 import sys
@@ -49,9 +48,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
 
     try:
         return_data = requests.post(
-            'https://masternode-01.lamden.io/', data=tx).content
-        return_data = return_data.decode("UTF-8")
-        return_data = ast.literal_eval(return_data)
+            'https://masternode-01.lamden.io/', data=tx).json()
         print(return_data['hash'])
     except KeyError:
         # Raises error on second try (so it doesn't continuously retry)
@@ -62,9 +59,7 @@ def submit_transaction(wallet, contract, function, kwargs, nonce):
                 f"Retrying...", color.RED)
 
             return_data = requests.post(
-                'https://masternode-01.lamden.io/', data=tx).content
-            return_data = return_data.decode("UTF-8")
-            return_data = ast.literal_eval(return_data)
+                'https://masternode-01.lamden.io/', data=tx).json()
             print(return_data['hash'])
         except KeyError:
             raise SubmissionError(str(return_data['error']))
