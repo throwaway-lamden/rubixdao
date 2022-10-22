@@ -276,11 +276,13 @@ class VaultTests(unittest.TestCase):
         self.vault.close_vault(cdp_number=id)
 
     def test_close_vault_after_time(self):
-        self.currency.approve(to='vault_contract', amount=1500)
+        self.currency.approve(to='vault_contract', amount=15000)
         env = {'now': Datetime(year=2020, month=12, day=31)}  # mocks the date
+        self.vault.create_vault(vault_type=0, amount_of_tad=1000,
+                                amount_of_collateral=15000, environment=env)
         id = self.vault.create_vault(vault_type=0, amount_of_tad=100,
                                      amount_of_collateral=1500, environment=env)
-        self.tad.approve(to='vault_contract', amount=100)
+        self.tad.approve(to='vault_contract', amount=1000)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
         print(self.vault.get_timestamp() - self.vault.cdp[id, 'time'])
         self.vault.close_vault(cdp_number=id, environment=env)
@@ -495,7 +497,7 @@ class VaultTests(unittest.TestCase):
                 key=0, new_value=1.2, signer='wallet2')
 
     def test_change_stability_rate_normal(self):
-        assert self.vault.stability_rate[0] == 1.1
+        assert self.vault.stability_rate[0] == 1.0000000015469297
         self.vault.change_stability_rate(key=0, new_value=1.2)
         assert self.vault.stability_rate[0] == 1.2
 
