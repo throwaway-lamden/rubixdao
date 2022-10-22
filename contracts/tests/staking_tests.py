@@ -242,12 +242,5 @@ class StakingTests(unittest.TestCase):
             self.assertEqual(current_rate, self.staking.get_price(
                 environment=env))
 
-    def test_timestamp_is_correct(self):
-        # mocks the date to be today
-        env = {'now': Datetime(year=datetime.datetime.now().year, month=datetime.datetime.now().month, day=datetime.datetime.now().day)}
-        self.assertLess(abs(datetime.datetime.utcnow().timestamp() -
-                            self.vault.get_timestamp(environment=env)) % 14400 * 1000, 120)
-
-
 if __name__ == '__main__':
     unittest.main()

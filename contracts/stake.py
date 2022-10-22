@@ -31,7 +31,7 @@ def seed():
 def get_timestamp():
     # https://developers.lamden.io/docs/smart-contracts/datetime-module/
     td = now - datetime.datetime(1970, 1, 1, 0, 0, 0)
-    return fix_decimal(td.seconds / 1000)
+    return fix_decimal(td.seconds / 1000000)
 
 
 @export
