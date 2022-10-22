@@ -282,6 +282,7 @@ class VaultTests(unittest.TestCase):
                                      amount_of_collateral=1500, environment=env)
         self.tad.approve(to='vault_contract', amount=100)
         env = {'now': Datetime(year=2022, month=12, day=31)}  # mocks the date
+        print(self.vault.get_timestamp() - self.vault.cdp[id, 'time'])
         self.vault.close_vault(cdp_number=id, environment=env)
 
     def test_close_vault_closes_vault(self):
