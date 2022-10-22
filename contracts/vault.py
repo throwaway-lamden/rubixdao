@@ -18,7 +18,7 @@ def seed():
 
     vaults[0, 'collateral_type'] = 'currency'
     vaults[0, 'minimum_collateralization'] = 1.5
-    vaults[0, 'minimum_auction_time'] = 259.2
+    vaults[0, 'minimum_auction_time'] = 25.92
     vaults[0, 'cap'] = 100000
     vaults[0, 'weight'] = 10
 
@@ -29,7 +29,7 @@ def seed():
 def get_timestamp():
     # https://developers.lamden.io/docs/smart-contracts/datetime-module/
     td = now - datetime.datetime(1970, 1, 1, 0, 0, 0)
-    return fix_decimal(td.seconds / 1000000)
+    return fix_decimal(td.seconds / 10000)
 
 
 @export
