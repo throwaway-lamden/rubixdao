@@ -373,7 +373,7 @@ def remove_vault(vault_type: int):
 def change_state(key: str, new_value: str, convert_to_decimal: bool = False):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
     assert isinstance(key, str), 'Invalid type for key'
-    assert isinstance(new_value, str) == str, 'Invalid type for new value'
+    assert isinstance(new_value, str), 'Invalid type for new value'
 
     if convert_to_decimal:
         new_value = decimal(new_value)
