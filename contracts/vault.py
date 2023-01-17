@@ -342,7 +342,11 @@ def add_vault(collateral_type: str, collateral_amount: float, auction_time: floa
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
 
     vault_number = vaults['current_number']
-    vaults['list'].append(vault_number)
+    
+    tmp_list = vaults['list']
+    tmp_list.append(vault_number)
+    vaults['list'] = tmp_list
+
     vaults['current_number'] += 1
 
     vaults[vault_number, 'collateral_type'] = collateral_type
@@ -359,7 +363,10 @@ def add_vault(collateral_type: str, collateral_amount: float, auction_time: floa
 @export
 def remove_vault(vault_type: int):
     assert vaults['OWNER'] == ctx.caller, 'Not the owner!'
-    vaults['list'].remove(vault_type)
+    
+    tmp_list = vaults['list']
+    tmp_list.remove(vault_type)
+    vaults['list'] = tmp_list
 
 
 @export
