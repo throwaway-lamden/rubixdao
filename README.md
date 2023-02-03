@@ -2,7 +2,7 @@
 
 ![Python Version](https://img.shields.io/badge/Python-3.6-blue?style=flat-square)
 ![Dependencies](https://img.shields.io/badge/Dependencies-contracting%2C%20requests-blue?style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/throwaway-lamden/rubixdao/tests.yml?branch=main)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/throwaway-lamden/rubixdao/tests.yml?branch=main?label=Tests&style=flat-square)
 
 This repository contains the backend code for the RubixDAO clone and some associated tests.
 
